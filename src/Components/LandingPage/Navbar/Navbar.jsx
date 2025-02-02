@@ -6,16 +6,17 @@ const Navbar = () => {
   const [activeTab, setActiveTab] = useState("Home");
 
   const tabs = [
-    "HOME",
-    "BLOGS",
-    "CODE SNIPPETS",
-    "PODCASTS",
-    "FORUMS",
-    "ABOUT",
+    { name: "HOME", id: "home" },
+    { name: "BLOGS", id: "blogs" },
+    { name: "CODE SNIPPETS", id: "code-snippets" },
+    { name: "PODCASTS", id: "podcasts" },
+    { name: "FORUMS", id: "forums" },
+    { name: "ABOUT", id: "about" },
   ];
 
   const handleTabClick = (tab) => {
-    setActiveTab(tab);
+    setActiveTab(tab.name);
+    document.getElementById(tab.id).scrollIntoView({ behavior: "smooth" });
   };
 
   // Framer Motion animation variants for the navbar
@@ -49,14 +50,14 @@ const Navbar = () => {
             {tabs.map((tab) => (
               // Wrap each tab in a motion.div to animate hover and click events
               <motion.div
-                key={tab}
-                className={`nav-tab ${activeTab === tab ? "active" : ""}`}
+                key={tab.name}
+                className={`nav-tab ${activeTab === tab.name ? "active" : ""}`}
                 onClick={() => handleTabClick(tab)}
                 whileHover="hover"
                 whileTap="click"
                 variants={tabVariants}
               >
-                {tab}
+                {tab.name}
               </motion.div>
             ))}
           </nav>

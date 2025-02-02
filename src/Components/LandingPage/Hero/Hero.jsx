@@ -41,7 +41,7 @@ const Hero = () => {
   ];
 
   return (
-    <section className="hero-section">
+    <section className="hero-section" id="home">
       <motion.h1
         className="hero-heading"
         initial={{ opacity: 0, y: -20 }}

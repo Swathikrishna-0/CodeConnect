@@ -79,45 +79,49 @@
 
     p {
       font-family: "Roboto";
-      font-size: 30px;
+      font-size: clamp(1.5rem, 2.5vw, 2rem); // Adjusted size
       font-weight: 100;
-      margin-bottom: -50px;
+      margin-bottom: -20px;
     }
+
     h2 {
       font-family: "Lexend Exa";
       font-weight: 300;
-      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-size: clamp(2.5rem, 8vw, 4.5rem); // Adjusted size
       margin-bottom: -10px;
     }
+
     h5 {
       font-family: "Roboto";
       font-weight: 100;
-      font-size: 25px;
+      font-size: clamp(1.25rem, 2vw, 1.75rem); // Adjusted size
+      color: $white;
+      line-height: 1.6;
+      margin-bottom: 2rem;
     }
     button {
       background-color: $light-orange;
       border: none;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       padding: 0.75rem 1.5rem;
       color: $black;
-      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      font-size: clamp(1rem, 2vw, 1.25rem);
       font-family: "Jost", sans-serif;
       font-weight: bold;
       border-radius: 0.5rem;
       cursor: pointer;
       transition: all 0.3s ease;
-      width: 165px;
-      height: 58px;
+      display: flex;
+      align-items: center;
+      width: 150px;
       &:hover {
         transform: scale(1.05);
         box-shadow: 0 4px 10px rgba($very-light-gray, 0.3);
       }
+
       .arrow-icon {
-        width: 40px;
-        height: 40px;
-        margin-left: 10px;
+        width: clamp(20px, 3vw, 30px);
+        height: clamp(20px, 3vw, 30px);
+        margin-left: 0.5rem;
       }
     }
   }
@@ -204,46 +208,49 @@
 
       p {
         font-family: "Roboto";
-        font-size: 30px; // Decreased size
+        font-size: clamp(1.5rem, 2.5vw, 2rem); // Adjusted size
         font-weight: 100;
-        margin-bottom: -50px;
+        margin-bottom: -20px;
       }
+  
       h2 {
         font-family: "Lexend Exa";
         font-weight: 300;
-        font-size: 80px; // Decreased size
-        margin-bottom: -15px;
+        font-size: clamp(2.5rem, 8vw, 4.5rem); // Adjusted size
+        margin-bottom: -10px;
       }
+  
       h5 {
         font-family: "Roboto";
         font-weight: 100;
-        font-size: 28px; // Decreased size
+        font-size: clamp(1.25rem, 2vw, 1.75rem); // Adjusted size
+        color: $white;
+        line-height: 1.6;
+        margin-bottom: 2rem;
       }
       button {
         background-color: $light-orange;
         border: none;
-        padding: 5px;
+        padding: 0.75rem 1.5rem;
         color: $black;
-        width: 240px; // Decreased size
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 70px; // Decreased size
-        font-size: 32px; // Decreased size
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        font-family: "Jost", sans-serif;
         font-weight: bold;
-        border-top-right-radius: 30px;
-        border-bottom-left-radius: 30px;
-        transition: box-shadow 0.3s ease, text-decoration 0.3s ease;
-
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        width: 150px;
         &:hover {
-          cursor: pointer;
-          text-decoration: underline;
-          box-shadow: 0 4px 10px $very-light-gray;
+          transform: scale(1.05);
+          box-shadow: 0 4px 10px rgba($very-light-gray, 0.3);
         }
+  
         .arrow-icon {
-          width: 40px; // Decreased size
-          height: 40px; // Decreased size
-          margin-left: 10px;
+          width: clamp(20px, 3vw, 30px);
+          height: clamp(20px, 3vw, 30px);
+          margin-left: 0.5rem;
         }
       }
     }
@@ -333,50 +340,49 @@
 
       p {
         font-family: "Roboto";
-        font-size: 28px;
+        font-size: clamp(1.5rem, 2.5vw, 2rem); // Adjusted size
         font-weight: 100;
         margin-bottom: -20px;
       }
+  
       h2 {
         font-family: "Lexend Exa";
         font-weight: 300;
-        font-size: 55px;
-        margin-bottom: -15px;
+        font-size: clamp(2.5rem, 8vw, 4.5rem); // Adjusted size
+        margin-bottom: -10px;
       }
+  
       h5 {
         font-family: "Roboto";
         font-weight: 100;
-        font-size: 20px;
-        padding-left: 30px;
-        padding-right: 20px;
-        line-height: 32px;
-        text-align: center;
+        font-size: clamp(1.25rem, 2vw, 1.75rem); // Adjusted size
+        color: $white;
+        line-height: 1.6;
+        margin-bottom: 2rem;
       }
       button {
         background-color: $light-orange;
         border: none;
-        padding: 5px;
+        padding: 0.75rem 1.5rem;
         color: $black;
-        width: 170px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 50px;
-        font-size: 25px;
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        font-family: "Jost", sans-serif;
         font-weight: bold;
-        border-top-right-radius: 30px;
-        border-bottom-left-radius: 30px;
-        transition: box-shadow 0.3s ease, text-decoration 0.3s ease;
-
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        width: 150px;
         &:hover {
-          cursor: pointer;
-          text-decoration: underline;
-          box-shadow: 0 4px 10px $very-light-gray;
+          transform: scale(1.05);
+          box-shadow: 0 4px 10px rgba($very-light-gray, 0.3);
         }
+  
         .arrow-icon {
-          width: 30px;
-          height: 30px;
-          margin-left: 10px;
+          width: clamp(20px, 3vw, 30px);
+          height: clamp(20px, 3vw, 30px);
+          margin-left: 0.5rem;
         }
       }
     }
@@ -466,50 +472,49 @@
 
       p {
         font-family: "Roboto";
-        font-size: 22px;
+        font-size: clamp(1.5rem, 2.5vw, 2rem); // Adjusted size
         font-weight: 100;
         margin-bottom: -20px;
       }
+  
       h2 {
         font-family: "Lexend Exa";
         font-weight: 300;
-        font-size: 38px;
-        margin-bottom: -15px;
+        font-size: clamp(2.5rem, 8vw, 4.5rem); // Adjusted size
+        margin-bottom: -10px;
       }
+  
       h5 {
         font-family: "Roboto";
         font-weight: 100;
-        font-size: 15px;
-        padding-left: 30px;
-        padding-right: 20px;
-        line-height: 25px;
-        text-align: center;
+        font-size: clamp(1.25rem, 2vw, 1.75rem); // Adjusted size
+        color: $white;
+        line-height: 1.6;
+        margin-bottom: 2rem;
       }
       button {
         background-color: $light-orange;
         border: none;
-        padding: 5px;
+        padding: 0.75rem 1.5rem;
         color: $black;
-        width: 130px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 40px;
-        font-size: 18px;
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        font-family: "Jost", sans-serif;
         font-weight: bold;
-        border-top-right-radius: 30px;
-        border-bottom-left-radius: 30px;
-        transition: box-shadow 0.3s ease, text-decoration 0.3s ease;
-
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        width: 150px;
         &:hover {
-          cursor: pointer;
-          text-decoration: underline;
-          box-shadow: 0 4px 10px $very-light-gray;
+          transform: scale(1.05);
+          box-shadow: 0 4px 10px rgba($very-light-gray, 0.3);
         }
+  
         .arrow-icon {
-          width: 25px;
-          height: 25px;
-          margin-left: 10px;
+          width: clamp(20px, 3vw, 30px);
+          height: clamp(20px, 3vw, 30px);
+          margin-left: 0.5rem;
         }
       }
     }
@@ -599,50 +604,49 @@
 
       p {
         font-family: "Roboto";
-        font-size: 18px;
+        font-size: clamp(1.5rem, 2.5vw, 2rem); // Adjusted size
         font-weight: 100;
         margin-bottom: -20px;
       }
+  
       h2 {
         font-family: "Lexend Exa";
         font-weight: 300;
-        font-size: 28px;
-        margin-bottom: -15px;
+        font-size: clamp(2.5rem, 8vw, 4.5rem); // Adjusted size
+        margin-bottom: -10px;
       }
+  
       h5 {
         font-family: "Roboto";
         font-weight: 100;
-        font-size: 13px;
-        padding-left: 30px;
-        padding-right: 20px;
-        line-height: 25px;
-        text-align: center;
+        font-size: clamp(1.25rem, 2vw, 1.75rem); // Adjusted size
+        color: $white;
+        line-height: 1.6;
+        margin-bottom: 2rem;
       }
       button {
         background-color: $light-orange;
         border: none;
-        padding: 5px;
+        padding: 0.75rem 1.5rem;
         color: $black;
-        width: 110px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 33px;
-        font-size: 15px;
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        font-family: "Jost", sans-serif;
         font-weight: bold;
-        border-top-right-radius: 20px;
-        border-bottom-left-radius: 20px;
-        transition: box-shadow 0.3s ease, text-decoration 0.3s ease;
-
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        width: 150px;
         &:hover {
-          cursor: pointer;
-          text-decoration: underline;
-          box-shadow: 0 4px 10px $very-light-gray;
+          transform: scale(1.05);
+          box-shadow: 0 4px 10px rgba($very-light-gray, 0.3);
         }
+  
         .arrow-icon {
-          width: 20px;
-          height: 20px;
-          margin-left: 10px;
+          width: clamp(20px, 3vw, 30px);
+          height: clamp(20px, 3vw, 30px);
+          margin-left: 0.5rem;
         }
       }
     }

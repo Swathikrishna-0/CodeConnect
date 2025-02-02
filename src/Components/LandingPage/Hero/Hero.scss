@@ -10,7 +10,7 @@
   text-align: center;
   background-color: $dark-gray;
   overflow: hidden;
-
+  margin-top: 30px;
   .hero-heading {
     font-family: "Merienda", cursive;
     font-size: clamp(2.5rem, 8vw, 4.5rem);
@@ -26,7 +26,7 @@
     align-items: center;
     gap: 2rem;
 
-    @media (min-width: 768px) {
+    @media (min-width: 1200px) {
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
@@ -40,10 +40,13 @@
     p {
       font-family: "Roboto";
       font-weight: 100;
-      font-size: 25px;
+      font-size: 18px;
       color: $white;
       line-height: 1.6;
       margin-bottom: 2rem;
+      @media (min-width: 768px) {
+        font-size: 28px;
+      }
     }
 
     .button-get {

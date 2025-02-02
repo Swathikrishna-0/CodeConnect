@@ -25,7 +25,7 @@ const Blogs = () => {
   const transition = { duration: 0.8, ease: "easeInOut" };
 
   return (
-    <div className="blog-section-main">
+    <div className="blog-section-main" id="blogs">
       <motion.div
         className="blog-left"
         ref={blogLeftRef}
