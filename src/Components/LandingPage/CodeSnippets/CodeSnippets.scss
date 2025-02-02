@@ -1,0 +1,840 @@
+@import "../../../index.scss";
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;300;400;500;600;700&display=swap");
+
+.code-section-main {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 200px;
+  margin-left: 50px;
+
+  .code-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+    width: 35%;
+    margin-right: 80px;
+    p {
+      font-family: "Roboto";
+      font-size: 32px;
+      font-weight: 100;
+      margin-bottom: -50px;
+    }
+    h2 {
+      font-family: "Lexend Exa";
+      font-weight: 300;
+      font-size: 96px;
+      margin-bottom: -10px;
+    }
+    h5 {
+      font-family: "Roboto";
+      font-weight: 100;
+      font-size: 36px;
+    }
+    button {
+      background-color: $light-orange;
+      border: none;
+      padding: 5px;
+      color: $black;
+      width: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80px;
+      font-size: 40px;
+      font-weight: bold;
+      border-top-right-radius: 30px;
+      border-bottom-left-radius: 30px;
+      transition: box-shadow 0.3s ease, text-decoration 0.3s ease;
+
+      &:hover {
+        cursor: pointer;
+        text-decoration: underline;
+        box-shadow: 0 4px 10px $very-light-gray;
+      }
+      .arrow-icon {
+        width: 50px;
+        height: 50px;
+        margin-left: 10px;
+      }
+    }
+  }
+  .code-right {
+    display: flex;
+
+    .code-snippet1 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .profile-img {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        margin-bottom: -15%;
+        z-index: 100;
+      }
+
+      .snippet-card {
+        background-color: #4247699e;
+        width: 420px;
+        border-radius: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 50px;
+      }
+      .quote-icon {
+        color: $light-orange;
+        height: 80px;
+        width: 80px;
+        padding-top: 10px;
+      }
+      .snippet-name {
+        font-size: 32px;
+        color: white;
+        margin: 0px;
+      }
+      .snippet-content {
+        font-size: 20px;
+        color: white;
+        font-weight: 100;
+      }
+      .snippet-img {
+        width: 420px;
+        height: 250px;
+        border-radius: 80px;
+      }
+    }
+    .code-snippet2 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-left: 35px;
+
+      .profile-img {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        margin-bottom: -15%;
+        z-index: 100;
+      }
+
+      .snippet-card {
+        background-color: #4247699e;
+        width: 420px;
+        border-radius: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 50px;
+      }
+      .quote-icon {
+        color: $light-orange;
+        height: 80px;
+        width: 80px;
+        padding-top: 10px;
+      }
+      .snippet-name {
+        font-size: 32px;
+        color: white;
+        margin: 0px;
+      }
+      .snippet-content {
+        font-size: 20px;
+        color: white;
+        font-weight: 100;
+      }
+      .snippet-img {
+        width: 420px;
+        height: 250px;
+        border-radius: 80px;
+      }
+    }
+  }
+}
+
+//tablet and medium devices view
+@media screen and (max-width: 1900px) {
+  .code-section-main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 130px;
+    margin-left: 0px;
+
+    .code-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: white;
+      width: 35%;
+      margin-right: 100px;
+      margin-left: 20px;
+
+      p {
+        font-family: "Roboto";
+        font-size: 32px;
+        font-weight: 100;
+        margin-bottom: -50px;
+      }
+      h2 {
+        font-family: "Lexend Exa";
+        font-weight: 300;
+        font-size: 82px;
+        margin-bottom: -15px;
+      }
+      h5 {
+        font-family: "Roboto";
+        font-weight: 100;
+        font-size: 30px;
+      }
+      button {
+        background-color: $light-orange;
+        border: none;
+        padding: 5px;
+        color: $black;
+        width: 250px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 75px;
+        font-size: 35px;
+        font-weight: bold;
+        border-top-right-radius: 30px;
+        border-bottom-left-radius: 30px;
+        transition: box-shadow 0.3s ease, text-decoration 0.3s ease;
+
+        &:hover {
+          cursor: pointer;
+          text-decoration: underline;
+          box-shadow: 0 4px 10px $very-light-gray;
+        }
+        .arrow-icon {
+          width: 45px;
+          height: 45px;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+  .code-right {
+    display: flex;
+
+    .code-snippet1 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .profile-img {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        margin-bottom: -13%;
+        z-index: 100;
+      }
+
+      .snippet-card {
+        background-color: #4247699e;
+        width: 400px;
+        border-radius: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 45px;
+      }
+      .quote-icon {
+        color: $light-orange;
+        height: 80px;
+        width: 80px;
+        padding-top: 10px;
+      }
+      .snippet-name {
+        font-size: 32px;
+        color: white;
+        margin: 0px;
+      }
+      .snippet-content {
+        font-size: 20px;
+        color: white;
+        font-weight: 100;
+      }
+      .snippet-img {
+        width: 400px;
+        height: 230px;
+        border-radius: 80px;
+      }
+    }
+    .code-snippet2 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-left: 35px;
+
+      .profile-img {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        margin-bottom: -13%;
+        z-index: 100;
+      }
+
+      .snippet-card {
+        background-color: #4247699e;
+        width: 420px;
+        border-radius: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 45px;
+      }
+      .quote-icon {
+        color: $light-orange;
+        height: 80px;
+        width: 80px;
+        padding-top: 10px;
+      }
+      .snippet-name {
+        font-size: 32px;
+        color: white;
+        margin: 0px;
+      }
+      .snippet-content {
+        font-size: 20px;
+        color: white;
+        font-weight: 100;
+      }
+      .snippet-img {
+        width: 420px;
+        height: 250px;
+        border-radius: 80px;
+      }
+    }
+  }
+}
+
+//tablet and medium devices view
+@media screen and (max-width: 1200px) {
+  .code-section-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 130px;
+    margin-left: 0px;
+    .code-left {
+      margin-left: 20px;
+      margin-right: 20px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+
+      p {
+        font-family: "Roboto";
+        font-size: 28px;
+        font-weight: 100;
+        margin-bottom: -20px;
+      }
+      h2 {
+        font-family: "Lexend Exa";
+        font-weight: 300;
+        font-size: 55px;
+        margin-bottom: -15px;
+      }
+      h5 {
+        font-family: "Roboto";
+        font-weight: 100;
+        font-size: 20px;
+        padding-left: 30px;
+        padding-right: 20px;
+        line-height: 32px;
+        text-align: center;
+      }
+      button {
+        background-color: $light-orange;
+        border: none;
+        padding: 5px;
+        color: $black;
+        width: 170px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50px;
+        font-size: 25px;
+        font-weight: bold;
+        border-top-right-radius: 30px;
+        border-bottom-left-radius: 30px;
+        transition: box-shadow 0.3s ease, text-decoration 0.3s ease;
+
+        &:hover {
+          cursor: pointer;
+          text-decoration: underline;
+          box-shadow: 0 4px 10px $very-light-gray;
+        }
+        .arrow-icon {
+          width: 30px;
+          height: 30px;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+  .code-right {
+    display: flex;
+
+    .code-snippet1 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .profile-img {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        margin-bottom: -11%;
+        z-index: 100;
+      }
+
+      .snippet-card {
+        background-color: #4247699e;
+        width: 380px;
+        border-radius: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 40px;
+      }
+      .quote-icon {
+        color: $light-orange;
+        height: 70px;
+        width: 70px;
+        padding-top: 10px;
+      }
+      .snippet-name {
+        font-size: 30px;
+        color: white;
+        margin: 0px;
+      }
+      .snippet-content {
+        font-size: 18px;
+        color: white;
+        font-weight: 100;
+      }
+      .snippet-img {
+        width: 380px;
+        height: 210px;
+        border-radius: 80px;
+      }
+    }
+    .code-snippet2 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-left: 30px;
+
+      .profile-img {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        margin-bottom: -11%;
+        z-index: 100;
+      }
+
+      .snippet-card {
+        background-color: #4247699e;
+        width: 380px;
+        border-radius: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 40px;
+      }
+      .quote-icon {
+        color: $light-orange;
+        height: 70px;
+        width: 70px;
+        padding-top: 10px;
+      }
+      .snippet-name {
+        font-size: 30px;
+        color: white;
+        margin: 0px;
+      }
+      .snippet-content {
+        font-size: 18px;
+        color: white;
+        font-weight: 100;
+      }
+      .snippet-img {
+        width: 380px;
+        height: 210px;
+        border-radius: 80px;
+      }
+    }
+  }
+}
+
+//phone and tablet view
+@media screen and (max-width: 850px) {
+  .code-section-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 130px;
+    margin-left: 0px;
+    .code-left {
+      margin-left: 20px;
+      margin-right: 20px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+
+      p {
+        font-family: "Roboto";
+        font-size: 22px;
+        font-weight: 100;
+        margin-bottom: -20px;
+      }
+      h2 {
+        font-family: "Lexend Exa";
+        font-weight: 300;
+        font-size: 38px;
+        margin-bottom: -15px;
+      }
+      h5 {
+        font-family: "Roboto";
+        font-weight: 100;
+        font-size: 15px;
+        padding-left: 30px;
+        padding-right: 20px;
+        line-height: 25px;
+        text-align: center;
+      }
+      button {
+        background-color: $light-orange;
+        border: none;
+        padding: 5px;
+        color: $black;
+        width: 130px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 40px;
+        font-size: 18px;
+        font-weight: bold;
+        border-top-right-radius: 30px;
+        border-bottom-left-radius: 30px;
+        transition: box-shadow 0.3s ease, text-decoration 0.3s ease;
+
+        &:hover {
+          cursor: pointer;
+          text-decoration: underline;
+          box-shadow: 0 4px 10px $very-light-gray;
+        }
+        .arrow-icon {
+          width: 25px;
+          height: 25px;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+  .code-right {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+
+    .code-snippet1 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .profile-img {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        margin-bottom: -11%;
+        z-index: 100;
+      }
+
+      .snippet-card {
+        background-color: #4247699e;
+        width: 380px;
+        border-radius: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 40px;
+      }
+      .quote-icon {
+        color: $light-orange;
+        height: 70px;
+        width: 70px;
+        padding-top: 10px;
+      }
+      .snippet-name {
+        font-size: 30px;
+        color: white;
+        margin: 0px;
+      }
+      .snippet-content {
+        font-size: 18px;
+        color: white;
+        font-weight: 100;
+      }
+      .snippet-img {
+        width: 380px;
+        height: 210px;
+        border-radius: 80px;
+      }
+    }
+    .code-snippet2 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-left: 30px;
+
+      .profile-img {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        margin-bottom: -11%;
+        z-index: 100;
+      }
+
+      .snippet-card {
+        background-color: #4247699e;
+        width: 380px;
+        border-radius: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 40px;
+      }
+      .quote-icon {
+        color: $light-orange;
+        height: 70px;
+        width: 70px;
+        padding-top: 10px;
+      }
+      .snippet-name {
+        font-size: 30px;
+        color: white;
+        margin: 0px;
+      }
+      .snippet-content {
+        font-size: 18px;
+        color: white;
+        font-weight: 100;
+      }
+      .snippet-img {
+        width: 380px;
+        height: 210px;
+        border-radius: 80px;
+      }
+    }
+  }
+}
+
+//phone and small devices
+@media screen and (max-width: 540px) {
+  .code-section-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 130px;
+    margin-left: 0px;
+
+    .code-left {
+      margin-left: 20px;
+      margin-right: 20px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+
+      p {
+        font-family: "Roboto";
+        font-size: 18px;
+        font-weight: 100;
+        margin-bottom: -20px;
+      }
+      h2 {
+        font-family: "Lexend Exa";
+        font-weight: 300;
+        font-size: 28px;
+        margin-bottom: -15px;
+        text-align: center;
+      }
+      h5 {
+        font-family: "Roboto";
+        font-weight: 100;
+        font-size: 13px;
+        padding-left: 30px;
+        padding-right: 20px;
+        line-height: 25px;
+        text-align: center;
+      }
+      button {
+        background-color: $light-orange;
+        border: none;
+        padding: 5px;
+        color: $black;
+        width: 110px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 33px;
+        font-size: 15px;
+        font-weight: bold;
+        border-top-right-radius: 20px;
+        border-bottom-left-radius: 20px;
+        transition: box-shadow 0.3s ease, text-decoration 0.3s ease;
+
+        &:hover {
+          cursor: pointer;
+          text-decoration: underline;
+          box-shadow: 0 4px 10px $very-light-gray;
+        }
+        .arrow-icon {
+          width: 20px;
+          height: 20px;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+  .code-right {
+    display: flex;
+    flex-direction: column;
+
+    .code-snippet1 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: 25px;
+
+      .profile-img {
+        width: 120px !important;
+        height: 120px !important;
+        border-radius: 50%;
+        margin-bottom: -11%;
+        z-index: 100;
+      }
+
+      .snippet-card {
+        background-color: #4247699e;
+        width: 330px !important;
+        border-radius: 60px !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .quote-icon {
+        color: $light-orange;
+        height: 60px !important;
+        width: 60px !important;
+        padding-top: 0px !important;
+      }
+      .snippet-name {
+        font-size: 28px !important;
+        color: white;
+        margin: 0px;
+      }
+      .snippet-content {
+        font-size: 14px !important;
+        color: white;
+        font-weight: 100;
+      }
+      .snippet-img {
+        width: 330px !important;
+        height: 190px !important;
+        border-radius: 60px !important;
+      }
+    }
+    .code-snippet2 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-left: 0px !important;
+
+      .profile-img {
+        width: 120px !important;
+        height: 120px !important;
+        border-radius: 50%;
+        margin-bottom: -11%;
+        z-index: 100;
+      }
+
+      .snippet-card {
+        background-color: #4247699e;
+        width: 330px !important;
+        border-radius: 60px !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .quote-icon {
+        color: $light-orange;
+        height: 60px !important;
+        width: 60px !important;
+        padding-top: 0px !important;
+      }
+      .snippet-name {
+        font-size: 28px !important;
+        color: white;
+        margin: 0px;
+      }
+      .snippet-content {
+        font-size: 14px !important;
+        color: white;
+        font-weight: 100;
+      }
+      .snippet-img {
+        width: 330px !important;
+        height: 190px !important;
+        border-radius: 60px !important;
+      }
+    }
+  }
+}
