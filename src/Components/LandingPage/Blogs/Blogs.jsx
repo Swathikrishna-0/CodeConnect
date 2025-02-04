@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { motion, useInView } from "framer-motion"; // Import useInView hook
+import { motion, useInView } from "framer-motion"; 
 import "./Blogs.scss";
 import EastIcon from "@mui/icons-material/East";
 import Blog1 from "../../../assets/blog1.png";
@@ -8,20 +8,27 @@ import Blog3 from "../../../assets/blog3.png";
 import Blog4 from "../../../assets/blog4.png";
 
 const Blogs = () => {
+  // Refs to track the visibility of blog sections
   const blogLeftRef = useRef(null);
   const blogRightRef = useRef(null);
+  
+  // Check if the blog sections are in view
   const blogLeftInView = useInView(blogLeftRef, { once: true, margin: "-50px" });
   const blogRightInView = useInView(blogRightRef, { once: true, margin: "-50px" });
+  
+  // Animation variants for the left blog section
   const blogVariants = {
     hidden: { opacity: 0, x: -100 }, 
     visible: { opacity: 1, x: 0 },   
   };
 
+  // Animation variants for the right content section
   const contentVariants = {
     hidden: { opacity: 0, x: 100 },  
     visible: { opacity: 1, x: 0 },    
   };
 
+  // Transition settings for animations
   const transition = { duration: 0.8, ease: "easeInOut" };
 
   return (
