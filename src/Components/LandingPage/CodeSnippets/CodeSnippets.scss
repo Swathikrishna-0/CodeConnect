@@ -73,7 +73,7 @@
     display: flex;
     gap: 2rem;
     width: 60%;
-    max-width:950px;
+    max-width: 950px;
     .code-snippet1,
     .code-snippet2 {
       display: flex;
@@ -127,12 +127,19 @@
 // Responsive Adjustments
 @media screen and (max-width: 1200px) {
   .code-section-main {
+    display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     padding: 2rem 1rem;
 
     .code-left {
       width: 100%;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       margin-bottom: 2rem;
     }
 

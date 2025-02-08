@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion"; 
 import "../Navbar/Navbar.scss";
 
@@ -18,6 +18,24 @@ const Navbar = () => {
     setActiveTab(tab.name);
     document.getElementById(tab.id).scrollIntoView({ behavior: "smooth" });
   };
+
+  // Update active tab based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = tabs.map(tab => document.getElementById(tab.id));
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+
+      for (let section of sections) {
+        if (section.offsetTop <= scrollPosition && section.offsetTop + section.offsetHeight > scrollPosition) {
+          setActiveTab(section.id.replace("-", " ").toUpperCase());
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Framer Motion animation variants for the navbar
   const navbarVariants = {

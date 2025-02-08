@@ -1,0 +1,202 @@
+@import "../../../index.scss";
+
+.forums-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 50px;
+  margin-top: 250px;
+  max-height: 880px;
+
+  @media (max-width: 1200px) {
+    margin-top: 350px;
+    max-height: 580px;
+    width: 100%;
+    flex-direction: column;
+  }
+}
+.forums-left {
+  background-color: #676f9d;
+  padding: 30px;
+  border-bottom-left-radius: 50px;
+  width: 35%;
+  @media (max-width: 1200px) {
+    width: 80%;
+    border-top-right-radius: 50px;
+    border-bottom-left-radius: 0px;
+  }
+}
+.forums-right {
+  width: 50%;
+  background-color: #424769;
+  padding: 20px;
+  border-top-right-radius: 50px;
+  @media (max-width: 1200px) {
+    height: 700px;
+    width: 80%;
+    border-bottom-left-radius: 50px;
+    border-top-right-radius: 0px;
+    padding-right: 40px;
+  }
+}
+.forums-tag {
+  color: #fff;
+  font-family: "Roboto";
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 100;
+  margin-bottom: -20px;
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+}
+.forums-heading {
+  font-family: "Lexend Exa";
+  font-weight: 300;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  margin-bottom: -10px;
+  color: #fff;
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+}
+.forums-description {
+  font-family: "Roboto";
+  font-weight: 100;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  color: #fff;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+}
+.forums-buttons-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+
+  @media (min-width: 1200px) {
+    justify-content: flex-start;
+  }
+
+  .forums-button {
+    background-color: $light-orange;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    color: $black;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-family: "Jost", sans-serif;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba($very-light-gray, 0.3);
+    }
+
+    .arrow-icon {
+      width: clamp(20px, 3vw, 30px);
+      height: clamp(20px, 3vw, 30px);
+      margin-left: 0.5rem;
+    }
+  }
+
+  .cta-button-outline {
+    background-color: transparent;
+    border: 2px solid $light-orange;
+    padding: 0.75rem 1.5rem;
+    color: $light-orange;
+    font-size: 1.1rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $light-orange;
+      color: $black;
+      transform: scale(1.05);
+    }
+  }
+}
+
+.forums-card-container {
+  background-color: $light-orange;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 30px;
+  padding: 20px;
+  h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 5px;
+    @media (max-width: 768px) {
+      font-size: 20px;
+    }
+  }
+  h4 {
+    font-size: 20px;
+    font-weight: 400;
+    margin-top: 15px;
+    margin-left: 5px;
+    @media (max-width: 768px) {
+      font-size: 15px;
+    }
+  }
+}
+.forums-card-name-container {
+  display: flex;
+  justify-content: space-between;
+  p {
+    font-size: 20px;
+    font-weight: bold;
+  }
+}
+.forums-card-name {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  p {
+    font-size: 20px;
+    font-weight: bold;
+  }
+}
+.forums-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.forums-card-left {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.icon-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.icon-right {
+  padding-left: 15px;
+}
+.image-forums {
+  margin-top: -20px;
+  margin-left: -60px;
+  width: 850px;
+  height: 80%;
+  @media (max-width: 1200px) {
+    margin-top: -10px;
+    width: 450px;
+    height: 50%;
+  }
+}
+.avatar-icon {
+  width: clamp(20px, 3vw, 30px);
+  height: clamp(20px, 3vw, 30px);
+  margin-right: 0.5rem;
+}
