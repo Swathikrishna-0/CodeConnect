@@ -7,6 +7,7 @@ import EastIcon from "@mui/icons-material/East";
 const Podcasts = () => {
   // Framer Motion animations
   const podcastVariants = {
+    
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
@@ -17,7 +18,7 @@ const Podcasts = () => {
   };
 
   return (
-    <section className="podcasts-section">
+    <section id="podcasts" className="podcasts-section">
       {/* Podcasts Content (Left Side) */}
       <motion.div
         className="podcasts-image"

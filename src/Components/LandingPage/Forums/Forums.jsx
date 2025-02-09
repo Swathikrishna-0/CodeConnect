@@ -9,7 +9,7 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 
 const Forums = () => {
   return (
-    <div className="forums-container">
+    <div id="forums" className="forums-container">
       <div className="forums-left">
         <p className="forums-tag">Forums</p>
         <h2 className="forums-heading">Community Forums</h2>
