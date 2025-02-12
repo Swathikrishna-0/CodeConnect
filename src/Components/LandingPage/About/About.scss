@@ -1,0 +1,71 @@
+.about-container {
+  background-image: url("../../../assets/footer eclipse.svg");
+  width: 100vw;
+  height: 1000px;
+  background-size: cover;
+  padding-left: -10px;
+  margin-top: 300px;
+  color: white;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: column;
+  @media (min-width: 1200px) {
+    height: 1500px;
+  }
+  h2 {
+    color: rgba(255, 255, 255, 0.459);
+
+    @media (min-width: 1200px) {
+      font-size: 48px;
+    }
+  }
+  h4 {
+    color: #676f9d;
+    font-weight: 400;
+    text-align: center;
+    margin-top: -5px;
+    padding-left: 30px;
+    padding-right: 30px;
+    @media (min-width: 1200px) {
+      font-size: 32px;
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+  }
+  div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    flex-direction: column;
+    @media (min-width: 1200px) {
+      margin-top: 50px;
+
+      flex-direction: row;
+    }
+  }
+}
+.logo1 {
+  @media (min-width: 1200px) {
+    font-size: 80px;
+  }
+}
+.quick-link {
+  color: #676f9d;
+  font-weight: 400;
+  text-align: center;
+  margin-top: -5px;
+  padding-left: 30px;
+  padding-right: 30px;
+  cursor: pointer;
+  text-decoration: underline;
+  @media (min-width: 1200px) {
+    font-size: 32px;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+  &:hover {
+    color: white;
+  }
+}
