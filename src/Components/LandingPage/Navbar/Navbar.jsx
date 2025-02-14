@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion"; 
+import { useUser, SignedIn, SignedOut, SignOutButton } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import "../Navbar/Navbar.scss";
 
 const Navbar = () => {
+  const { user } = useUser();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Home");
 
   const tabs = [
@@ -19,86 +23,52 @@ const Navbar = () => {
     document.getElementById(tab.id).scrollIntoView({ behavior: "smooth" });
   };
 
-  // Update active tab based on scroll position
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = tabs.map(tab => document.getElementById(tab.id));
-      const scrollPosition = window.scrollY + window.innerHeight / 2;
-
-      for (let section of sections) {
-        if (section.offsetTop <= scrollPosition && section.offsetTop + section.offsetHeight > scrollPosition) {
-          setActiveTab(section.id.replace("-", " ").toUpperCase());
-          break;
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Framer Motion animation variants for the navbar
-  const navbarVariants = {
-    hidden: { opacity: 0, y: -50 },
-    visible: { opacity: 1, y: 0 },
-  };
-
-  // Animation for individual tabs
-  const tabVariants = {
-    hover: { scale: 1.1, transition: { duration: 0.2 } },
-    click: { scale: 1.05, transition: { duration: 0.1 } },
-  };
-
   return (
-    // Wrap the entire navbar container with motion.div for animation
-    <motion.div
-      className="navbar-container-main"
-      initial="hidden"
-      animate="visible"
-      variants={navbarVariants}
-      transition={{ duration: 0.6, ease: "easeInOut" }}
-    >
+    <motion.div className="navbar-container-main">
       <h1 className="logo">
         Code<span>Connect</span>
       </h1>
 
       <div className="navbar-main">
-        <div className="navbar-container">
-          <nav className="navbar">
-            {tabs.map((tab) => (
-              // Wrap each tab in a motion.div to animate hover and click events
-              <motion.div
-                key={tab.name}
-                className={`nav-tab ${activeTab === tab.name ? "active" : ""}`}
-                onClick={() => handleTabClick(tab)}
-                whileHover="hover"
-                whileTap="click"
-                variants={tabVariants}
-              >
-                {tab.name}
-              </motion.div>
-            ))}
-          </nav>
-        </div>
+        <nav className="navbar">
+          {tabs.map((tab) => (
+            <motion.div
+              key={tab.name}
+              className={`nav-tab ${activeTab === tab.name ? "active" : ""}`}
+              onClick={() => handleTabClick(tab)}
+            >
+              {tab.name}
+            </motion.div>
+          ))}
+        </nav>
 
-        <div className="login-btn-container">
-          <motion.button
-            className="login-button"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-          >
-            Login
-          </motion.button>
+        <div className="auth-buttons">
+          {/* If user is signed in, show Sign Out button */}
+          <SignedIn>
+            <span>Welcome, {user?.firstName}</span>
+            <SignOutButton />
+          </SignedIn>
 
-          <motion.button
-            className="signup-button"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-          >
-            Sign Up
-          </motion.button>
+          {/* If user is signed out, show login/signup buttons */}
+          <SignedOut>
+            <motion.button
+              className="login-button"
+              onClick={() => navigate("/login")}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Login
+            </motion.button>
+
+            <motion.button
+              className="signup-button"
+              onClick={() => navigate("/signup")}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Sign Up
+            </motion.button>
+          </SignedOut>
         </div>
       </div>
     </motion.div>
