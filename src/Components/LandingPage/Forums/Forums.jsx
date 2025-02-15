@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import "./Forums.scss";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EastIcon from "@mui/icons-material/East";
@@ -9,8 +10,20 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 
 const Forums = () => {
   return (
-    <div id="forums" className="forums-container">
-      <div className="forums-left">
+    <motion.div
+      id="forums"
+      className="forums-container"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+    >
+      {/* Left Section */}
+      <motion.div
+        className="forums-left"
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
         <p className="forums-tag">Forums</p>
         <h2 className="forums-heading">Community Forums</h2>
         <p className="forums-description">
@@ -21,78 +34,71 @@ const Forums = () => {
           skills and advance your projects.
         </p>
         <div className="forums-buttons-container">
-          <button className="forums-button">
+          <motion.button
+            className="forums-button"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             Explore Forums
             <EastIcon className="arrow-icon" />
-          </button>
+          </motion.button>
         </div>
-      </div>
-      <div className="forums-right">
-        <div className="forums-card-container">
-          <div className="forums-card-name-container">
-            <div className="forums-card-name">
-              <AccountCircleIcon className="avatar-icon" fontSize="large" />
-              <p>Swathi</p>
+      </motion.div>
+
+      {/* Right Section */}
+      <motion.div
+        className="forums-right"
+        initial={{ x: 50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        {[{ name: "Swathi", upvotes: "1.5k", downvotes: "10", comments: "15" },
+          { name: "Priya", upvotes: "2.5k", downvotes: "1.5k", comments: "40" }].map((post, index) => (
+          <motion.div
+            key={index}
+            className="forums-card-container"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="forums-card-name-container">
+              <div className="forums-card-name">
+                <AccountCircleIcon className="avatar-icon" fontSize="large" />
+                <p>{post.name}</p>
+              </div>
+              <p className="time-stamp">2 hrs ago</p>
             </div>
-            <p className="time-stamp">2 hrs ago</p>
-          </div>
-          <h2>Check out the trending tech stacks</h2>
-          <h4>
-            Explore the most popular tech stacks shaping the future of
-            development. Stay ahead with insights into trending...
-          </h4>
-          <div className="forums-card-footer">
-            <div className="forums-card-left">
+            <h2>Check out the trending tech stacks</h2>
+            <h4>
+              Explore the most popular tech stacks shaping the future of
+              development. Stay ahead with insights into trending...
+            </h4>
+            <div className="forums-card-footer">
+              <div className="forums-card-left">
+                <div className="icon-div">
+                  <ArrowCircleUpIcon fontSize="large" style={{ color: "green" }} />
+                  {post.upvotes}
+                </div>
+                <div className="icon-div icon-right">
+                  <ArrowCircleDownIcon fontSize="large" style={{ color: "red" }} />
+                  {post.downvotes}
+                </div>
+              </div>
               <div className="icon-div">
-                <ArrowCircleUpIcon fontSize="large" style={{color: "green"}}/>
-                1.5k
-              </div>
-              <div className="icon-div icon-right">
-                <ArrowCircleDownIcon fontSize="large" style={{color: "red"}}/>
-                10
+                <ChatBubbleOutlineIcon fontSize="large" />
+                {post.comments}
               </div>
             </div>
-            <div className="icon-div">
-              <ChatBubbleOutlineIcon fontSize="large" />
-              15
-            </div>
-          </div>
-        </div>
-        <div className="forums-card-container">
-          <div className="forums-card-name-container">
-            <div className="forums-card-name">
-              <AccountCircleIcon className="avatar-icon" fontSize="large" />
-              <p>Priya</p>
-            </div>
-            <p className="time-stamp">2 hrs ago</p>
-          </div>
-          <h2>Check out the trending tech stacks</h2>
-          <h4>
-            Explore the most popular tech stacks shaping the future of
-            development. Stay ahead with insights into trending...
-          </h4>
-          <div className="forums-card-footer">
-            <div className="forums-card-left">
-              <div className="icon-div">
-                <ArrowCircleUpIcon fontSize="large"style={{color: "green"}} />
-                2.5k
-              </div>
-              <div className="icon-div icon-right">
-                <ArrowCircleDownIcon fontSize="large" style={{color: "red"}}/>
-                1.5k
-              </div>
-            </div>
-            <div className="icon-div">
-              <ChatBubbleOutlineIcon fontSize="large"/>
-              40
-            </div>
-          </div>
-        </div>
-        <div>
+          </motion.div>
+        ))}
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           <img src={forums} alt="forums" className="image-forums" />
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

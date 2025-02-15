@@ -1,19 +1,18 @@
-import "./App.scss";
-import Landing from "./Pages/Landing";
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Auth from './Pages/Auth';
+import Landing from './Pages/Landing';
 
-function App() {
+const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/*" element={<Auth />} />
+        <Route path="/login" element={<Auth />} />
+        <Route path="/signup" element={<Auth />} />
         <Route path="/" element={<Landing />} />
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;
-//

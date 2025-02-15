@@ -23,6 +23,24 @@ const Navbar = () => {
     document.getElementById(tab.id).scrollIntoView({ behavior: "smooth" });
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = tabs.map(tab => document.getElementById(tab.id));
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+
+      sections.forEach(section => {
+        if (section.offsetTop <= scrollPosition && section.offsetTop + section.offsetHeight > scrollPosition) {
+          setActiveTab(section.id.replace("-", " ").toUpperCase());
+        }
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [tabs]);
+
   return (
     <motion.div className="navbar-container-main">
       <h1 className="logo">
