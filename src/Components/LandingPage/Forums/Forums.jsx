@@ -14,15 +14,17 @@ const Forums = () => {
       id="forums"
       className="forums-container"
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      whileInView={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
+      viewport={{ once: true }}
     >
       {/* Left Section */}
       <motion.div
         className="forums-left"
         initial={{ x: -50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
+        whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
+        viewport={{ once: true }}
       >
         <p className="forums-tag">Forums</p>
         <h2 className="forums-heading">Community Forums</h2>
@@ -49,8 +51,9 @@ const Forums = () => {
       <motion.div
         className="forums-right"
         initial={{ x: 50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
+        whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
+        viewport={{ once: true }}
       >
         {[{ name: "Swathi", upvotes: "1.5k", downvotes: "10", comments: "15" },
           { name: "Priya", upvotes: "2.5k", downvotes: "1.5k", comments: "40" }].map((post, index) => (
@@ -92,8 +95,9 @@ const Forums = () => {
         ))}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+          whileInView={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
+          viewport={{ once: true }}
         >
           <img src={forums} alt="forums" className="image-forums" />
         </motion.div>

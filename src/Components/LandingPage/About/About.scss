@@ -52,7 +52,7 @@
   }
 }
 .quick-link {
-  color: #676f9d;
+  color: #676f9d !important;
   font-weight: 400;
   text-align: center;
   margin-top: -5px;
@@ -66,6 +66,6 @@
     padding-right: 50px;
   }
   &:hover {
-    color: white;
+    color: #ffb17a !important;
   }
 }

@@ -1,9 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 import "../Hero/Hero.scss";
 import HeroImg from "../../../assets/HeroImg.png";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const { isSignedIn } = useUser();
+
   // Framer Motion animations
   const boxVariants = {
     hidden: { opacity: 0, x: -50 },
@@ -40,6 +45,14 @@ const Hero = () => {
     { text: "Write Blogs", bgColor: "#676f9d", textColor: "white", width: "35%" },
   ];
 
+  const handleGetStartedClick = () => {
+    if (isSignedIn) {
+      navigate("/feed");
+    } else {
+      navigate("/login", { state: { from: "/feed" } });
+    }
+  };
+
   return (
     <section className="hero-section" id="home">
       <motion.h1
@@ -70,7 +83,9 @@ const Hero = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.6 }}
           >
-            <button className="getstarted-button">Get Started</button>
+            <button className="getstarted-button" onClick={handleGetStartedClick}>
+              Get Started
+            </button>
           </motion.div>
 
           <div className="box-container">

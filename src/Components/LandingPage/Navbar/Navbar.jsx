@@ -63,8 +63,8 @@ const Navbar = () => {
         <div className="auth-buttons">
           {/* If user is signed in, show Sign Out button */}
           <SignedIn>
-            <span>Welcome, {user?.firstName}</span>
-            <SignOutButton />
+            <span style={{ marginRight: "10px", color: "#ffb17a",textDecoration: "underline" }}>Hi, {user?.firstName}!</span>
+            <SignOutButton className="login-button"/>
           </SignedIn>
 
           {/* If user is signed out, show login/signup buttons */}

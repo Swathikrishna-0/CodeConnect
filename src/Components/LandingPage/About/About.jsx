@@ -12,37 +12,42 @@ const About = () => {
       className="about-container"
       id="about"
       initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
+      viewport={{ once: true }}
     >
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
       >
         ABOUT
       </motion.h2>
       
       <motion.h4
         initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
+        whileInView={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
+        viewport={{ once: true }}
       >
         CodeConnect is a vibrant developer community where programmers of all levels connect, collaborate, and grow. Share knowledge, explore new technologies, and build innovative solutions together.
       </motion.h4>
       
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
+        viewport={{ once: true }}
       >
         QUICK LINKS
       </motion.h2>
       
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.4 }}
+        viewport={{ once: true }}
       >
         {["home", "blogs", "code-snippets", "podcasts", "forums"].map((link, index) => (
           <motion.h4
@@ -60,8 +65,9 @@ const About = () => {
       <motion.h1
         className="logo logo1"
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.6 }}
+        viewport={{ once: true }}
         whileHover={{ scale: 1.05 }}
       >
         Code<span>Connect</span>

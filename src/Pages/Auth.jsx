@@ -4,6 +4,7 @@ import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import Login from "./Login";
 import SignUp from "./SignUp";
 import Landing from "./Landing";
+import Feed from "../Components/MainPages/Feed/Feed";
 
 const Auth = () => {
   return (
@@ -27,6 +28,7 @@ const Auth = () => {
           </SignedOut>
         }
       />
+      <Route path="/feed" element={<Feed />} />
     </Routes>
   );
 };
