@@ -16,6 +16,13 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
+import Avatar from '@mui/material/Avatar';
+import Container from '@mui/material/Container'; // Import Container
+import { useUser } from '@clerk/clerk-react';
+import { db } from '../../../firebase';
+import { doc, getDoc, collection, query, onSnapshot } from 'firebase/firestore';
+import BlogPostEditor from '../BlogPosts/BlogPostEditor';
+import BlogPost from '../BlogPosts/BlogPost';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -60,7 +67,35 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function Feed() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [profilePic, setProfilePic] = React.useState(null);
+  const [posts, setPosts] = React.useState([]);
+  const { user } = useUser();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (user) {
+      const fetchProfilePic = async () => {
+        const docRef = doc(db, 'profiles', user.id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setProfilePic(docSnap.data().profilePic);
+        }
+      };
+      fetchProfilePic();
+    }
+  }, [user]);
+
+  React.useEffect(() => {
+    const q = query(collection(db, 'posts'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const postsData = [];
+      querySnapshot.forEach((doc) => {
+        postsData.push({ id: doc.id, ...doc.data() });
+      });
+      setPosts(postsData);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -104,8 +139,8 @@ export default function Feed() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleProfileClick}>My Profile</MenuItem>
+      <MenuItem onClick={handleProfileClick}>My Account</MenuItem>
     </Menu>
   );
 
@@ -127,8 +162,8 @@ export default function Feed() {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
+        <IconButton size="large" aria-label="show 0 new mails" color="inherit">
+          <Badge badgeContent={0} color="error">
             <MailIcon />
           </Badge>
         </IconButton>
@@ -137,10 +172,10 @@ export default function Feed() {
       <MenuItem>
         <IconButton
           size="large"
-          aria-label="show 17 new notifications"
+          aria-label="show 0 new notifications"
           color="inherit"
         >
-          <Badge badgeContent={17} color="error">
+          <Badge badgeContent={0} color="error">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -154,7 +189,7 @@ export default function Feed() {
           aria-haspopup="true"
           color="inherit"
         >
-          <AccountCircle />
+          {profilePic ? <Avatar src={profilePic} /> : <AccountCircle />}
         </IconButton>
         <p>Profile</p>
       </MenuItem>
@@ -163,7 +198,7 @@ export default function Feed() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="static" sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
         <Toolbar>
           <IconButton
             size="large"
@@ -180,7 +215,7 @@ export default function Feed() {
             component="div"
             sx={{ display: { xs: 'none', sm: 'block' } }}
           >
-            MUI
+            <span style={{ color: '#ffffff' }}>Code</span><span style={{ color: '#ffb17a' }}>Connect</span>
           </Typography>
           <Search>
             <SearchIconWrapper>
@@ -193,17 +228,17 @@ export default function Feed() {
           </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="error">
+            <IconButton size="large" aria-label="show 0 new mails" color="inherit">
+              <Badge badgeContent={0} color="error">
                 <MailIcon />
               </Badge>
             </IconButton>
             <IconButton
               size="large"
-              aria-label="show 17 new notifications"
+              aria-label="show 0 new notifications"
               color="inherit"
             >
-              <Badge badgeContent={17} color="error">
+              <Badge badgeContent={0} color="error">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -216,7 +251,7 @@ export default function Feed() {
               onClick={handleProfileMenuOpen}
               color="inherit"
             >
-              <AccountCircle />
+              {profilePic ? <Avatar src={profilePic} /> : <AccountCircle />}
             </IconButton>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -226,8 +261,7 @@ export default function Feed() {
               aria-controls={mobileMenuId}
               aria-haspopup="true"
               onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
+              color="inherit">
               <MoreIcon />
             </IconButton>
           </Box>
@@ -235,6 +269,12 @@ export default function Feed() {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <BlogPostEditor />
+        {posts.map((post) => (
+          <BlogPost key={post.id} post={post} />
+        ))}
+      </Container>
     </Box>
   );
 }

@@ -2,12 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useUser, SignedIn, SignedOut, SignOutButton } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Avatar } from "@mui/material";
+import { db } from '../../../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import "../Navbar/Navbar.scss";
 
 const Navbar = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Home");
+  const [profilePic, setProfilePic] = useState(null);
 
   const tabs = [
     { name: "HOME", id: "home" },
@@ -41,6 +45,19 @@ const Navbar = () => {
     };
   }, [tabs]);
 
+  useEffect(() => {
+    if (user) {
+      const fetchProfilePic = async () => {
+        const docRef = doc(db, 'profiles', user.id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setProfilePic(docSnap.data().profilePic);
+        }
+      };
+      fetchProfilePic();
+    }
+  }, [user]);
+
   return (
     <motion.div className="navbar-container-main">
       <h1 className="logo">
@@ -63,8 +80,9 @@ const Navbar = () => {
         <div className="auth-buttons">
           {/* If user is signed in, show Sign Out button */}
           <SignedIn>
-            <span style={{ marginRight: "10px", color: "#ffb17a",textDecoration: "underline" }}>Hi, {user?.firstName}!</span>
-            <SignOutButton className="login-button"/>
+            <span style={{ marginRight: "10px", color: "#ffb17a", textDecoration: "underline" }}>Hi, {user?.firstName}!</span>
+            {profilePic && <Avatar src={profilePic} sx={{ width: 30, height: 30, marginRight: "10px" }} />}
+            <SignOutButton className="login-button" />
           </SignedIn>
 
           {/* If user is signed out, show login/signup buttons */}
