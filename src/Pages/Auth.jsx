@@ -6,6 +6,7 @@ import SignUp from "./SignUp";
 import Landing from "./Landing";
 import Feed from "../Components/MainPages/Feed/Feed";
 import Profile from "../Components/MainPages/Profile/Profile";
+import Myaccount from "../Components/MainPages/MyAccount/Myaccount";
 
 const Auth = () => {
   return (
@@ -31,6 +32,7 @@ const Auth = () => {
       />
       <Route path="/feed" element={<Feed />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/myaccount" element={<Myaccount />} />
     </Routes>
   );
 };

@@ -118,6 +118,11 @@ export default function Feed() {
     navigate('/profile');
   };
 
+  const handleAccountClick = () => {
+    handleMenuClose();
+    navigate('/myaccount');
+  };
+
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
@@ -140,7 +145,7 @@ export default function Feed() {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleProfileClick}>My Profile</MenuItem>
-      <MenuItem onClick={handleProfileClick}>My Account</MenuItem>
+      <MenuItem onClick={handleAccountClick}>My Account</MenuItem>
     </Menu>
   );
 
