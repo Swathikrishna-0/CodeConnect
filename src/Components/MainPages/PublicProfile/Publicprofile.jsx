@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../../../firebase';
-import { doc, getDoc, query, where, getDocs, collection } from 'firebase/firestore';
-import { Box, Typography, Avatar, Button, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { doc, getDoc, query, where, getDocs, collection, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
+import { Box, Typography, Avatar, Button, Divider } from '@mui/material';
 import { useUser } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
+import BlogPost from '../BlogPosts/BlogPost';
 
 const Publicprofile = () => {
   const { userId } = useParams();
@@ -11,6 +13,7 @@ const Publicprofile = () => {
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -27,6 +30,26 @@ const Publicprofile = () => {
       setPosts(postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     };
 
+    const fetchFollowers = async () => {
+      const followersQuery = query(collection(db, 'followers'), where('followingId', '==', userId));
+      const followersSnapshot = await getDocs(followersQuery);
+      const followersData = await Promise.all(followersSnapshot.docs.map(async doc => {
+        const userDoc = await getDoc(doc(db, 'profiles', doc.data().followerId));
+        return userDoc.exists() ? { id: doc.data().followerId, name: userDoc.data().fullName || userDoc.data().email } : { id: doc.data().followerId, name: doc.data().followerId };
+      }));
+      setFollowers(followersData);
+    };
+
+    const fetchFollowing = async () => {
+      const followingQuery = query(collection(db, 'followers'), where('followerId', '==', userId));
+      const followingSnapshot = await getDocs(followingQuery);
+      const followingData = await Promise.all(followingSnapshot.docs.map(async doc => {
+        const userDoc = await getDoc(doc(db, 'profiles', doc.data().followingId));
+        return userDoc.exists() ? { id: doc.data().followingId, name: userDoc.data().fullName || userDoc.data().email } : { id: doc.data().followingId, name: doc.data().followingId };
+      }));
+      setFollowing(followingData);
+    };
+
     const checkFollowing = async () => {
       if (user) {
         const docRef = doc(db, 'followers', `${user.id}_${userId}`);
@@ -37,6 +60,8 @@ const Publicprofile = () => {
 
     fetchProfile();
     fetchPosts();
+    fetchFollowers();
+    fetchFollowing();
     checkFollowing();
   }, [userId, user]);
 
@@ -51,6 +76,11 @@ const Publicprofile = () => {
       });
     }
     setIsFollowing(!isFollowing);
+  };
+
+
+  const handleUserClick = (userId) => {
+    navigate(`/profile/${userId}`);
   };
 
   if (!profile) {
@@ -80,19 +110,14 @@ const Publicprofile = () => {
         </Box>
       </Box>
       <Typography variant="h6" sx={{ color: '#ffb17a', mb: 2 }}>Posts</Typography>
-      <List>
+      <Box>
         {posts.map(post => (
           <React.Fragment key={post.id}>
-            <ListItem>
-              <ListItemText 
-                primary={post.title} 
-                secondary={<span dangerouslySetInnerHTML={{ __html: post.content }} />} 
-              />
-            </ListItem>
+            <BlogPost post={post} />
             <Divider />
           </React.Fragment>
         ))}
-      </List>
+      </Box>
     </Box>
   );
 };

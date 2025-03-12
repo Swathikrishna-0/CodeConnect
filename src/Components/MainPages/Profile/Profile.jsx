@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../../../firebase'; // Import Firebase configuration
+import { db } from '../../../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { useUser } from '@clerk/clerk-react'; // Import Clerk's useUser hook
+import { useUser } from '@clerk/clerk-react';
 import { TextField, Button, Typography, Container, Box, Alert, Grid, Avatar, IconButton } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 
 const Profile = () => {
-  const { user } = useUser(); // Get the current user from Clerk
+  const { user } = useUser(); 
   const [message, setMessage] = useState('');
   const [profilePic, setProfilePic] = useState(null);
 
