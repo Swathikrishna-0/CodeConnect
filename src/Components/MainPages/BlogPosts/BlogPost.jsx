@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { db } from "../../../firebase";
 import {
   doc,
@@ -19,7 +20,6 @@ import {
   Avatar,
   Alert,
 } from "@mui/material";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import CommentIcon from "@mui/icons-material/Comment";
 import ShareIcon from "@mui/icons-material/Share";
 import { useUser } from "@clerk/clerk-react";
@@ -154,11 +154,11 @@ const BlogPost = ({ post }) => {
             color:
               Array.isArray(post.likes) && post.likes.includes(user.id)
                 ? "#ffb17a"
-                : "#676f9d",
+                : "#ffffff",
           }}
         >
-          <ThumbUpIcon /> &nbsp;{" "}
-          {Array.isArray(post.likes) ? post.likes.length : 0}
+          <FavoriteIcon /> <Typography sx={{ color: "#ffffff" }}>&nbsp;{" "}
+          {Array.isArray(post.likes) ? post.likes.length : 0}</Typography>
         </IconButton>
         <IconButton onClick={handleShare} sx={{ color: "#ffb17a" }}>
           <ShareIcon />
@@ -184,6 +184,7 @@ const BlogPost = ({ post }) => {
         <Button
           onClick={handleComment}
           variant="contained"
+          startIcon={<CommentIcon />}
           sx={{ backgroundColor: "#ffb17a", color: "#000000" }}
         >
           Comment
