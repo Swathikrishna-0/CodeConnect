@@ -1,9 +1,9 @@
-@import "../../../index.scss";
+@use "../../../index.scss";
 // Navbar.scss
 
 .navbar-container-main {
   width: 100%;
-  background-color: $dark-gray;
+  background-color: #202338;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -18,7 +18,7 @@
   justify-content: space-evenly;
 }
 .navbar-container {
-  background-color: $gray;
+  background-color: #424769;
   border-radius: 40px;
   display: flex;
   padding-right: 20px;
@@ -34,9 +34,9 @@
 .logo {
   font-size: 40px;
   padding-left: 20px;
-  color: $white;
+  color: #ffffff;
   span {
-    color: $light-orange;
+    color: #ffb17a;
   }
 }
 
@@ -49,14 +49,14 @@
 }
 
 .nav-tab {
-  color: $white;
+  color: #ffffff;
   padding: 10px 20px;
   border-radius: 40px;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
 
   &:hover {
-    background-color: $light-gray;
+    background-color: #676f9d;
   }
 }
 .login-btn-container {
@@ -65,15 +65,15 @@
   justify-content: end;
 }
 .nav-tab.active {
-  background-color: $dark-gray;
-  color: $light-orange;
+  background-color: #202338;
+  color: #ffb17a;
 }
 
 .login-button {
-  background-color: $dark-gray;
-  border: 1px solid $light-orange;
+  background-color: #202338;
+  border: 1px solid #ffb17a;
   padding: 10px;
-  color: $white;
+  color: #ffffff;
   width: 130px;
   height: 55px;
   font-size: 20px;
@@ -84,15 +84,15 @@
   &:hover {
     cursor: pointer;
     text-decoration: underline;
-    box-shadow: 0 4px 10px $light-orange;
+    box-shadow: 0 4px 10px #ffb17a;
   }
 }
 
 .signup-button {
-  background-color: $light-orange;
+  background-color: #ffb17a;
   border: none;
   padding: 10px;
-  color: $black;
+  color: #000000;
   width: 130px;
   height: 55px;
   font-size: 20px;
@@ -105,7 +105,7 @@
   &:hover {
     cursor: pointer;
     text-decoration: underline;
-    box-shadow: 0 4px 10px $very-light-gray;
+    box-shadow: 0 4px 10px #d9d9d9;
   }
 }
 
@@ -113,9 +113,9 @@
 @media screen and (max-width: 1900px) {
   .logo {
     font-size: 35px;
-    color: $white;
+    color: #ffffff;
     span {
-      color: $light-orange;
+      color: #ffb17a;
     }
   }
   .navbar-main {
@@ -127,7 +127,7 @@
   }
 
   .navbar-container-main {
-    background-color: $dark-gray;
+    background-color: #202338;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -137,7 +137,7 @@
     z-index: 100;
   }
   .navbar-container {
-    background-color: $gray;
+    background-color: #424769;
     padding: 15px 20px;
     border-radius: 40px;
     display: flex;
@@ -154,22 +154,22 @@
   }
 
   .nav-tab {
-    color: $white;
+    color: #ffffff;
     padding: 5px 10px;
     border-radius: 40px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
     &:hover {
-      background-color: $light-gray;
+      background-color: #676f9d;
     }
     font-size: 15px;
   }
 
   .login-button {
-    background-color: $dark-gray;
-    border: 1px solid $light-orange;
+    background-color: #202338;
+    border: 1px solid #ffb17a;
     padding: 5px;
-    color: $white;
+    color: #ffffff;
     width: 130px;
     height: 42px;
     font-size: 20px;
@@ -180,7 +180,7 @@
 
     &:hover {
       text-decoration: underline;
-      box-shadow: 0 4px 10px $light-orange;
+      box-shadow: 0 4px 10px #ffb17a;
       cursor: pointer;
     }
   }
@@ -189,10 +189,10 @@
     margin-right: 20px;
   }
   .signup-button {
-    background-color: $light-orange;
+    background-color: #ffb17a;
     border: none;
     padding: 5px;
-    color: $black;
+    color: #000000;
     width: 130px;
     height: 42px;
     font-size: 20px;
@@ -203,7 +203,7 @@
 
     &:hover {
       text-decoration: underline;
-      box-shadow: 0 4px 10px $very-light-gray;
+      box-shadow: 0 4px 10px #d9d9d9;
       cursor: pointer;
     }
   }
@@ -213,9 +213,9 @@
 @media screen and (max-width: 1200px) {
   .logo {
     font-size: 20px;
-    color: $white;
+    color: #ffffff;
     span {
-      color: $light-orange;
+      color: #ffb17a;
     }
   }
   .navbar-main {
@@ -227,7 +227,7 @@
   }
 
   .navbar-container-main {
-    background-color: $dark-gray;
+    background-color: #202338;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -237,7 +237,7 @@
     z-index: 100;
   }
   .navbar-container {
-    background-color: $gray;
+    background-color: #424769;
     padding: 10px 15px;
     border-radius: 40px;
     display: flex;
@@ -254,13 +254,13 @@
   }
 
   .nav-tab {
-    color: $white;
+    color: #ffffff;
     padding: 5px 10px;
     border-radius: 40px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
     &:hover {
-      background-color: $light-gray;
+      background-color: #676f9d;
     }
     font-size: 10px;
   }
@@ -268,10 +268,10 @@
     margin-right: 20px;
   }
   .login-button {
-    background-color: $dark-gray;
-    border: 1px solid $light-orange;
+    background-color: #202338;
+    border: 1px solid #ffb17a;
     padding: 5px;
-    color: $white;
+    color: #ffffff;
     width: 90px;
     height: 35px;
     font-size: 15px;
@@ -282,16 +282,16 @@
 
     &:hover {
       text-decoration: underline;
-      box-shadow: 0 4px 10px $light-orange;
+      box-shadow: 0 4px 10px #ffb17a;
       cursor: pointer;
     }
   }
 
   .signup-button {
-    background-color: $light-orange;
+    background-color: #ffb17a;
     border: none;
     padding: 5px;
-    color: $black;
+    color: #000000;
     width: 90px;
     height: 35px;
     font-size: 15px;
@@ -302,7 +302,7 @@
 
     &:hover {
       text-decoration: underline;
-      box-shadow: 0 4px 10px $very-light-gray;
+      box-shadow: 0 4px 10px #d9d9d9;
       cursor: pointer;
     }
   }
@@ -312,9 +312,9 @@
 @media screen and (max-width: 850px) {
   .logo {
     font-size: 30px;
-    color: $white;
+    color: #ffffff;
     span {
-      color: $light-orange;
+      color: #ffb17a;
     }
   }
   .navbar-main {
@@ -325,7 +325,7 @@
     width: 100%;
   }
   .navbar-container-main {
-    background-color: $dark-gray;
+    background-color: #202338;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -335,7 +335,7 @@
     z-index: 100;
   }
   .navbar-container {
-    background-color: $gray;
+    background-color: #424769;
     padding: 5px 10px;
     border-radius: 40px;
     display: flex;
@@ -352,13 +352,13 @@
   }
 
   .nav-tab {
-    color: $white;
+    color: #ffffff;
     padding: 5px 10px;
     border-radius: 40px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
     &:hover {
-      background-color: $light-gray;
+      background-color: #676f9d;
     }
     font-size: 10px;
   }
@@ -367,10 +367,10 @@
     margin-top: 20px;
   }
   .login-button {
-    background-color: $dark-gray;
-    border: 1px solid $light-orange;
+    background-color: #202338;
+    border: 1px solid #ffb17a;
     padding: 5px;
-    color: $white;
+    color: #ffffff;
     width: 90px;
     height: 35px;
     font-size: 15px;
@@ -381,16 +381,16 @@
 
     &:hover {
       text-decoration: underline;
-      box-shadow: 0 4px 10px $light-orange;
+      box-shadow: 0 4px 10px #ffb17a;
       cursor: pointer;
     }
   }
 
   .signup-button {
-    background-color: $light-orange;
+    background-color: #ffb17a;
     border: none;
     padding: 5px;
-    color: $black;
+    color: #000000;
     width: 90px;
     height: 35px;
     font-size: 15px;
@@ -401,7 +401,7 @@
 
     &:hover {
       text-decoration: underline;
-      box-shadow: 0 4px 10px $very-light-gray;
+      box-shadow: 0 4px 10px #d9d9d9;
       cursor: pointer;
     }
   }
@@ -412,13 +412,13 @@
   .logo {
     font-size: 25px;
     margin-top: 0px;
-    color: $white;
+    color: #ffffff;
     span {
-      color: $light-orange;
+      color: #ffb17a;
     }
   }
   .navbar-container-main {
-    background-color: $dark-gray;
+    background-color: #202338;
     position: sticky;
     display: flex;
     align-items: center;
@@ -430,7 +430,7 @@
     padding-bottom: 10px;
   }
   .navbar-container {
-    background-color: $gray;
+    background-color: #424769;
     border-radius: 40px;
     display: flex;
     align-items: center;
@@ -455,13 +455,13 @@
     align-items: center;
   }
   .nav-tab {
-    color: $white;
+    color: #ffffff;
     padding: 5px 10px;
     border-radius: 40px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
     &:hover {
-      background-color: $light-gray;
+      background-color: #676f9d;
     }
     font-size: 8px;
   }
@@ -470,10 +470,10 @@
     margin-left: 40px;
   }
   .login-button {
-    background-color: $dark-gray;
-    border: 1px solid $light-orange;
+    background-color: #202338;
+    border: 1px solid #ffb17a;
     padding: 5px;
-    color: $white;
+    color: #ffffff;
     width: 90px;
     height: 35px;
     font-size: 15px;
@@ -486,15 +486,15 @@
     &:hover {
       text-decoration: underline;
       cursor: pointer;
-      box-shadow: 0 4px 10px $light-orange;
+      box-shadow: 0 4px 10px #ffb17a;
     }
   }
 
   .signup-button {
-    background-color: $light-orange;
+    background-color: #ffb17a;
     border: none;
     padding: 5px;
-    color: $black;
+    color: #000000;
     width: 90px;
     height: 35px;
     font-size: 15px;
@@ -507,7 +507,7 @@
     &:hover {
       text-decoration: underline;
       cursor: pointer;
-      box-shadow: 0 4px 10px $very-light-gray;
+      box-shadow: 0 4px 10px #d9d9d9;
     }
   }
 }

@@ -1,11 +1,11 @@
-$white: #ffffff;
-$very-light-gray: #d9d9d9;
-$light-gray: #676f9d;
-$gray: #424769;
-$dark-gray: #202338;
-$light-orange: #ffb17a;
-$dark-orange: #c17b49;
-$black: #000000;
+// #ffffff: #ffffff;
+// #d9d9d9: #d9d9d9;
+// #676f9d: #676f9d;
+// #424769: #424769;
+// #202338: #202338;
+// #ffb17a: #ffb17a;
+// #C17B49: #c17b49;
+// #000000: #000000;
 
 .auth-page {
   display: flex;
@@ -13,11 +13,11 @@ $black: #000000;
   align-items: center;
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(135deg, $dark-gray, $gray);
+  background: linear-gradient(135deg, #202338, #424769);
 }
 
 .auth-container {
-  background-color: $white;
+  background-color: #ffffff;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
@@ -33,7 +33,7 @@ $black: #000000;
   text-align: center;
   margin-bottom: 1rem;
   span {
-    color: $light-orange;
+    color: #ffb17a;
   }
 }
 
@@ -44,8 +44,8 @@ $black: #000000;
 }
 
 .auth-container .clerk-button {
-  background: $light-orange;
-  color: $white;
+  background: #ffb17a;
+  color: #ffffff;
   font-weight: bold;
   padding: 0.75rem;
   border-radius: 6px;
@@ -55,18 +55,18 @@ $black: #000000;
 }
 
 .auth-container .clerk-button:hover {
-  background: $dark-orange;
+  background: #C17B49;
   transform: scale(1.05);
 }
 
 .auth-container input {
-  border: 1px solid $very-light-gray;
+  border: 1px solid #d9d9d9;
   padding: 0.75rem;
   border-radius: 5px;
 }
 
 .auth-container input:focus {
-  border-color: $dark-orange;
+  border-color: #C17B49;
   outline: none;
   box-shadow: 0 0 5px rgba(193, 123, 73, 0.5);
 }

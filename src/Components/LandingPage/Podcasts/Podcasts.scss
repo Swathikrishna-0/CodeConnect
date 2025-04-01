@@ -1,4 +1,4 @@
-@import "../../../index.scss";
+@use "../../../index.scss";
 
 .podcasts-section {
   margin-top: 200px;
@@ -7,8 +7,8 @@
   justify-content:center;
   align-items: center;
   padding: 4rem 2rem;
-  background-color: $dark-gray;
-  color: $white;
+  background-color: #202338;
+  color: #ffffff;
 
   @media (max-width: 1200px) {
     width: 100%;
@@ -49,7 +49,7 @@
         font-family: "Roboto";
         font-weight: 100;
         font-size: clamp(1.25rem, 2vw, 1.75rem); // Adjusted size
-        color: $white;
+        color: #ffffff;
         line-height: 1.6;
         margin-bottom: 2rem;
     }
@@ -64,10 +64,10 @@
       }
 
       .cta-button {
-        background-color: $light-orange;
+        background-color: #ffb17a;
         border: none;
         padding: 0.75rem 1.5rem;
-        color: $black;
+        color: #000000;
         font-size: clamp(1rem, 2vw, 1.25rem);
         font-family: "Jost", sans-serif;
         font-weight: bold;
@@ -79,7 +79,7 @@
   
         &:hover {
           transform: scale(1.05);
-          box-shadow: 0 4px 10px rgba($very-light-gray, 0.3);
+          box-shadow: 0 4px 10px rgba(#d9d9d9, 0.3);
         }
   
         .arrow-icon {
@@ -91,9 +91,9 @@
 
       .cta-button-outline {
         background-color: transparent;
-        border: 2px solid $light-orange;
+        border: 2px solid #ffb17a;
         padding: 0.75rem 1.5rem;
-        color: $light-orange;
+        color: #ffb17a;
         font-size: 1.1rem;
         font-family: "Roboto", sans-serif;
         font-weight: 500;
@@ -102,8 +102,8 @@
         transition: all 0.3s ease;
 
         &:hover {
-          background-color: $light-orange;
-          color: $black;
+          background-color: #ffb17a;
+          color: #000000;
           transform: scale(1.05);
         }
       }

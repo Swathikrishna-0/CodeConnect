@@ -5,12 +5,26 @@
   overflow-x: hidden;
   height: 100vh;
 }
-// Colors
-$white: #ffffff;
-$very-light-gray: #d9d9d9;
-$light-orange: #ffb17a;
-$dark-orange: #C17B49;
-$black : #000000;
-$light-gray: #676f9d;
-$gray: #424769;
-$dark-gray: #202338;
+// // Colors
+
+// @use "./variables" as *;
+
+// body{
+//   color:variables.#ffffff;
+//   color:variables.#d9d9d9;
+//   color:variables.#ffb17a;
+//   color:variables.#C17B49;
+//   color:variables.#000000 ;
+//   color:variables.#676f9d;
+//   color:variables.#424769;
+//   color:variables.#202338;
+// }
+
+// #ffffff: #ffffff;
+// #d9d9d9: #d9d9d9;
+// #ffb17a: #ffb17a;
+// #C17B49: #C17B49;
+// #000000 : #000000;
+// #676f9d: #676f9d;
+// #424769: #424769;
+// #202338: #202338;

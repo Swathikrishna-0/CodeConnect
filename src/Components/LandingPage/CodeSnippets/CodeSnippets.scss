@@ -1,4 +1,4 @@
-@import "../../../index.scss";
+@use "../../../index.scss";
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;300;400;500;600;700&display=swap");
 
 .code-section-main {
@@ -7,7 +7,7 @@
   align-items: center;
   width: 100%;
   padding: 4rem 2rem;
-  background-color: $dark-gray;
+  background-color: #202338;
   color: white;
   margin-top: 200px;
   .code-left {
@@ -36,16 +36,16 @@
       font-family: "Roboto";
       font-weight: 100;
       font-size: clamp(1.25rem, 2vw, 1.75rem); // Adjusted size
-      color: $white;
+      color: #ffffff;
       line-height: 1.6;
       margin-bottom: 2rem;
     }
 
     button {
-      background-color: $light-orange;
+      background-color: #ffb17a;
       border: none;
       padding: 0.75rem 1.5rem;
-      color: $black;
+      color: #000000;
       font-size: clamp(1rem, 2vw, 1.25rem);
       font-family: "Jost", sans-serif;
       font-weight: bold;
@@ -57,7 +57,7 @@
 
       &:hover {
         transform: scale(1.05);
-        box-shadow: 0 4px 10px rgba($very-light-gray, 0.3);
+        box-shadow: 0 4px 10px rgba(#d9d9d9, 0.3);
       }
 
       .arrow-icon {
@@ -96,7 +96,7 @@
         text-align: center;
 
         .quote-icon {
-          color: $light-orange;
+          color: #ffb17a;
           width: clamp(40px, 5vw, 60px);
           height: clamp(40px, 5vw, 60px);
           margin-bottom: 1rem;

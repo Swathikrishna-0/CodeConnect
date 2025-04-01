@@ -39,6 +39,8 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
 import CodeIcon from '@mui/icons-material/Code';
+import PodcastsIcon from '@mui/icons-material/Podcasts';
+import PodcastPage from "../Podcasts/PodcastPage";
 
 const drawerWidth = 240;
 
@@ -167,6 +169,7 @@ export default function Feed() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [showEditor, setShowEditor] = React.useState(false);
+  const [showPodcastPage, setShowPodcastPage] = React.useState(false);
 
   React.useEffect(() => {
     if (user) {
@@ -247,6 +250,7 @@ export default function Feed() {
     setShowEditor((prevShowEditor) => !prevShowEditor);
     if (!showEditor) {
       setShowSnippetEditor(false);
+      setShowPodcastPage(false);
     }
   };
 
@@ -254,6 +258,15 @@ export default function Feed() {
     setShowSnippetEditor((prevShowSnippetEditor) => !prevShowSnippetEditor);
     if (!showSnippetEditor) {
       setShowEditor(false);
+      setShowPodcastPage(false);
+    }
+  };
+
+  const handleCreatePodcastClick = () => {
+    setShowPodcastPage((prevShowPodcastPage) => !prevShowPodcastPage);
+    if (!showPodcastPage) {
+      setShowEditor(false);
+      setShowSnippetEditor(false);
     }
   };
 
@@ -421,6 +434,12 @@ export default function Feed() {
             </ListItemIcon>
             <ListItemText primary="Write a Code Snippet" sx={{ color: "#ffffff" }} />
           </ListItem>
+          <ListItem button onClick={handleCreatePodcastClick} sx={{ cursor: 'pointer' }}>
+            <ListItemIcon>
+              <PodcastsIcon sx={{ color: showPodcastPage ? "#ffb17a" : "#ffffff" }} />
+            </ListItemIcon>
+            <ListItemText primary="Podcasts" sx={{ color: "#ffffff" }} />
+          </ListItem>
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
@@ -428,10 +447,11 @@ export default function Feed() {
         <Container maxWidth="md" sx={{ mt: 4 }}>
           {showEditor && <BlogPostEditor />}
           {showSnippetEditor && <CodeSnippetEditor />}
-          {snippets.map((snippet) => (
+          {showPodcastPage && <PodcastPage />}
+          {!showPodcastPage && snippets.map((snippet) => (
             <CodeSnippet key={snippet.id} snippet={snippet} />
           ))}
-          {posts.map((post) => (
+          {!showPodcastPage && posts.map((post) => (
             <BlogPost key={post.id} post={post} />
           ))}
         </Container>

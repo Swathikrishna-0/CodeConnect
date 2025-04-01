@@ -1,4 +1,4 @@
-@import "../../../index.scss";
+@use "../../../index.scss";
 
 .forums-container {
   display: flex;
@@ -80,10 +80,10 @@
   }
 
   .forums-button {
-    background-color: $light-orange;
+    background-color: #ffb17a;
     border: none;
     padding: 0.75rem 1.5rem;
-    color: $black;
+    color: #000000;
     font-size: clamp(1rem, 2vw, 1.25rem);
     font-family: "Jost", sans-serif;
     font-weight: bold;
@@ -95,7 +95,7 @@
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 4px 10px rgba($very-light-gray, 0.3);
+      box-shadow: 0 4px 10px rgba(#d9d9d9, 0.3);
     }
 
     .arrow-icon {
@@ -107,9 +107,9 @@
 
   .cta-button-outline {
     background-color: transparent;
-    border: 2px solid $light-orange;
+    border: 2px solid #ffb17a;
     padding: 0.75rem 1.5rem;
-    color: $light-orange;
+    color: #ffb17a;
     font-size: 1.1rem;
     font-family: "Roboto", sans-serif;
     font-weight: 500;
@@ -118,15 +118,15 @@
     transition: all 0.3s ease;
 
     &:hover {
-      background-color: $light-orange;
-      color: $black;
+      background-color: #ffb17a;
+      color: #000000;
       transform: scale(1.05);
     }
   }
 }
 
 .forums-card-container {
-  background-color: $light-orange;
+  background-color: #ffb17a;
   margin-top: 10px;
   margin-bottom: 10px;
   border-radius: 30px;
