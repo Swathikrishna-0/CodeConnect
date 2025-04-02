@@ -41,6 +41,8 @@ import MuiAppBar from "@mui/material/AppBar";
 import CodeIcon from '@mui/icons-material/Code';
 import PodcastsIcon from '@mui/icons-material/Podcasts';
 import PodcastPage from "../Podcasts/PodcastPage";
+import ForumIcon from '@mui/icons-material/Forum'; // Import Forums icon
+import Forums from '../Forums/Forums'; // Import Forums component
 
 const drawerWidth = 240;
 
@@ -170,6 +172,7 @@ export default function Feed() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [showPodcastPage, setShowPodcastPage] = React.useState(false);
+  const [showForumsPage, setShowForumsPage] = React.useState(false);
 
   React.useEffect(() => {
     if (user) {
@@ -251,6 +254,7 @@ export default function Feed() {
     if (!showBlogPage) {
       setShowSnippetPage(false);
       setShowPodcastPage(false);
+      setShowForumsPage(false);
     }
   };
 
@@ -259,6 +263,7 @@ export default function Feed() {
     if (!showSnippetPage) {
       setShowBlogPage(false);
       setShowPodcastPage(false);
+      setShowForumsPage(false);
     }
   };
 
@@ -267,6 +272,16 @@ export default function Feed() {
     if (!showPodcastPage) {
       setShowBlogPage(false);
       setShowSnippetPage(false);
+      setShowForumsPage(false);
+    }
+  };
+
+  const handleCreateForumsClick = () => {
+    setShowForumsPage((prevShowForumsPage) => !prevShowForumsPage);
+    if (!showForumsPage) {
+      setShowBlogPage(false);
+      setShowSnippetPage(false);
+      setShowPodcastPage(false);
     }
   };
 
@@ -274,6 +289,7 @@ export default function Feed() {
     setShowBlogPage(false);
     setShowSnippetPage(false);
     setShowPodcastPage(false);
+    setShowForumsPage(false);
   };
 
   const menuId = "primary-search-account-menu";
@@ -442,6 +458,12 @@ export default function Feed() {
             </ListItemIcon>
             <ListItemText primary="Podcasts" sx={{ color: "#ffffff" }} />
           </ListItem>
+          <ListItem button onClick={handleCreateForumsClick} sx={{ cursor: 'pointer' }}>
+            <ListItemIcon>
+              <ForumIcon sx={{ color: showForumsPage ? "#ffb17a" : "#ffffff" }} />
+            </ListItemIcon>
+            <ListItemText primary="Forums" sx={{ color: "#ffffff" }} />
+          </ListItem>
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
@@ -464,6 +486,7 @@ export default function Feed() {
             </>
           )}
           {showPodcastPage && <PodcastPage />}
+          {showForumsPage && <Forums />}
         </Container>
       </Box>
     </Box>
