@@ -1,171 +1,153 @@
-import React, { useState, useEffect } from 'react';
-import { Typography, Box, TextField, Button, Card, CardContent, CardHeader, Avatar, Grid } from '@mui/material';
-import { useUser } from '@clerk/clerk-react';
-import { db } from '../../../firebase';
-import { collection, addDoc, query, onSnapshot, orderBy } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { UploadFile } from '@mui/icons-material';
+import React from "react";
+import { Typography, Box, Grid, Card, CardContent } from "@mui/material";
 
 const PodcastPage = () => {
-  const { user } = useUser();
-  const [title, setTitle] = useState('');
-  const [audioFile, setAudioFile] = useState(null);
-  const [audioFileName, setAudioFileName] = useState('');
-  const [podcasts, setPodcasts] = useState([]);
-  const [message, setMessage] = useState('');
+  const sections = [
+    {
+      title: "Trending Podcasts",
+      embedUrls: [
+        "https://open.spotify.com/embed/episode/113ni5udh5i7YqEYcb3FDn/video?utm_source=generator",
+        "https://open.spotify.com/embed/episode/5l9MupgL0VKKMswTXd2F8i?utm_source=generator",
+        "https://open.spotify.com/embed/episode/2DPYhrpsVXZEYlp0JEotdn?utm_source=generator",
+        "https://open.spotify.com/embed/episode/4ztC2xMeBVjvcymJ3qhxrT?utm_source=generator",
+      ],
+    },
+    {
+      title: "Podcasts on AI",
+      embedUrls: [
+        "https://open.spotify.com/embed/episode/7eCSiGoNvPkfnaR4aONUsm?utm_source=generator",
+        "https://open.spotify.com/embed/episode/5TyfhJMbr3h6dXvYpjEDsq?utm_source=generator",
+        "https://open.spotify.com/embed/episode/1AYejKpHXVu1SOLQU0NX08?utm_source=generator",
+        "https://open.spotify.com/embed/episode/4sTdP5Ve4Elqt19jq36Lmy/video?utm_source=generator",
+      ],
+    },
+    {
+      title: "Tech Daily",
+      embedUrls: [
+        "https://open.spotify.com/embed/episode/1Xl2qpTDLJB7zJQQb34lPy?utm_source=generator",
+        "https://open.spotify.com/embed/episode/2E1WK1Hsw7EGP1f0biK2n0?utm_source=generator",
+      ],
+    },
 
-  useEffect(() => {
-    const q = query(collection(db, 'podcasts'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const podcastsData = [];
-      querySnapshot.forEach((doc) => {
-        podcastsData.push({ id: doc.id, ...doc.data() });
-      });
-      setPodcasts(podcastsData);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setAudioFile(file);
-    setAudioFileName(file ? file.name : '');
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (user && audioFile) {
-      try {
-        const storage = getStorage();
-        const storageRef = ref(storage, `podcasts/${user.id}_${Date.now()}_${audioFile.name}`);
-  
-        // Upload audio file to Firebase Storage
-        await uploadBytes(storageRef, audioFile);
-  
-        // Get the download URL after upload
-        const downloadURL = await getDownloadURL(storageRef);
-  
-        // Store podcast metadata & audio URL in Firestore
-        const podcastData = {
-          userId: user.id,
-          userName: user.fullName,
-          userProfilePic: user.profileImageUrl,
-          title: title.trim(),
-          createdAt: new Date(),
-          audioUrl: downloadURL,  // Store the actual file URL
-        };
-  
-        await addDoc(collection(db, 'podcasts'), podcastData);
-  
-        // Reset form
-        setTitle('');
-        setAudioFile(null);
-        setAudioFileName('');
-        setMessage('Podcast uploaded successfully!');
-        setTimeout(() => setMessage(''), 3000);
-      } catch (error) {
-        console.error('Error uploading podcast: ', error);
-        setMessage('Error uploading podcast. Please try again.');
-      }
-    }
-  };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (user && audioFile) {
-  //     try {
-  //       const podcastData = {
-  //         userId: user.id,
-  //         userName: user.fullName,
-  //         userProfilePic: user.profileImageUrl,
-  //         title: title.trim(),
-  //         createdAt: new Date(),
-  //         audioUrl: URL.createObjectURL(audioFile),
-  //       };
-  //       await addDoc(collection(db, 'podcasts'), podcastData);
-  //       setTitle('');
-  //       setAudioFile(null);
-  //       setAudioFileName('');
-  //       setMessage('Podcast uploaded successfully!');
-  //       setTimeout(() => setMessage(''), 3000);
-  //     } catch (error) {
-  //       console.error('Error uploading podcast: ', error);
-  //       setMessage('Error uploading podcast. Please try again.');
-  //     }
-  //   }
-  // };
-
+    {
+      title: "Ted Tech",
+      embedUrls: [
+        "https://open.spotify.com/embed/episode/07YqdzOQBTmgtgIUcuI9yl?utm_source=generator",
+        "https://open.spotify.com/embed/episode/6MwIhHmpf5S1055ANZXpVU?utm_source=generator",
+      ],
+    },
+  ];
   return (
     <Box sx={{ mb: 4 }}>
-      <Typography variant="h5" sx={{ mb: 2, color: "#ffb17a" }}>
-        Podcasts
+      <Typography
+        variant="h5"
+        sx={{ mb: 2, color: "#ffb17a", textAlign: "center" }}
+      >
+        Welcome to the world of Podcasts
       </Typography>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6" sx={{ mb: 2, color: "#ffb17a" }}>
+          Popular Podcast
+        </Typography>
+        <iframe
+          style={{ borderRadius: "12px" }}
+          src="https://open.spotify.com/embed/episode/5C6bNbZgGNdOgtZK1mwSSA?utm_source=generator"
+          width="100%"
+          height="152"
+          frameBorder="0"
+          allowFullScreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+        <Box sx={{ mt: 4 }}>
+          <iframe
+            style={{ borderRadius: "12px" }}
+            src="https://open.spotify.com/embed/episode/5l9MupgL0VKKMswTXd2F8i?utm_source=generator"
+            width="100%"
+            height="152"
+            frameBorder="0"
+            allowfullscreen=""
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+          ></iframe>
+        </Box>
+        <Box sx={{ mt: 4 }}>
+          <iframe
+            style={{ borderRadius: "12px" }}
+            src="https://open.spotify.com/embed/episode/7d2qd2rD4aKG54musxLm6q?utm_source=generator"
+            width="100%"
+            height="152"
+            frameBorder="0"
+            allowfullscreen=""
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+          ></iframe>
+        </Box>
+        <Box sx={{ mt: 4 }}>
+          <iframe
+            style={{ borderRadius: "12px" }}
+            src="https://open.spotify.com/embed/episode/1AYejKpHXVu1SOLQU0NX08?utm_source=generator"
+            width="100%"
+            height="152"
+            frameBorder="0"
+            allowFullScreen=""
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+          ></iframe>
+        </Box>
+      </Box>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" sx={{ mb: 2, color: "#ffb17a" }}>
-              Upload Podcast
-            </Typography>
-            <form onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column' }}>
-              <TextField
-                fullWidth
-                label="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                InputLabelProps={{ style: { color: "#C17B49" } }}
-                InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
-                sx={{
-                  mb: 2,
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": { borderColor: "#676f9d" },
-                    "&:hover fieldset": { borderColor: "#ffb17a" },
-                    "&.Mui-focused fieldset": { borderColor: "#ffb17a" },
-                  },
-                }}
-              />
-              {audioFileName && (
-                <Typography sx={{ mb: 1, color: "#ffb17a" }}>
-                  Selected file: {audioFileName}
+        {sections.map((section, index) => (
+          <Grid item xs={12} md={6} key={index}>
+            <Card
+              sx={{
+                backgroundColor: "transparent",
+                border: "1px solid #676f9d",
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 2, color: "#ffb17a" }}>
+                  {section.title}
                 </Typography>
-              )}
-              <Button
-                variant="contained"
-                component="label"
-                sx={{ backgroundColor: "#ffb17a", color: "#000000", mb: 2 }}
-                startIcon={<UploadFile />}
-              >
-                Upload Audio
-                <input type="file" hidden onChange={handleFileChange} />
-              </Button><br/>
-              <Button
-                type="submit"
-                variant="contained"
-                sx={{ backgroundColor: "#ffb17a", color: "#000000" }}
-              >
-                Post
-              </Button>
-            </form>
-            {message && <Typography sx={{ mt: 2, color: "#ffb17a" }}>{message}</Typography>}
-          </Box>
-        </Grid>
+                {section.embedUrls.map((url, idx) => (
+                  <Box key={idx} sx={{ mb: 2 }}>
+                    <iframe
+                      style={{ borderRadius: "12px" }}
+                      src={url}
+                      width="100%"
+                      height={url.includes("video") ? "351" : "152"}
+                      frameBorder="0"
+                      allowFullScreen=""
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      loading="lazy"
+                    ></iframe>
+                  </Box>
+                ))}
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
       </Grid>
       <Box sx={{ mt: 4 }}>
         <Typography variant="h6" sx={{ mb: 2, color: "#ffb17a" }}>
-          Recently Posted Podcasts
+          Business and Tech
         </Typography>
-        {podcasts.map((podcast) => (
-          <Card key={podcast.id} sx={{ mb: 2, backgroundColor: 'transparent', border: '1px solid #676f9d' }}>
-            <CardHeader
-              avatar={<Avatar src={podcast.userProfilePic} />}
-              title={<Typography sx={{ color: "#ffb17a" }}>{podcast.userName}</Typography>}
-              subheader={<Typography sx={{ color: "#C17B49" }}>{new Date(podcast.createdAt.seconds * 1000).toLocaleDateString()}</Typography>}
-            />
-            <CardContent>
-              <Typography variant="h6" sx={{ color: "#ffb17a" }}>{podcast.title}</Typography>
-              <audio controls src={podcast.audioUrl} style={{ width: '100%', marginTop: '10px' }} />
-            </CardContent>
-          </Card>
-        ))}
+        <iframe
+          style={{ borderRadius: "12px" }}
+          src="https://open.spotify.com/embed/playlist/37i9dQZF1DX9Z1itlyWIjS?utm_source=generator"
+          width="100%"
+          height="600"
+          frameBorder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+      </Box>
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6" sx={{ mb: 2, color: "#ffb17a" }}>
+          Indian Tech Startups
+        </Typography>
+        <iframe style={{ borderRadius: "12px" }} src="https://open.spotify.com/embed/playlist/37i9dQZF1DWWYU1hafNQFA?utm_source=generator" width="100%" height="500" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
       </Box>
     </Box>
   );

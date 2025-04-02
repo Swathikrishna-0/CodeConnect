@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { styled, alpha, useTheme } from "@mui/material/styles";
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import AppBar from "@mui/material/AppBar";
@@ -162,13 +162,13 @@ export default function Feed() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [profilePic, setProfilePic] = React.useState(null);
   const [posts, setPosts] = React.useState([]);
-  const [showSnippetEditor, setShowSnippetEditor] = React.useState(false);
   const [snippets, setSnippets] = React.useState([]);
+  const [showBlogPage, setShowBlogPage] = React.useState(false);
+  const [showSnippetPage, setShowSnippetPage] = React.useState(false);
   const { user } = useUser();
   const navigate = useNavigate();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [showEditor, setShowEditor] = React.useState(false);
   const [showPodcastPage, setShowPodcastPage] = React.useState(false);
 
   React.useEffect(() => {
@@ -247,17 +247,17 @@ export default function Feed() {
   };
 
   const handleCreatePostClick = () => {
-    setShowEditor((prevShowEditor) => !prevShowEditor);
-    if (!showEditor) {
-      setShowSnippetEditor(false);
+    setShowBlogPage((prevShowBlogPage) => !prevShowBlogPage);
+    if (!showBlogPage) {
+      setShowSnippetPage(false);
       setShowPodcastPage(false);
     }
   };
 
   const handleCreateSnippetClick = () => {
-    setShowSnippetEditor((prevShowSnippetEditor) => !prevShowSnippetEditor);
-    if (!showSnippetEditor) {
-      setShowEditor(false);
+    setShowSnippetPage((prevShowSnippetPage) => !prevShowSnippetPage);
+    if (!showSnippetPage) {
+      setShowBlogPage(false);
       setShowPodcastPage(false);
     }
   };
@@ -265,13 +265,15 @@ export default function Feed() {
   const handleCreatePodcastClick = () => {
     setShowPodcastPage((prevShowPodcastPage) => !prevShowPodcastPage);
     if (!showPodcastPage) {
-      setShowEditor(false);
-      setShowSnippetEditor(false);
+      setShowBlogPage(false);
+      setShowSnippetPage(false);
     }
   };
 
   const handleLogoClick = () => {
-    setShowEditor(false);
+    setShowBlogPage(false);
+    setShowSnippetPage(false);
+    setShowPodcastPage(false);
   };
 
   const menuId = "primary-search-account-menu";
@@ -424,13 +426,13 @@ export default function Feed() {
         <List>
           <ListItem button onClick={handleCreatePostClick} sx={{ cursor: 'pointer' }}>
             <ListItemIcon>
-              <PostAddIcon sx={{ color: showEditor ? "#ffb17a" : "#ffffff" }} />
+              <PostAddIcon sx={{ color: showBlogPage ? "#ffb17a" : "#ffffff" }} />
             </ListItemIcon>
             <ListItemText primary="Write a Blog" sx={{ color: "#ffffff" }} />
           </ListItem>
           <ListItem button onClick={handleCreateSnippetClick} sx={{ cursor: 'pointer' }}>
             <ListItemIcon>
-              <CodeIcon sx={{ color: showSnippetEditor ? "#ffb17a" : "#ffffff" }} />
+              <CodeIcon sx={{ color: showSnippetPage ? "#ffb17a" : "#ffffff" }} />
             </ListItemIcon>
             <ListItemText primary="Write a Code Snippet" sx={{ color: "#ffffff" }} />
           </ListItem>
@@ -445,15 +447,23 @@ export default function Feed() {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
         <Container maxWidth="md" sx={{ mt: 4 }}>
-          {showEditor && <BlogPostEditor />}
-          {showSnippetEditor && <CodeSnippetEditor />}
+          {showBlogPage && (
+            <>
+              <BlogPostEditor />
+              {posts.map((post) => (
+                <BlogPost key={post.id} post={post} />
+              ))}
+            </>
+          )}
+          {showSnippetPage && (
+            <>
+              <CodeSnippetEditor />
+              {snippets.map((snippet) => (
+                <CodeSnippet key={snippet.id} snippet={snippet} />
+              ))}
+            </>
+          )}
           {showPodcastPage && <PodcastPage />}
-          {!showPodcastPage && snippets.map((snippet) => (
-            <CodeSnippet key={snippet.id} snippet={snippet} />
-          ))}
-          {!showPodcastPage && posts.map((post) => (
-            <BlogPost key={post.id} post={post} />
-          ))}
         </Container>
       </Box>
     </Box>

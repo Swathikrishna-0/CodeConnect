@@ -3,8 +3,13 @@ import { motion } from "framer-motion";
 import "./Podcasts.scss";
 import podcast from "../../../assets/podcast.svg";
 import EastIcon from "@mui/icons-material/East";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 
 const Podcasts = () => {
+  const navigate = useNavigate();
+  const { isSignedIn } = useUser();
+
   // Framer Motion animations
   const podcastVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -14,6 +19,14 @@ const Podcasts = () => {
   const contentVariants = {
     hidden: { opacity: 0, x: 50 },
     visible: { opacity: 1, x: 0, transition: { duration: 0.6, delay: 0.3 } },
+  };
+
+  const handleListenNowClick = () => {
+    if (isSignedIn) {
+      navigate("/feed");
+    } else {
+      navigate("/login", { state: { from: "/feed" } });
+    }
   };
 
   return (
@@ -50,7 +63,9 @@ const Podcasts = () => {
           informed and empowered in your development journey.
         </p>
         <div className="cta-buttons">
-          <button className="cta-button">Listen Now <EastIcon className="arrow-icon" /></button>
+          <button className="cta-button" onClick={handleListenNowClick}>
+            Listen Now <EastIcon className="arrow-icon" />
+          </button>
         </div>
       </motion.div>
     </section>

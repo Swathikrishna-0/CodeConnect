@@ -7,8 +7,21 @@ import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
 import forums from "../../../assets/forums.svg";
 import ArrowCircleDownIcon from "@mui/icons-material/ArrowCircleDown";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 
 const Forums = () => {
+  const navigate = useNavigate();
+  const { isSignedIn } = useUser();
+
+  const handleExploreForumsClick = () => {
+    if (isSignedIn) {
+      navigate("/feed");
+    } else {
+      navigate("/login", { state: { from: "/feed" } });
+    }
+  };
+
   return (
     <motion.div
       id="forums"
@@ -40,6 +53,7 @@ const Forums = () => {
             className="forums-button"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={handleExploreForumsClick}
           >
             Explore Forums
             <EastIcon className="arrow-icon" />

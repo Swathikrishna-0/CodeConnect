@@ -7,8 +7,12 @@ import profile2 from "../../../assets/profile2.jpeg";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import codesnippet1 from "../../../assets/code snippet 1.png";
 import codesnippet2 from "../../../assets/code snippet 2.png";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 
 const CodeSnippets = () => {
+  const navigate = useNavigate();
+  const { isSignedIn } = useUser();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true });
 
@@ -28,6 +32,14 @@ const CodeSnippets = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeInOut" } },
   };
 
+  const handleSeeAllClick = () => {
+    if (isSignedIn) {
+      navigate("/feed");
+    } else {
+      navigate("/login", { state: { from: "/feed" } });
+    }
+  };
+
   return (
     <div className="code-section-main" ref={sectionRef} id="code-snippets">
       {/* Left Side */}
@@ -44,7 +56,7 @@ const CodeSnippets = () => {
           discover, and learn from valuable, reusable code. Contribute and
           collaborate with others to streamline coding and accelerate innovation.
         </h5>
-        <button>
+        <button onClick={handleSeeAllClick}>
           See all <EastIcon className="arrow-icon" />
         </button>
       </motion.div>
