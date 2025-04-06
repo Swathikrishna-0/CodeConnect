@@ -6,6 +6,7 @@ import Auth from './Pages/Auth';
 import Feed from './Components/MainPages/Feed/Feed';
 import Myaccount from './Components/MainPages/MyAccount/Myaccount';
 import Publicprofile from './Components/MainPages/PublicProfile/Publicprofile';
+import GroupDiscussion from './Components/MainPages/Forums/GroupDiscussion';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/feed" element={<Feed />} />
         <Route path="/myaccount" element={<Myaccount />} />
         <Route path="/profile/:userId" element={<Publicprofile />} />
+        <Route path="/forums/:groupId" element={<GroupDiscussion />} />
       </Routes>
     </Router>
   );

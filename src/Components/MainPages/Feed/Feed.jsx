@@ -43,6 +43,7 @@ import PodcastsIcon from '@mui/icons-material/Podcasts';
 import PodcastPage from "../Podcasts/PodcastPage";
 import ForumIcon from '@mui/icons-material/Forum'; // Import Forums icon
 import Forums from '../Forums/Forums'; // Import Forums component
+import GroupDiscussion from '../Forums/GroupDiscussion'; // Import GroupDiscussion component
 
 const drawerWidth = 240;
 
@@ -173,6 +174,7 @@ export default function Feed() {
   const [open, setOpen] = React.useState(false);
   const [showPodcastPage, setShowPodcastPage] = React.useState(false);
   const [showForumsPage, setShowForumsPage] = React.useState(false);
+  const [activeGroup, setActiveGroup] = React.useState(null);
 
   React.useEffect(() => {
     if (user) {
@@ -290,6 +292,16 @@ export default function Feed() {
     setShowSnippetPage(false);
     setShowPodcastPage(false);
     setShowForumsPage(false);
+  };
+
+  const handleOpenGroup = (groupId, groupName) => {
+    setActiveGroup({ groupId, groupName });
+    setShowForumsPage(false);
+  };
+
+  const handleBackToForums = () => {
+    setActiveGroup(null);
+    setShowForumsPage(true);
   };
 
   const menuId = "primary-search-account-menu";
@@ -486,7 +498,26 @@ export default function Feed() {
             </>
           )}
           {showPodcastPage && <PodcastPage />}
-          {showForumsPage && <Forums />}
+          {showForumsPage && <Forums onOpenGroup={handleOpenGroup} />}
+          {activeGroup && (
+            <>
+              <button
+                onClick={handleBackToForums}
+                style={{
+                  marginBottom: '20px',
+                  padding: '10px 20px',
+                  backgroundColor: '#ffb17a',
+                  color: '#000',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+              >
+                Back to Forums
+              </button>
+              <GroupDiscussion groupId={activeGroup.groupId} groupName={activeGroup.groupName} />
+            </>
+          )}
         </Container>
       </Box>
     </Box>

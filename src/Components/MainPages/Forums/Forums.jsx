@@ -1,48 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const Forums = () => {
+const Forums = ({ onOpenGroup }) => {
   const groups = [
-    { name: 'React Developers', description: 'A community for React enthusiasts to share and learn.' },
-    { name: 'JavaScript Masters', description: 'Discuss advanced JavaScript concepts and projects.' },
-    { name: 'Web Dev Beginners', description: 'A friendly space for beginners to ask questions and grow.' },
+    { id: 'react-devs', name: 'React Developers', description: 'A community for React enthusiasts to share and learn.' },
+    { id: 'js-masters', name: 'JavaScript Masters', description: 'Discuss advanced JavaScript concepts and projects.' },
+    { id: 'web-beginners', name: 'Web Dev Beginners', description: 'A friendly space for beginners to ask questions and grow.' },
   ];
-
-  const [joinedGroups, setJoinedGroups] = useState({});
-
-  const handleJoinGroup = (index) => {
-    alert('Joined');
-    setJoinedGroups((prev) => ({ ...prev, [index]: true }));
-  };
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>Forums</h1>
+      <h1 style={{ color: '#fff'}}>Forums</h1>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-        {groups.map((group, index) => (
+        {groups.map((group) => (
           <div
-            key={index}
+            key={group.id}
             style={{
               border: '1px solid #ccc',
               borderRadius: '8px',
               padding: '16px',
               width: '300px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',color:"#fff"
             }}
           >
             <h2>{group.name}</h2>
             <p>{group.description}</p>
-            {joinedGroups[index] ? (
-              <button style={{ padding: '8px 16px', backgroundColor: '#28A745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                Open Group Discussion
-              </button>
-            ) : (
-              <button
-                onClick={() => handleJoinGroup(index)}
-                style={{ padding: '8px 16px', backgroundColor: '#007BFF', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-              >
-                Join Group
-              </button>
-            )}
+            <button
+              onClick={() => onOpenGroup(group.id, group.name)}
+              style={{ padding: '8px 16px', backgroundColor: '#ffb17a', color: '#000', border: 'none', borderRadius: '4px', cursor: 'pointer' }} 
+            >
+              Open Group Discussion
+            </button>
           </div>
         ))}
       </div>
