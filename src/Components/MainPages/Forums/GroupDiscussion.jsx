@@ -1,109 +1,181 @@
 import React, { useState, useEffect } from 'react';
 import { getDatabase, ref, push, onValue } from 'firebase/database';
+import { useUser } from '@clerk/clerk-react';
+import { Box, TextField, Button, Typography, Avatar, Alert } from '@mui/material';
 
 const GroupDiscussion = ({ groupId, groupName }) => {
+  const { user } = useUser();
   const [topic, setTopic] = useState('');
   const [details, setDetails] = useState('');
   const [questions, setQuestions] = useState([]);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     const db = getDatabase();
     const questionsRef = ref(db, `groups/${groupId}/questions`);
 
     // Fetch questions from Firebase
-    onValue(questionsRef, (snapshot) => {
-      const data = snapshot.val();
-      const questionsList = data ? Object.values(data) : [];
-      setQuestions(questionsList);
-    });
+    const unsubscribe = onValue(
+      questionsRef,
+      (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const questionsList = Object.entries(data).map(([id, value]) => ({ id, ...value }));
+          setQuestions(questionsList);
+        } else {
+          setQuestions([]); // Clear questions if no data exists
+        }
+        setError(null); // Clear any previous errors
+      },
+      (error) => {
+        console.error('Error fetching questions:', error);
+        setError('Failed to fetch questions. Please check your database connection.');
+      }
+    );
+
+    return () => unsubscribe(); // Cleanup listener on component unmount
   }, [groupId]);
 
-  const handlePostQuestion = () => {
+  const handlePostQuestion = async () => {
     if (!topic.trim() || !details.trim()) {
       alert('Both fields are required.');
       return;
     }
 
-    const db = getDatabase();
-    const questionsRef = ref(db, `groups/${groupId}/questions`);
+    if (!user) {
+      alert('You must be logged in to post a question.');
+      return;
+    }
 
-    // Push the new question to Firebase
-    push(questionsRef, {
-      topic,
-      details,
-      createdAt: new Date().toISOString(),
-    });
+    try {
+      const db = getDatabase();
+      const questionsRef = ref(db, `groups/${groupId}/questions`);
 
-    // Clear input fields
-    setTopic('');
-    setDetails('');
+      // Push the new question to Firebase
+      const newQuestion = {
+        userId: user.id,
+        userName: user.fullName,
+        userProfilePic: user.profileImageUrl || '',
+        topic,
+        details,
+        createdAt: new Date().toISOString(),
+      };
+
+      await push(questionsRef, newQuestion);
+
+      // Clear input fields
+      setTopic('');
+      setDetails('');
+      setMessage('Question posted successfully!');
+      setTimeout(() => setMessage(''), 3000); // Clear message after 3 seconds
+    } catch (error) {
+      console.error('Error posting question:', error);
+      alert('Failed to post question. Please try again.');
+    }
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ color: '#fff' }}>Group Discussion: {groupName}</h1>
-      <div style={{ marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="Topic of your question"
+    <Box sx={{ padding: '20px' }}>
+      <Typography variant="h4" sx={{ color: '#ffb17a', marginBottom: '20px' }}>
+        Group Discussion: {groupName}
+      </Typography>
+      <Box
+        component="form"
+        sx={{
+          padding: '20px',
+          borderRadius: '8px',
+          marginBottom: '20px',
+        }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          handlePostQuestion();
+        }}
+      >
+        <Typography variant="h5" sx={{ color: '#ffb17a', marginBottom: '10px' }}>
+          Post a Question
+        </Typography>
+        <TextField
+          fullWidth
+          label="Topic of your question"
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '10px',
-            marginBottom: '10px',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
+          InputLabelProps={{ style: { color: '#C17B49' } }}
+          InputProps={{ style: { color: '#ffffff', borderColor: '#ffb17a' } }}
+          sx={{
+            marginBottom: '20px',
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': { borderColor: '#676f9d' },
+              '&:hover fieldset': { borderColor: '#ffb17a' },
+              '&.Mui-focused fieldset': { borderColor: '#ffb17a' },
+            },
           }}
         />
-        <textarea
-          placeholder="Write your question in detail"
+        <TextField
+          fullWidth
+          multiline
+          rows={4}
+          label="Write your question in detail"
           value={details}
           onChange={(e) => setDetails(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '10px',
-            marginBottom: '10px',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            height: '100px',
+          InputLabelProps={{ style: { color: '#C17B49' } }}
+          InputProps={{ style: { color: '#ffffff', borderColor: '#ffb17a' } }}
+          sx={{
+            marginBottom: '20px',
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': { borderColor: '#676f9d' },
+              '&:hover fieldset': { borderColor: '#ffb17a' },
+              '&.Mui-focused fieldset': { borderColor: '#ffb17a' },
+            },
           }}
         />
-        <button
-          onClick={handlePostQuestion}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#007BFF',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{ backgroundColor: '#ffb17a', color: '#000000' }}
         >
           Post Question
-        </button>
-      </div>
-      <div>
-        <h2 style={{ color: '#fff' }}>Questions</h2>
-        {questions.map((question, index) => (
-          <div
-            key={index}
-            style={{
-              border: '1px solid #ccc',
+        </Button>
+        {message && <Alert severity="success" sx={{ marginTop: '20px' }}>{message}</Alert>}
+      </Box>
+      <Box>
+        <Typography variant="h5" sx={{ color: '#ffb17a', marginBottom: '20px' }}>
+          Questions
+        </Typography>
+        {error && <Alert severity="error" sx={{ marginBottom: '20px' }}>{error}</Alert>}
+        {questions.map((question) => (
+          <Box
+            key={question.id}
+            sx={{
+              padding: '20px',
               borderRadius: '8px',
-              padding: '16px',
-              marginBottom: '10px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-              color: '#fff',
+              marginBottom: '20px',
+              color: '#fff', borderColor: "#676f9d", borderWidth: "1px", borderStyle: "solid",
             }}
           >
-            <h3>{question.topic}</h3>
-            <p>{question.details}</p>
-            <small>Posted on: {new Date(question.createdAt).toLocaleString()}</small>
-          </div>
+            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+              <Avatar
+                src={question.userProfilePic}
+                alt="User"
+                sx={{ width: '40px', height: '40px', marginRight: '10px' }}
+              />
+              <Typography variant="h6" sx={{ color: '#ffb17a' }}>
+                {question.userName}
+              </Typography>
+            </Box>
+            <Typography variant="h6" sx={{ color: '#ffb17a' }}>
+              {question.topic}
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#ffffff', marginBottom: '10px' }}>
+              {question.details}
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#676f9d' }}>
+              Posted on: {new Date(question.createdAt).toLocaleString()}
+            </Typography>
+          </Box>
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
