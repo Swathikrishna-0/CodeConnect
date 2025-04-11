@@ -252,6 +252,7 @@ export default function Feed() {
   };
 
   const handleCreatePostClick = () => {
+    setActiveGroup(null); // Reset active group
     setShowBlogPage((prevShowBlogPage) => !prevShowBlogPage);
     if (!showBlogPage) {
       setShowSnippetPage(false);
@@ -261,6 +262,7 @@ export default function Feed() {
   };
 
   const handleCreateSnippetClick = () => {
+    setActiveGroup(null); // Reset active group
     setShowSnippetPage((prevShowSnippetPage) => !prevShowSnippetPage);
     if (!showSnippetPage) {
       setShowBlogPage(false);
@@ -270,6 +272,7 @@ export default function Feed() {
   };
 
   const handleCreatePodcastClick = () => {
+    setActiveGroup(null); // Reset active group
     setShowPodcastPage((prevShowPodcastPage) => !prevShowPodcastPage);
     if (!showPodcastPage) {
       setShowBlogPage(false);
@@ -279,6 +282,7 @@ export default function Feed() {
   };
 
   const handleCreateForumsClick = () => {
+    setActiveGroup(null); // Reset active group
     setShowForumsPage((prevShowForumsPage) => !prevShowForumsPage);
     if (!showForumsPage) {
       setShowBlogPage(false);
@@ -288,6 +292,7 @@ export default function Feed() {
   };
 
   const handleLogoClick = () => {
+    setActiveGroup(null); // Reset active group
     setShowBlogPage(false);
     setShowSnippetPage(false);
     setShowPodcastPage(false);

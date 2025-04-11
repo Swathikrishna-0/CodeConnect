@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getDatabase, ref, push, onValue } from 'firebase/database';
 import { useUser } from '@clerk/clerk-react';
 import { Box, TextField, Button, Typography, Avatar, Alert } from '@mui/material';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const GroupDiscussion = ({ groupId, groupName }) => {
   const { user } = useUser();
@@ -39,12 +41,12 @@ const GroupDiscussion = ({ groupId, groupName }) => {
 
   const handlePostQuestion = async () => {
     if (!topic.trim() || !details.trim()) {
-      alert('Both fields are required.');
+      toast.error('Both fields are required.', { position: 'top-right', autoClose: 3000 });
       return;
     }
 
     if (!user) {
-      alert('You must be logged in to post a question.');
+      toast.error('You must be logged in to post a question.', { position: 'top-right', autoClose: 3000 });
       return;
     }
 
@@ -67,16 +69,16 @@ const GroupDiscussion = ({ groupId, groupName }) => {
       // Clear input fields
       setTopic('');
       setDetails('');
-      setMessage('Question posted successfully!');
-      setTimeout(() => setMessage(''), 3000); // Clear message after 3 seconds
+      toast.success('Question posted successfully!', { position: 'top-right', autoClose: 3000 });
     } catch (error) {
       console.error('Error posting question:', error);
-      alert('Failed to post question. Please try again.');
+      toast.error('Failed to post question. Please try again.', { position: 'top-right', autoClose: 3000 });
     }
   };
 
   return (
     <Box sx={{ padding: '20px' }}>
+      <ToastContainer />
       <Typography variant="h4" sx={{ color: '#ffb17a', marginBottom: '20px' }}>
         Group Discussion: {groupName}
       </Typography>
@@ -136,7 +138,6 @@ const GroupDiscussion = ({ groupId, groupName }) => {
         >
           Post Question
         </Button>
-        {message && <Alert severity="success" sx={{ marginTop: '20px' }}>{message}</Alert>}
       </Box>
       <Box>
         <Typography variant="h5" sx={{ color: '#ffb17a', marginBottom: '20px' }}>
