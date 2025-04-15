@@ -88,18 +88,43 @@ const BlogPostEditor = () => {
           apiKey="wqheav2fbolvt7xe3m7fsnt5o9u29p25j51j3q2jd7lygpzh"
           value={content}
           init={{
-            height: 300,
-            menubar: false,
+            height: 500,
+            menubar: true,
             plugins: [
               "advlist autolink lists link image charmap print preview anchor",
               "searchreplace visualblocks code fullscreen",
               "insertdatetime media table paste code help wordcount",
+              "codesample emoticons table advtable",
+              "textcolor colorpicker",
+              "fullscreen hr pagebreak save template",
             ],
             toolbar:
-              "undo redo | formatselect | bold italic backcolor | \
-              alignleft aligncenter alignright alignjustify | \
-              bullist numlist outdent indent | removeformat | help | \
-              codesample link",
+              "undo redo | formatselect | fontsizeselect | fontselect | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | codesample emoticons | hr pagebreak | preview fullscreen",
+            fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
+            font_formats: "Arial=arial,helvetica,sans-serif; Times New Roman=times new roman,times; Verdana=verdana,geneva;",
+            content_style: "body { font-family:Arial,sans-serif; font-size:14px; background-color:#f4f4f4; padding:10px; }",
+            image_title: true,
+            automatic_uploads: true,
+            file_picker_types: 'image',
+            file_picker_callback: function (cb, value, meta) {
+              const input = document.createElement('input');
+              input.setAttribute('type', 'file');
+              input.setAttribute('accept', 'image/*');
+              input.onchange = function () {
+                const file = this.files[0];
+                const reader = new FileReader();
+                reader.onload = function () {
+                  const id = 'blobid' + new Date().getTime();
+                  const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                  const base64 = reader.result.split(',')[1];
+                  const blobInfo = blobCache.create(id, file, base64);
+                  blobCache.add(blobInfo);
+                  cb(blobInfo.blobUri(), { title: file.name });
+                };
+                reader.readAsDataURL(file);
+              };
+              input.click();
+            },
           }}
           onEditorChange={handleEditorChange}
         />

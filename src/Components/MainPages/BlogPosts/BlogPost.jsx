@@ -10,6 +10,7 @@ import {
   getDoc,
   setDoc,
   deleteDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import {
   Box,
@@ -21,7 +22,6 @@ import {
   Alert,
 } from "@mui/material";
 import CommentIcon from "@mui/icons-material/Comment";
-import ShareIcon from "@mui/icons-material/Share";
 import { useUser } from "@clerk/clerk-react";
 
 const BlogPost = ({ post }) => {
@@ -30,6 +30,7 @@ const BlogPost = ({ post }) => {
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
   const [isFollowing, setIsFollowing] = useState(false);
+  const [comments, setComments] = useState([]);
 
   useEffect(() => {
     const fetchUserProfilePic = async () => {
@@ -56,6 +57,19 @@ const BlogPost = ({ post }) => {
     checkFollowing();
   }, [user, post.userId]);
 
+  useEffect(() => {
+    if (!post.id) return; // Ensure post.id is valid before setting up the listener
+
+    const postRef = doc(db, "posts", post.id);
+    const unsubscribe = onSnapshot(postRef, (doc) => {
+      if (doc.exists()) {
+        setComments(doc.data().comments || []);
+      }
+    });
+
+    return () => unsubscribe(); // Properly clean up the listener
+  }, [post.id]);
+
   const handleLike = async () => {
     const postRef = doc(db, "posts", post.id);
     if (Array.isArray(post.likes) && post.likes.includes(user.id)) {
@@ -74,6 +88,7 @@ const BlogPost = ({ post }) => {
       setError("Comment required");
       return;
     }
+
     const postRef = doc(db, "posts", post.id);
     await updateDoc(postRef, {
       comments: arrayUnion({
@@ -85,10 +100,6 @@ const BlogPost = ({ post }) => {
     });
     setComment("");
     setError("");
-  };
-
-  const handleShare = () => {
-    // Implement share functionality
   };
 
   const handleFollow = async () => {
@@ -160,9 +171,6 @@ const BlogPost = ({ post }) => {
           <FavoriteIcon /> <Typography sx={{ color: "#ffffff" }}>&nbsp;{" "}
           {Array.isArray(post.likes) ? post.likes.length : 0}</Typography>
         </IconButton>
-        <IconButton onClick={handleShare} sx={{ color: "#ffb17a" }}>
-          <ShareIcon />
-        </IconButton>
       </Box>
       <Box sx={{ mt: 2 }}>
         <TextField
@@ -199,7 +207,7 @@ const BlogPost = ({ post }) => {
       <Typography variant="body2" sx={{ color: "#ffffff" }}>
         Comments:
       </Typography>
-      {post.comments.map((comment, index) => (
+      {comments.map((comment, index) => (
         <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
           <Avatar src={comment.userProfilePic} sx={{ mr: 2 }} />
           <Typography variant="body2" sx={{ color: "#676f9d" }}>

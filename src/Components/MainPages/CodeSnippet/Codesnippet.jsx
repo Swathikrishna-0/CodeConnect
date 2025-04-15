@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -13,19 +13,32 @@ import {
   Alert,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
 import CommentIcon from "@mui/icons-material/Comment";
 import { useUser } from "@clerk/clerk-react";
 import { db } from "../../../firebase";
-import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "firebase/firestore";
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs";
+import "prismjs/themes/prism.css";
 
 const CodeSnippet = ({ snippet }) => {
   const { user } = useUser();
   const [likes, setLikes] = useState(snippet.likes.length);
-  const [comments, setComments] = useState(snippet.comments);
+  const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
   const [liked, setLiked] = useState(snippet.likes.includes(user.id));
   const [alertMessage, setAlertMessage] = useState('');
+
+  useEffect(() => {
+    const snippetRef = doc(db, "codeSnippets", snippet.id);
+    const unsubscribe = onSnapshot(snippetRef, (doc) => {
+      if (doc.exists()) {
+        setComments(doc.data().comments || []);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [snippet.id]);
 
   const handleLike = async () => {
     const snippetRef = doc(db, "codeSnippets", snippet.id);
@@ -43,18 +56,18 @@ const CodeSnippet = ({ snippet }) => {
     setLiked(!liked);
   };
 
-  const handleComment = () => {
+  const handleComment = async () => {
     if (commentText.trim() === '') {
       setAlertMessage('Review required');
       setTimeout(() => setAlertMessage(''), 3000);
       return;
     }
-    setComments([...comments, commentText]);
-    setCommentText('');
-  };
 
-  const handleShare = () => {
-    // Implement share functionality
+    const snippetRef = doc(db, "codeSnippets", snippet.id);
+    await updateDoc(snippetRef, {
+      comments: arrayUnion(commentText),
+    });
+    setCommentText('');
   };
 
   return (
@@ -80,15 +93,27 @@ const CodeSnippet = ({ snippet }) => {
         <Typography variant="h6" sx={{ color: "#ffb17a" }}>
           {snippet.description}
         </Typography>
+        <Typography variant="body2" sx={{ color: "#C17B49", mt: 1 }}>
+          Language: {snippet.language || "Unknown"} {/* Display the language */}
+        </Typography>
         <Box sx={{ overflowY: "scroll", maxHeight: "250px", backgroundColor: "#424769", p: 2, mt: 2 }}>
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            component="pre"
-            sx={{ whiteSpace: "pre-wrap", color: "#ffffff" }}
-          >
-            {snippet.code}
-          </Typography>
+          <Editor
+            value={snippet.code}
+            onValueChange={() => {}}
+            highlight={(code) => highlight(code, languages[snippet.language] || languages.javascript, snippet.language)}
+            padding={10}
+            style={{
+              fontFamily: '"Fira code", "Fira Mono", monospace',
+              fontSize: 14,
+              backgroundColor: "#424769",
+              color: "#ffffff",
+              border: "1px solid #676f9d",
+              borderRadius: "4px",
+              minHeight: "200px",
+              whiteSpace: "collapse", 
+            }}
+            readOnly
+          />
         </Box>
       </CardContent>
       <CardActions
@@ -98,10 +123,6 @@ const CodeSnippet = ({ snippet }) => {
         <IconButton onClick={handleLike}>
           <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
           <Typography sx={{ color: "#ffffff" }}>&nbsp; {likes}</Typography>
-        </IconButton>
-
-        <IconButton onClick={handleShare}>
-          <ShareIcon sx={{ color: "#ffffff" }} />
         </IconButton>
       </CardActions>
       <CardContent>

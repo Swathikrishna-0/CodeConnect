@@ -4,6 +4,7 @@ import { useUser } from '@clerk/clerk-react';
 import { Box, TextField, Button, Typography, Avatar, Alert } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CommentSection from './CommentSection';
 
 const GroupDiscussion = ({ groupId, groupName }) => {
   const { user } = useUser();
@@ -173,6 +174,9 @@ const GroupDiscussion = ({ groupId, groupName }) => {
             <Typography variant="body2" sx={{ color: '#676f9d' }}>
               Posted on: {new Date(question.createdAt).toLocaleString()}
             </Typography>
+
+            {/* Add Comment Section */}
+            <CommentSection questionId={question.id} groupId={groupId} />
           </Box>
         ))}
       </Box>

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { db } from "../../../firebase";
 import { collection, addDoc, doc, getDoc } from "firebase/firestore";
-import { TextField, Button, Box, Typography, Alert } from "@mui/material";
-import { Editor } from "@tinymce/tinymce-react";
+import { TextField, Button, Box, Typography, Alert, MenuItem, Select } from "@mui/material";
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs";
+import "prismjs/themes/prism.css";
 
 const CodeSnippetEditor = () => {
   const { user } = useUser();
@@ -11,6 +13,7 @@ const CodeSnippetEditor = () => {
   const [description, setDescription] = useState("");
   const [profilePic, setProfilePic] = useState(null);
   const [message, setMessage] = useState("");
+  const [language, setLanguage] = useState("javascript");
 
   useEffect(() => {
     if (user) {
@@ -25,10 +28,6 @@ const CodeSnippetEditor = () => {
     }
   }, [user]);
 
-  const handleEditorChange = (content) => {
-    setCode(content);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (user) {
@@ -39,6 +38,7 @@ const CodeSnippetEditor = () => {
           userProfilePic: profilePic || "",
           code: code.trim(),
           description: description.trim(),
+          language,
           createdAt: new Date(),
           likes: [],
           comments: [],
@@ -46,6 +46,7 @@ const CodeSnippetEditor = () => {
         });
         setCode("");
         setDescription("");
+        setLanguage("javascript");
         setMessage("Code snippet created successfully!");
         setTimeout(() => setMessage(""), 3000);
       } catch (error) {
@@ -67,7 +68,7 @@ const CodeSnippetEditor = () => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           InputLabelProps={{ style: { color: "#C17B49" } }}
-          InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+          InputProps={{ style: { color: "#ffffff", borderColor:"#ffb17a" } }}
           sx={{
             mb: 2,
             "& .MuiOutlinedInput-root": {
@@ -77,30 +78,53 @@ const CodeSnippetEditor = () => {
             },
           }}
         />
-        <Editor
-          apiKey="wqheav2fbolvt7xe3m7fsnt5o9u29p25j51j3q2jd7lygpzh"
-          value={code}
-          init={{
-            height: 300,
-            menubar: false,
-            plugins: [
-              "advlist autolink lists link image charmap print preview anchor",
-              "searchreplace visualblocks code fullscreen",
-              "insertdatetime media table paste code help wordcount",
-              "codesample",
-            ],
-            toolbar:
-              "undo redo | formatselect | bold italic backcolor | \
-              alignleft aligncenter alignright alignjustify | \
-              bullist numlist outdent indent | removeformat | help | \
-              codesample",
+        <Select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          fullWidth
+          sx={{
+            mb: 2,
+            color: "#ffffff",
+            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#676f9d" },
+            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#ffb17a" },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#ffb17a" },
           }}
-          onEditorChange={handleEditorChange}
+        >
+          <MenuItem value="javascript">JavaScript</MenuItem>
+          <MenuItem value="python">Python</MenuItem>
+          <MenuItem value="java">Java</MenuItem>
+          <MenuItem value="html">HTML</MenuItem>
+          <MenuItem value="css">CSS</MenuItem>
+          <MenuItem value="c">C</MenuItem>
+          <MenuItem value="cpp">C++</MenuItem>
+          <MenuItem value="typescript">TypeScript</MenuItem>
+          <MenuItem value="ruby">Ruby</MenuItem>
+          <MenuItem value="go">Go</MenuItem>
+          <MenuItem value="php">PHP</MenuItem>
+          <MenuItem value="swift">Swift</MenuItem>
+          <MenuItem value="kotlin">Kotlin</MenuItem>
+          <MenuItem value="r">R</MenuItem>
+        </Select>
+        <Editor
+          value={code}
+          onValueChange={(code) => setCode(code)}
+          highlight={(code) => highlight(code, languages[language] || languages.javascript, language)}
+          padding={10}
+          style={{
+            fontFamily: '"Fira code", "Fira Mono", monospace',
+            fontSize: 14,
+            backgroundColor: "#424769",
+            color: "#ffffff",
+            border: "1px solid #676f9d",
+            borderRadius: "4px",
+            minHeight: "200px",
+            marginBottom: "20px",
+          }}
         />
         <Button
           type="submit"
           variant="contained"
-          sx={{ backgroundColor: "#ffb17a", color: "#000000" ,marginTop:"10px" }}
+          sx={{ backgroundColor: "#ffb17a", color: "#000000", marginTop: "10px" }}
         >
           Post
         </Button>
