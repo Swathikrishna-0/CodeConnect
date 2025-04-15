@@ -16,7 +16,9 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import CommentIcon from "@mui/icons-material/Comment";
 import { useUser } from "@clerk/clerk-react";
 import { db } from "../../../firebase";
-import { doc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { ref, onValue, push } from "firebase/database"; // Import Realtime Database functions
+import { realtimeDb } from "../../../firebase"; // Import the Realtime Database instance
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
 import "prismjs/themes/prism.css";
@@ -30,14 +32,16 @@ const CodeSnippet = ({ snippet }) => {
   const [alertMessage, setAlertMessage] = useState('');
 
   useEffect(() => {
-    const snippetRef = doc(db, "codeSnippets", snippet.id);
-    const unsubscribe = onSnapshot(snippetRef, (doc) => {
-      if (doc.exists()) {
-        setComments(doc.data().comments || []);
-      }
+    if (!snippet.id) return;
+
+    const commentsRef = ref(realtimeDb, `codeSnippets/${snippet.id}/comments`);
+    const unsubscribe = onValue(commentsRef, (snapshot) => {
+      const data = snapshot.val();
+      const commentsArray = data ? Object.values(data) : [];
+      setComments(commentsArray); // Update comments state with real-time data
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // Clean up the listener
   }, [snippet.id]);
 
   const handleLike = async () => {
@@ -57,17 +61,29 @@ const CodeSnippet = ({ snippet }) => {
   };
 
   const handleComment = async () => {
-    if (commentText.trim() === '') {
-      setAlertMessage('Review required');
-      setTimeout(() => setAlertMessage(''), 3000);
+    if (!commentText.trim()) {
+      setAlertMessage("Review required");
+      setTimeout(() => setAlertMessage(""), 3000);
       return;
     }
 
-    const snippetRef = doc(db, "codeSnippets", snippet.id);
-    await updateDoc(snippetRef, {
-      comments: arrayUnion(commentText),
-    });
-    setCommentText('');
+    const commentsRef = ref(realtimeDb, `codeSnippets/${snippet.id}/comments`);
+    const newComment = {
+      userId: user.id,
+      userName: user.fullName,
+      userAvatar: user.profileImageUrl,
+      text: commentText,
+      createdAt: new Date().toISOString(), // Add a timestamp
+    };
+
+    try {
+      await push(commentsRef, newComment); // Push the new comment to the Realtime Database
+      setCommentText(""); // Clear the input field
+      setAlertMessage("");
+    } catch (error) {
+      console.error("Error adding comment: ", error);
+      setAlertMessage("Failed to add comment. Please try again.");
+    }
   };
 
   return (
@@ -153,13 +169,27 @@ const CodeSnippet = ({ snippet }) => {
         </Button>
         {alertMessage && <Alert severity="error" sx={{ mt: 2 }}>{alertMessage}</Alert>}
         {comments.map((comment, index) => (
-          <Typography
+          <Box
             key={index}
-            variant="body2"
-            sx={{ mt: 2, color: "#ffffff" }}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              mt: 2,
+              backgroundColor: "#424769",
+              p: 1,
+              borderRadius: "4px",
+            }}
           >
-            {comment}
-          </Typography>
+            <Avatar src={comment.userAvatar} sx={{ mr: 2 }} />
+            <Box>
+              <Typography variant="body2" sx={{ color: "#ffb17a", fontWeight: "bold" }}>
+                {comment.userName}
+              </Typography>
+              <Typography variant="body2" sx={{ color: "#ffffff" }}>
+                {comment.text}
+              </Typography>
+            </Box>
+          </Box>
         ))}
       </CardContent>
     </Card>

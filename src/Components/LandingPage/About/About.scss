@@ -11,13 +11,18 @@
   align-items: center;
   flex-direction: column;
   @media (min-width: 1200px) {
-    height: 1500px;
+    height: 1150px;
+    padding-left: -40px;
   }
   h2 {
     color: rgba(255, 255, 255, 0.459);
 
     @media (min-width: 1200px) {
-      font-size: 48px;
+      font-size: 38px; 
+      // Decreased from 48px
+    }
+    @media (min-width: 1600px) {
+      font-size: 36px; // Further decrease for very large devices
     }
   }
   h4 {
@@ -28,9 +33,12 @@
     padding-left: 30px;
     padding-right: 30px;
     @media (min-width: 1200px) {
-      font-size: 32px;
-      padding-left: 50px;
-      padding-right: 50px;
+      font-size: 28px; // Decreased from 32px
+      padding-left: 70px;
+      padding-right: 70px;
+    }
+    @media (min-width: 1600px) {
+      font-size: 24px; // Further decrease for very large devices
     }
   }
   div {

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { db } from "../../../firebase";
 import { collection, addDoc, doc, getDoc } from "firebase/firestore";
-import { TextField, Button, Box, Typography, Alert, MenuItem, Select } from "@mui/material";
+import { TextField, Button, Box, Typography, Alert, Menu, MenuItem } from "@mui/material";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
 import "prismjs/themes/prism.css";
@@ -14,6 +14,7 @@ const CodeSnippetEditor = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [message, setMessage] = useState("");
   const [language, setLanguage] = useState("javascript");
+  const [anchorEl, setAnchorEl] = useState(null); // Anchor element for the dropdown
 
   useEffect(() => {
     if (user) {
@@ -27,6 +28,19 @@ const CodeSnippetEditor = () => {
       fetchProfilePic();
     }
   }, [user]);
+
+  const handleDropdownOpen = (event) => {
+    setAnchorEl(event.currentTarget); // Open the dropdown
+  };
+
+  const handleDropdownClose = () => {
+    setAnchorEl(null); // Close the dropdown
+  };
+
+  const handleLanguageSelect = (lang) => {
+    setLanguage(lang); // Set the selected language
+    handleDropdownClose();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,7 +82,7 @@ const CodeSnippetEditor = () => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           InputLabelProps={{ style: { color: "#C17B49" } }}
-          InputProps={{ style: { color: "#ffffff", borderColor:"#ffb17a" } }}
+          InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
           sx={{
             mb: 2,
             "& .MuiOutlinedInput-root": {
@@ -78,33 +92,42 @@ const CodeSnippetEditor = () => {
             },
           }}
         />
-        <Select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          fullWidth
+        <Button
+          variant="outlined"
+          onClick={handleDropdownOpen}
           sx={{
             mb: 2,
             color: "#ffffff",
-            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#676f9d" },
-            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#ffb17a" },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#ffb17a" },
+            borderColor: "#676f9d",
+            "&:hover": { borderColor: "#ffb17a" },
           }}
         >
-          <MenuItem value="javascript">JavaScript</MenuItem>
-          <MenuItem value="python">Python</MenuItem>
-          <MenuItem value="java">Java</MenuItem>
-          <MenuItem value="html">HTML</MenuItem>
-          <MenuItem value="css">CSS</MenuItem>
-          <MenuItem value="c">C</MenuItem>
-          <MenuItem value="cpp">C++</MenuItem>
-          <MenuItem value="typescript">TypeScript</MenuItem>
-          <MenuItem value="ruby">Ruby</MenuItem>
-          <MenuItem value="go">Go</MenuItem>
-          <MenuItem value="php">PHP</MenuItem>
-          <MenuItem value="swift">Swift</MenuItem>
-          <MenuItem value="kotlin">Kotlin</MenuItem>
-          <MenuItem value="r">R</MenuItem>
-        </Select>
+          {language.toUpperCase()}
+        </Button>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleDropdownClose}
+          PaperProps={{
+            style: {
+              maxHeight: 200, // Limit the height of the dropdown
+              backgroundColor: "#424769",
+              color: "#ffffff",
+            },
+          }}
+        >
+          {["javascript", "python", "java", "html", "css", "c", "cpp", "typescript", "ruby", "go", "php", "swift", "kotlin", "r"].map((lang) => (
+            <MenuItem
+              key={lang}
+              onClick={() => handleLanguageSelect(lang)}
+              sx={{
+                "&:hover": { backgroundColor: "#ffb17a", color: "#000000" },
+              }}
+            >
+              {lang.toUpperCase()}
+            </MenuItem>
+          ))}
+        </Menu>
         <Editor
           value={code}
           onValueChange={(code) => setCode(code)}

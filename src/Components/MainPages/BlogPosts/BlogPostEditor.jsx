@@ -64,7 +64,7 @@ const BlogPostEditor = () => {
 
   return (
     <Box sx={{ mb: 4 }}>
-      <Typography variant="h5" sx={{ mb: 2, color: "#ffb17a" }}>
+      <Typography variant="h5" sx={{ mb: 2, color: "#ffffff" }}>
         Create a Post
       </Typography>
       <form onSubmit={handleSubmit}>
@@ -73,7 +73,7 @@ const BlogPostEditor = () => {
           label="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          InputLabelProps={{ style: { color: "#C17B49" } }}
+          InputLabelProps={{ style: { color: "#ffffff" } }}
           InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
           sx={{
             mb: 2,
@@ -133,7 +133,7 @@ const BlogPostEditor = () => {
           label="Tags (comma separated)"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
-          InputLabelProps={{ style: { color: "#C17B49" } }}
+          InputLabelProps={{ style: { color: "#ffffff" } }}
           InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
           sx={{
             mt: 2,
@@ -150,7 +150,7 @@ const BlogPostEditor = () => {
           label="Hashtags (comma separated)"
           value={hashtags}
           onChange={(e) => setHashtags(e.target.value)}
-          InputLabelProps={{ style: { color: "#C17B49" } }}
+          InputLabelProps={{ style: { color: "#ffffff" } }}
           InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
           sx={{
             mb: 2,

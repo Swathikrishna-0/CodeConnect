@@ -10,7 +10,6 @@ import {
   getDoc,
   setDoc,
   deleteDoc,
-  onSnapshot,
 } from "firebase/firestore";
 import {
   Box,
@@ -23,6 +22,8 @@ import {
 } from "@mui/material";
 import CommentIcon from "@mui/icons-material/Comment";
 import { useUser } from "@clerk/clerk-react";
+import { ref, onValue, push } from "firebase/database"; // Import Realtime Database functions
+import { realtimeDb } from "../../../firebase"; // Import the Realtime Database instance
 
 const BlogPost = ({ post }) => {
   const { user } = useUser();
@@ -58,16 +59,16 @@ const BlogPost = ({ post }) => {
   }, [user, post.userId]);
 
   useEffect(() => {
-    if (!post.id) return; // Ensure post.id is valid before setting up the listener
+    if (!post.id) return;
 
-    const postRef = doc(db, "posts", post.id);
-    const unsubscribe = onSnapshot(postRef, (doc) => {
-      if (doc.exists()) {
-        setComments(doc.data().comments || []);
-      }
+    const commentsRef = ref(realtimeDb, `blogPosts/${post.id}/comments`);
+    const unsubscribe = onValue(commentsRef, (snapshot) => {
+      const data = snapshot.val();
+      const commentsArray = data ? Object.values(data) : [];
+      setComments(commentsArray); // Update comments state with real-time data
     });
 
-    return () => unsubscribe(); // Properly clean up the listener
+    return () => unsubscribe(); // Clean up the listener
   }, [post.id]);
 
   const handleLike = async () => {
@@ -89,17 +90,23 @@ const BlogPost = ({ post }) => {
       return;
     }
 
-    const postRef = doc(db, "posts", post.id);
-    await updateDoc(postRef, {
-      comments: arrayUnion({
-        userId: user.id,
-        userName: user.fullName,
-        userProfilePic: user.profileImageUrl,
-        comment,
-      }),
-    });
-    setComment("");
-    setError("");
+    const commentsRef = ref(realtimeDb, `blogPosts/${post.id}/comments`);
+    const newComment = {
+      userId: user.id,
+      userName: user.fullName,
+      userProfilePic: user.profileImageUrl,
+      comment,
+      createdAt: new Date().toISOString(), // Add a timestamp
+    };
+
+    try {
+      await push(commentsRef, newComment); // Push the new comment to the Realtime Database
+      setComment(""); // Clear the input field
+      setError("");
+    } catch (error) {
+      console.error("Error adding comment: ", error);
+      setError("Failed to add comment. Please try again.");
+    }
   };
 
   const handleFollow = async () => {
@@ -127,7 +134,7 @@ const BlogPost = ({ post }) => {
     <Box sx={{ mb: 4, p: 2, border: "1px solid #676f9d", borderRadius: "8px" }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <Avatar src={post.userProfilePic} sx={{ mr: 2 }} onClick={handleProfileClick} style={{ cursor: 'pointer' }} />
-        <Typography variant="h6" sx={{ color: "#ffb17a", cursor: 'pointer' }} onClick={handleProfileClick}>
+        <Typography variant="h6" sx={{ color: "#ffffff", cursor: 'pointer' }} onClick={handleProfileClick}>
           {post.userName}
         </Typography>
         {user.id !== post.userId && (
@@ -144,7 +151,7 @@ const BlogPost = ({ post }) => {
           </Button>
         )}
       </Box>
-      <Typography variant="h6" sx={{ color: "#ffb17a" }}>
+      <Typography variant="h6" sx={{ color: "#ffffff" }}>
         {post.title}
       </Typography>
       <Typography
@@ -152,10 +159,10 @@ const BlogPost = ({ post }) => {
         sx={{ color: "#ffffff" }}
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
-      <Typography variant="body2" sx={{ color: "#676f9d" }}>
+      <Typography variant="body2" sx={{ color: "#ffffff" }}>
         Tags: {post.tags.join(", ")}
       </Typography>
-      <Typography variant="body2" sx={{ color: "#676f9d" }}>
+      <Typography variant="body2" sx={{ color: "#ffffff" }}>
         Hashtags: {post.hashtags.join(", ")}
       </Typography>
       <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
@@ -178,7 +185,7 @@ const BlogPost = ({ post }) => {
           label="Add a comment"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          InputLabelProps={{ style: { color: "#C17B49" } }}
+          InputLabelProps={{ style: { color: "#ffffff" } }}
           InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
           sx={{
             mb: 2,
@@ -203,18 +210,19 @@ const BlogPost = ({ post }) => {
           {error}
         </Alert>
       )}
-      <Box sx={{ mt: 2 }}></Box>
-      <Typography variant="body2" sx={{ color: "#ffffff" }}>
-        Comments:
-      </Typography>
-      {comments.map((comment, index) => (
-        <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <Avatar src={comment.userProfilePic} sx={{ mr: 2 }} />
-          <Typography variant="body2" sx={{ color: "#676f9d" }}>
-            <strong>{comment.userName}:</strong> {comment.comment}
-          </Typography>
-        </Box>
-      ))}
+      <Box sx={{ mt: 2 }}>
+        <Typography variant="body2" sx={{ color: "#ffffff" }}>
+          Comments:
+        </Typography>
+        {comments.map((comment, index) => (
+          <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+            <Avatar src={comment.userProfilePic} sx={{ mr: 2 }} />
+            <Typography variant="body2" sx={{ color: "#676f9d" }}>
+              <strong>{comment.userName}:</strong> {comment.comment}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
     </Box>
   );
 };

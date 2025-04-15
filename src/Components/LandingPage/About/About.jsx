@@ -62,7 +62,7 @@ const About = () => {
         ))}
       </motion.div>
       
-      <motion.h1
+      {/* <motion.h1
         className="logo logo1"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -71,7 +71,12 @@ const About = () => {
         whileHover={{ scale: 1.05 }}
       >
         Code<span>Connect</span>
-      </motion.h1>
+      </motion.h1> */}
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <h4>Copyright © 2025 Swathi Priya. All Rights Reserved.</h4>
     </motion.div>
   );
 };
