@@ -15,7 +15,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Avatar from "@mui/material/Avatar";
 import Container from "@mui/material/Container";
@@ -348,18 +347,6 @@ export default function Feed() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 0 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={0} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"
@@ -408,15 +395,6 @@ export default function Feed() {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton
-              size="large"
-              aria-label="show 0 new notifications"
-              color="inherit"
-            >
-              <Badge badgeContent={0} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
             <IconButton
               size="large"
               edge="end"
@@ -486,6 +464,50 @@ export default function Feed() {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
         <Container maxWidth="md" sx={{ mt: 4 }}>
+          {!showBlogPage && !showSnippetPage && !showPodcastPage && !showForumsPage && !activeGroup && (
+            <Box sx={{ textAlign: "center", color: "#ffffff" }}>
+              <Typography variant="h4" sx={{ mb: 4 }}>
+                Welcome to <span style={{ color: "#ffb17a" }}>CodeConnect</span>
+              </Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Explore the latest content from our community:
+              </Typography>
+              <Box sx={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap", gap: 4 }}>
+                <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                  <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                    Podcasts
+                  </Typography>
+                  <Typography variant="body2">
+                    Discover insightful podcasts created by our community members.
+                  </Typography>
+                </Box>
+                <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                  <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                    Groups
+                  </Typography>
+                  <Typography variant="body2">
+                    Join discussions and collaborate with like-minded individuals.
+                  </Typography>
+                </Box>
+                <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                  <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                    Blogs
+                  </Typography>
+                  <Typography variant="body2">
+                    Read and share blogs on various topics written by our users.
+                  </Typography>
+                </Box>
+                <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                  <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                    Code Snippets
+                  </Typography>
+                  <Typography variant="body2">
+                    Explore and contribute useful code snippets for the community.
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          )}
           {showBlogPage && (
             <>
               <BlogPostEditor />
@@ -509,13 +531,13 @@ export default function Feed() {
               <button
                 onClick={handleBackToForums}
                 style={{
-                  marginBottom: '20px',
-                  padding: '10px 20px',
-                  backgroundColor: '#ffb17a',
-                  color: '#000',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
+                  marginBottom: "20px",
+                  padding: "10px 20px",
+                  backgroundColor: "#ffb17a",
+                  color: "#000",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
                 }}
               >
                 Back to Forums
