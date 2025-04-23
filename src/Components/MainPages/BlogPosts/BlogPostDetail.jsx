@@ -14,6 +14,27 @@ import { ref, onValue, push } from "firebase/database";
 import { realtimeDb } from "../../../firebase";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
+import Drawer from "@mui/material/Drawer";
+import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import PostAddIcon from "@mui/icons-material/PostAdd";
+import CodeIcon from "@mui/icons-material/Code";
+import PodcastsIcon from "@mui/icons-material/Podcasts";
+import ForumIcon from "@mui/icons-material/Forum";
+import { styled } from "@mui/material/styles";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(0, 1),
+  ...theme.mixins.toolbar,
+  justifyContent: "flex-end",
+}));
 
 const BlogPostDetail = () => {
   const { id } = useParams();
@@ -26,6 +47,7 @@ const BlogPostDetail = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -91,6 +113,10 @@ const BlogPostDetail = () => {
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
+  };
+
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen);
   };
 
   const menuId = "primary-search-account-menu";
@@ -210,137 +236,189 @@ const BlogPostDetail = () => {
 
   return (
     <>
-      <AppBar position="fixed" sx={{ backgroundColor: "#202338" }}>
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, cursor: "pointer" }}
-            onClick={() => navigate("/feed")}
-          >
-            <span style={{ color: "#ffffff" }}>Code</span>
-            <span style={{ color: "#ffb17a" }}>Connect</span>
-          </Typography>
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
+      <Box sx={{ display: "flex" }}>
+        <AppBar position="fixed" sx={{ backgroundColor: "#202338", zIndex: 1201 }}>
+          <Toolbar>
             <IconButton
               size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
+              edge="start"
               color="inherit"
+              aria-label="open drawer"
+              sx={{ mr: 2 }}
+              onClick={handleDrawerToggle}
             >
-              {profilePic ? <Avatar src={profilePic} /> : <AccountCircle />}
+              <MenuIcon />
             </IconButton>
-          </Box>
-          <Box sx={{ display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ flexGrow: 1, cursor: "pointer" }}
+              onClick={() => navigate("/feed")}
             >
-              <MoreIcon />
+              <span style={{ color: "#ffffff" }}>Code</span>
+              <span style={{ color: "#ffb17a" }}>Connect</span>
+            </Typography>
+            <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              <IconButton
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                {profilePic ? <Avatar src={profilePic} /> : <AccountCircle />}
+              </IconButton>
+            </Box>
+            <Box sx={{ display: { xs: "flex", md: "none" } }}>
+              <IconButton
+                size="large"
+                aria-label="show more"
+                aria-controls={mobileMenuId}
+                aria-haspopup="true"
+                onClick={handleMobileMenuOpen}
+                color="inherit"
+              >
+                <MoreIcon />
+              </IconButton>
+            </Box>
+          </Toolbar>
+        </AppBar>
+        {renderMobileMenu}
+        {renderMenu}
+        <Drawer
+          variant="permanent"
+          sx={{
+            "& .MuiDrawer-paper": {
+              width: drawerOpen ? 240 : 60,
+              backgroundColor: "#424769",
+              color: "#ffffff",
+              overflowX: "hidden",
+              transition: "width 0.3s",
+              position: "fixed",
+              height: "100vh",
+            },
+          }}
+        >
+          <DrawerHeader>
+            <IconButton onClick={handleDrawerToggle}>
+              {drawerOpen ? <ChevronLeftIcon sx={{ color: "#ffffff" }} /> : <ChevronRightIcon sx={{ color: "#ffffff" }} />}
             </IconButton>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      {renderMobileMenu}
-      {renderMenu}
-      <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3, mt: 8 }}>
-        <Typography variant="h4" sx={{ mb: 2 }}>
-          {post.title}
-        </Typography>
-        <Typography
-          variant="body1"
-          sx={{ mb: 4 }}
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Avatar src={post.userProfilePic} sx={{ mr: 2 }} />
-          <Typography variant="h6">{post.userName}</Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
-          <IconButton
-            onClick={handleLike}
-            sx={{
-              color: Array.isArray(post.likes) && post.likes.includes(user.id)
-                ? "#ffb17a"
-                : "#ffffff",
-            }}
-          >
-            <FavoriteIcon />
-          </IconButton>
-          <Typography sx={{ ml: 1 }}>
-            {Array.isArray(post.likes) ? post.likes.length : 0} Likes
-          </Typography>
-          <IconButton
-            onClick={handleBookmark}
-            sx={{
-              ml: 2,
-              color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)
-                ? "#ffb17a"
-                : "#ffffff",
-            }}
-          >
-            <BookmarkIcon />
-          </IconButton>
-        </Box>
-        <Box>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Comments
-          </Typography>
-          <TextField
-            fullWidth
-            label="Add a comment"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            InputLabelProps={{ style: { color: "#ffffff" } }}
-            InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
-            sx={{
-              mb: 2,
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": { borderColor: "#676f9d" },
-                "&:hover fieldset": { borderColor: "#ffb17a" },
-                "&.Mui-focused fieldset": { borderColor: "#ffb17a" },
-              },
-            }}
-          />
-          <Button
-            onClick={handleComment}
-            variant="contained"
-            startIcon={<CommentIcon />}
-            sx={{ backgroundColor: "#ffb17a", color: "#000000" }}
-          >
-            Comment
-          </Button>
-          {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {error}
-            </Alert>
-          )}
-          <Box sx={{ mt: 2 }}>
-            {comments.map((comment, index) => (
-              <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                <Avatar src={comment.userProfilePic} sx={{ mr: 2 }} />
-                <Typography variant="body2" sx={{ color: "#676f9d" }}>
-                  <strong>{comment.userName}:</strong> {comment.comment}
-                </Typography>
+          </DrawerHeader>
+          <Divider />
+          <List>
+            <ListItem button onClick={() => navigate("/feed")}>
+              <ListItemIcon>
+                <PostAddIcon sx={{ color: "#ffffff" }} />
+              </ListItemIcon>
+              {drawerOpen && <ListItemText primary="Write a Blog" />}
+            </ListItem>
+            <ListItem button onClick={() => navigate("/feed")}>
+              <ListItemIcon>
+                <CodeIcon sx={{ color: "#ffffff" }} />
+              </ListItemIcon>
+              {drawerOpen && <ListItemText primary="Write a Code Snippet" />}
+            </ListItem>
+            <ListItem button onClick={() => navigate("/feed")}>
+              <ListItemIcon>
+                <PodcastsIcon sx={{ color: "#ffffff" }} />
+              </ListItemIcon>
+              {drawerOpen && <ListItemText primary="Podcasts" />}
+            </ListItem>
+            <ListItem button onClick={() => navigate("/feed")}>
+              <ListItemIcon>
+                <ForumIcon sx={{ color: "#ffffff" }} />
+              </ListItemIcon>
+              {drawerOpen && <ListItemText primary="Forums" />}
+            </ListItem>
+          </List>
+        </Drawer>
+        <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8,  ml: drawerOpen ? 30 : 10 }}>
+          <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3 }}>
+            <Typography variant="h4" sx={{ mb: 2 }}>
+              {post.title}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{ mb: 4 }}
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <Avatar src={post.userProfilePic} sx={{ mr: 2 }} />
+              <Typography variant="h6">{post.userName}</Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
+              <IconButton
+                onClick={handleLike}
+                sx={{
+                  color: Array.isArray(post.likes) && post.likes.includes(user.id)
+                    ? "#ffb17a"
+                    : "#ffffff",
+                }}
+              >
+                <FavoriteIcon />
+              </IconButton>
+              <Typography sx={{ ml: 1 }}>
+                {Array.isArray(post.likes) ? post.likes.length : 0} Likes
+              </Typography>
+              <IconButton
+                onClick={handleBookmark}
+                sx={{
+                  ml: 2,
+                  color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)
+                    ? "#ffb17a"
+                    : "#ffffff",
+                }}
+              >
+                <BookmarkIcon />
+              </IconButton>
+            </Box>
+            <Box>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Comments
+              </Typography>
+              <TextField
+                fullWidth
+                label="Add a comment"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                InputLabelProps={{ style: { color: "#ffffff" } }}
+                InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                sx={{
+                  mb: 2,
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": { borderColor: "#676f9d" },
+                    "&:hover fieldset": { borderColor: "#ffb17a" },
+                    "&.Mui-focused fieldset": { borderColor: "#ffb17a" },
+                  },
+                }}
+              />
+              <Button
+                onClick={handleComment}
+                variant="contained"
+                startIcon={<CommentIcon />}
+                sx={{ backgroundColor: "#ffb17a", color: "#000000" }}
+              >
+                Comment
+              </Button>
+              {error && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                  {error}
+                </Alert>
+              )}
+              <Box sx={{ mt: 2 }}>
+                {comments.map((comment, index) => (
+                  <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                    <Avatar src={comment.userProfilePic} sx={{ mr: 2 }} />
+                    <Typography variant="body2" sx={{ color: "#676f9d" }}>
+                      <strong>{comment.userName}:</strong> {comment.comment}
+                    </Typography>
+                  </Box>
+                ))}
               </Box>
-            ))}
+            </Box>
           </Box>
         </Box>
       </Box>
