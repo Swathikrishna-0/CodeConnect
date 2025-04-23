@@ -1,46 +1,54 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { db } from "../../../firebase";
+import { db, realtimeDb } from "../../../firebase";
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
-import { Box, Typography, IconButton, Avatar, TextField, Button, Alert, Menu, MenuItem } from "@mui/material";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import { ref, onValue, push } from "firebase/database";
+import { Box, Typography, Avatar, TextField, Button, Alert, IconButton, Menu, MenuItem } from "@mui/material";
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs";
+import "prismjs/themes/prism.css";
+import { useUser } from "@clerk/clerk-react";
 import CommentIcon from "@mui/icons-material/Comment";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
 import MenuIcon from "@mui/icons-material/Menu";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { useUser } from "@clerk/clerk-react";
-import { ref, onValue, push } from "firebase/database";
-import { realtimeDb } from "../../../firebase";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
 
-const BlogPostDetail = () => {
+const CodeSnippetDetail = () => {
   const { id } = useParams();
   const { user } = useUser();
   const navigate = useNavigate();
-  const [post, setPost] = useState(null);
-  const [comment, setComment] = useState("");
+  const [snippet, setSnippet] = useState(null);
   const [comments, setComments] = useState([]);
-  const [error, setError] = useState("");
+  const [commentText, setCommentText] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
 
   useEffect(() => {
-    const fetchPost = async () => {
-      const docRef = doc(db, "posts", id);
+    const fetchSnippet = async () => {
+      const docRef = doc(db, "codeSnippets", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setPost(docSnap.data());
+        const snippetData = docSnap.data();
+        setSnippet(snippetData);
+        setLiked(snippetData.likes?.includes(user.id));
+        setSaved(snippetData.bookmarks?.includes(user.id));
       }
     };
-    fetchPost();
-  }, [id]);
+    fetchSnippet();
+  }, [id, user.id]);
 
   useEffect(() => {
     if (!id) return;
-    const commentsRef = ref(realtimeDb, `blogPosts/${id}/comments`);
+
+    const commentsRef = ref(realtimeDb, `codeSnippets/${id}/comments`);
     const unsubscribe = onValue(commentsRef, (snapshot) => {
       const data = snapshot.val();
       const commentsArray = data ? Object.values(data) : [];
@@ -148,65 +156,70 @@ const BlogPostDetail = () => {
   );
 
   const handleLike = async () => {
-    const postRef = doc(db, "posts", id);
-    if (Array.isArray(post.likes) && post.likes.includes(user.id)) {
-      await updateDoc(postRef, { likes: arrayRemove(user.id) });
-      setPost((prevPost) => ({
-        ...prevPost,
-        likes: prevPost.likes.filter((like) => like !== user.id),
+    if (!snippet) return;
+    const snippetRef = doc(db, "codeSnippets", id);
+    if (liked) {
+      await updateDoc(snippetRef, { likes: arrayRemove(user.id) });
+      setSnippet((prev) => ({
+        ...prev,
+        likes: prev.likes.filter((like) => like !== user.id),
       }));
     } else {
-      await updateDoc(postRef, { likes: arrayUnion(user.id) });
-      setPost((prevPost) => ({
-        ...prevPost,
-        likes: [...(prevPost.likes || []), user.id],
+      await updateDoc(snippetRef, { likes: arrayUnion(user.id) });
+      setSnippet((prev) => ({
+        ...prev,
+        likes: [...(prev.likes || []), user.id],
       }));
     }
+    setLiked(!liked);
   };
 
-  const handleBookmark = async () => {
-    const postRef = doc(db, "posts", id);
-    if (Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)) {
-      await updateDoc(postRef, { bookmarks: arrayRemove(user.id) });
-      setPost((prevPost) => ({
-        ...prevPost,
-        bookmarks: prevPost.bookmarks.filter((bookmark) => bookmark !== user.id),
+  const handleSave = async () => {
+    if (!snippet) return;
+    const snippetRef = doc(db, "codeSnippets", id);
+    if (saved) {
+      await updateDoc(snippetRef, { bookmarks: arrayRemove(user.id) });
+      setSnippet((prev) => ({
+        ...prev,
+        bookmarks: prev.bookmarks.filter((bookmark) => bookmark !== user.id),
       }));
     } else {
-      await updateDoc(postRef, { bookmarks: arrayUnion(user.id) });
-      setPost((prevPost) => ({
-        ...prevPost,
-        bookmarks: [...(prevPost.bookmarks || []), user.id],
+      await updateDoc(snippetRef, { bookmarks: arrayUnion(user.id) });
+      setSnippet((prev) => ({
+        ...prev,
+        bookmarks: [...(prev.bookmarks || []), user.id],
       }));
     }
+    setSaved(!saved);
   };
 
   const handleComment = async () => {
-    if (!comment.trim()) {
-      setError("Comment required");
+    if (!commentText.trim()) {
+      setAlertMessage("Review required");
+      setTimeout(() => setAlertMessage(""), 3000);
       return;
     }
 
-    const commentsRef = ref(realtimeDb, `blogPosts/${id}/comments`);
+    const commentsRef = ref(realtimeDb, `codeSnippets/${id}/comments`);
     const newComment = {
       userId: user.id,
       userName: user.fullName,
-      userProfilePic: user.profileImageUrl,
-      comment,
+      userAvatar: user.profileImageUrl,
+      text: commentText,
       createdAt: new Date().toISOString(),
     };
 
     try {
       await push(commentsRef, newComment);
-      setComment("");
-      setError("");
+      setCommentText("");
+      setAlertMessage("");
     } catch (error) {
       console.error("Error adding comment: ", error);
-      setError("Failed to add comment. Please try again.");
+      setAlertMessage("Failed to add comment. Please try again.");
     }
   };
 
-  if (!post) return <Typography>Loading...</Typography>;
+  if (!snippet) return <Typography>Loading...</Typography>;
 
   return (
     <>
@@ -261,54 +274,62 @@ const BlogPostDetail = () => {
       {renderMobileMenu}
       {renderMenu}
       <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3, mt: 8 }}>
-        <Typography variant="h4" sx={{ mb: 2 }}>
-          {post.title}
-        </Typography>
-        <Typography
-          variant="body1"
-          sx={{ mb: 4 }}
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Avatar src={post.userProfilePic} sx={{ mr: 2 }} />
-          <Typography variant="h6">{post.userName}</Typography>
+          <Avatar src={snippet.userProfilePic} sx={{ mr: 2 }} />
+          <Typography variant="h6">{snippet.userName}</Typography>
         </Box>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
-          <IconButton
-            onClick={handleLike}
-            sx={{
-              color: Array.isArray(post.likes) && post.likes.includes(user.id)
-                ? "#ffb17a"
-                : "#ffffff",
+        <Typography variant="h4" sx={{ mb: 2 }}>
+          {snippet.description}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#C17B49", mb: 2 }}>
+          Language: {snippet.language || "Unknown"}
+        </Typography>
+        <Box sx={{ backgroundColor: "#424769", p: 2, borderRadius: "4px" }}>
+          <Editor
+            value={snippet.code}
+            onValueChange={() => {}}
+            highlight={(code) =>
+              highlight(
+                code,
+                languages[snippet.language] || languages.javascript,
+                snippet.language
+              )
+            }
+            padding={10}
+            style={{
+              fontFamily: '"Fira code", "Fira Mono", monospace',
+              fontSize: 14,
+              backgroundColor: "#424769",
+              color: "#ffffff",
+              border: "1px solid #676f9d",
+              borderRadius: "4px",
+              minHeight: "200px",
             }}
-          >
-            <FavoriteIcon />
+            readOnly
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+          <IconButton onClick={handleLike}>
+            <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
           </IconButton>
           <Typography sx={{ ml: 1 }}>
-            {Array.isArray(post.likes) ? post.likes.length : 0} Likes
+            {Array.isArray(snippet.likes) ? snippet.likes.length : 0} Likes
           </Typography>
-          <IconButton
-            onClick={handleBookmark}
-            sx={{
-              ml: 2,
-              color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)
-                ? "#ffb17a"
-                : "#ffffff",
-            }}
-          >
-            <BookmarkIcon />
+          <IconButton onClick={handleSave} sx={{ ml: 2 }}>
+            <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
           </IconButton>
         </Box>
-        <Box>
+        <Box sx={{ mt: 4 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
-            Comments
+            Code Reviews
           </Typography>
           <TextField
+            label="Add a code review..."
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
             fullWidth
-            label="Add a comment"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            InputLabelProps={{ style: { color: "#ffffff" } }}
+            margin="normal"
+            InputLabelProps={{ style: { color: "#C17B49" } }}
             InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
             sx={{
               mb: 2,
@@ -321,24 +342,42 @@ const BlogPostDetail = () => {
           />
           <Button
             onClick={handleComment}
-            variant="contained"
             startIcon={<CommentIcon />}
+            variant="contained"
             sx={{ backgroundColor: "#ffb17a", color: "#000000" }}
           >
-            Comment
+            Review Code
           </Button>
-          {error && (
+          {alertMessage && (
             <Alert severity="error" sx={{ mt: 2 }}>
-              {error}
+              {alertMessage}
             </Alert>
           )}
           <Box sx={{ mt: 2 }}>
             {comments.map((comment, index) => (
-              <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                <Avatar src={comment.userProfilePic} sx={{ mr: 2 }} />
-                <Typography variant="body2" sx={{ color: "#676f9d" }}>
-                  <strong>{comment.userName}:</strong> {comment.comment}
-                </Typography>
+              <Box
+                key={index}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  mt: 2,
+                  backgroundColor: "#424769",
+                  p: 1,
+                  borderRadius: "4px",
+                }}
+              >
+                <Avatar src={comment.userAvatar} sx={{ mr: 2 }} />
+                <Box>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "#ffb17a", fontWeight: "bold" }}
+                  >
+                    {comment.userName}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "#ffffff" }}>
+                    {comment.text}
+                  </Typography>
+                </Box>
               </Box>
             ))}
           </Box>
@@ -348,4 +387,4 @@ const BlogPostDetail = () => {
   );
 };
 
-export default BlogPostDetail;
+export default CodeSnippetDetail;

@@ -20,7 +20,7 @@ import Avatar from "@mui/material/Avatar";
 import Container from "@mui/material/Container";
 import { useUser } from "@clerk/clerk-react";
 import { db } from "../../../firebase";
-import { doc, getDoc, collection, query, onSnapshot, orderBy } from "firebase/firestore";
+import { doc, getDoc, collection, query, onSnapshot, orderBy, where } from "firebase/firestore";
 import BlogPostEditor from "../BlogPosts/BlogPostEditor";
 import BlogPost from "../BlogPosts/BlogPost";
 import CodeSnippetEditor from "../CodeSnippet/CodeSnippetEditor";
@@ -43,6 +43,8 @@ import PodcastPage from "../Podcasts/PodcastPage";
 import ForumIcon from '@mui/icons-material/Forum'; // Import Forums icon
 import Forums from '../Forums/Forums'; // Import Forums component
 import GroupDiscussion from '../Forums/GroupDiscussion'; // Import GroupDiscussion component
+import BookmarkIcon from '@mui/icons-material/Bookmark'; // Import Bookmark icon
+import SavedPosts from "../SavedPosts/SavedPosts"; // Import SavedPosts component
 
 const drawerWidth = 240;
 
@@ -174,6 +176,9 @@ export default function Feed() {
   const [showPodcastPage, setShowPodcastPage] = React.useState(false);
   const [showForumsPage, setShowForumsPage] = React.useState(false);
   const [activeGroup, setActiveGroup] = React.useState(null);
+  const [showSavedPostsPage, setShowSavedPostsPage] = React.useState(false);
+  const [bookmarkedPosts, setBookmarkedPosts] = React.useState([]);
+  const [bookmarkedSnippets, setBookmarkedSnippets] = React.useState([]);
 
   React.useEffect(() => {
     if (user) {
@@ -211,6 +216,43 @@ export default function Feed() {
     });
     return () => unsubscribe();
   }, []);
+
+  React.useEffect(() => {
+    if (user) {
+      const fetchBookmarkedPosts = async () => {
+        const q = query(collection(db, "posts"), where("bookmarks", "array-contains", user.id));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const bookmarksData = [];
+          querySnapshot.forEach((doc) => {
+            bookmarksData.push({ id: doc.id, ...doc.data() });
+          });
+          setBookmarkedPosts(bookmarksData);
+        });
+        return () => unsubscribe();
+      };
+      fetchBookmarkedPosts();
+    }
+  }, [user]);
+
+  React.useEffect(() => {
+    if (user) {
+      const fetchBookmarkedSnippets = async () => {
+        const q = query(
+          collection(db, "codeSnippets"),
+          where("bookmarks", "array-contains", user.id)
+        );
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const snippetsData = [];
+          querySnapshot.forEach((doc) => {
+            snippetsData.push({ id: doc.id, ...doc.data() });
+          });
+          setBookmarkedSnippets(snippetsData);
+        });
+        return () => unsubscribe();
+      };
+      fetchBookmarkedSnippets();
+    }
+  }, [user]);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -257,6 +299,7 @@ export default function Feed() {
       setShowSnippetPage(false);
       setShowPodcastPage(false);
       setShowForumsPage(false);
+      setShowSavedPostsPage(false);
     }
   };
 
@@ -267,6 +310,7 @@ export default function Feed() {
       setShowBlogPage(false);
       setShowPodcastPage(false);
       setShowForumsPage(false);
+      setShowSavedPostsPage(false);
     }
   };
 
@@ -277,6 +321,7 @@ export default function Feed() {
       setShowBlogPage(false);
       setShowSnippetPage(false);
       setShowForumsPage(false);
+      setShowSavedPostsPage(false);
     }
   };
 
@@ -287,6 +332,18 @@ export default function Feed() {
       setShowBlogPage(false);
       setShowSnippetPage(false);
       setShowPodcastPage(false);
+      setShowSavedPostsPage(false);
+    }
+  };
+
+  const handleSavedPostsClick = () => {
+    setActiveGroup(null); // Reset active group
+    setShowSavedPostsPage((prevShowSavedPostsPage) => !prevShowSavedPostsPage);
+    if (!showSavedPostsPage) {
+      setShowBlogPage(false);
+      setShowSnippetPage(false);
+      setShowPodcastPage(false);
+      setShowForumsPage(false);
     }
   };
 
@@ -296,6 +353,7 @@ export default function Feed() {
     setShowSnippetPage(false);
     setShowPodcastPage(false);
     setShowForumsPage(false);
+    setShowSavedPostsPage(false);
   };
 
   const handleOpenGroup = (groupId, groupName) => {
@@ -459,12 +517,18 @@ export default function Feed() {
             </ListItemIcon>
             <ListItemText primary="Forums" sx={{ color: "#ffffff" }} />
           </ListItem>
+          <ListItem button onClick={handleSavedPostsClick} sx={{ cursor: 'pointer' }}>
+            <ListItemIcon>
+              <BookmarkIcon sx={{ color: showSavedPostsPage ? "#ffb17a" : "#ffffff" }} />
+            </ListItemIcon>
+            <ListItemText primary="Saved Posts" sx={{ color: "#ffffff" }} />
+          </ListItem>
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
         <Container maxWidth="md" sx={{ mt: 4 }}>
-          {!showBlogPage && !showSnippetPage && !showPodcastPage && !showForumsPage && !activeGroup && (
+          {!showBlogPage && !showSnippetPage && !showPodcastPage && !showForumsPage && !activeGroup && !showSavedPostsPage && (
             <Box sx={{ textAlign: "center", color: "#ffffff" }}>
               <Typography variant="h4" sx={{ mb: 4 }}>
                 Welcome to <span style={{ color: "#ffb17a" }}>CodeConnect</span>
@@ -545,6 +609,7 @@ export default function Feed() {
               <GroupDiscussion groupId={activeGroup.groupId} groupName={activeGroup.groupName} />
             </>
           )}
+          {showSavedPostsPage && <SavedPosts bookmarkedPosts={bookmarkedPosts} bookmarkedSnippets={bookmarkedSnippets} />}
         </Container>
       </Box>
     </Box>

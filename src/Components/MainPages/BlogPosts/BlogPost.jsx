@@ -166,14 +166,14 @@ const BlogPost = ({ post }) => {
         sx={{
           color: "#ffffff",
           cursor: "pointer",
-          textDecoration: "underline",
+          textDecoration: "underline",mb: 2,
         }}
         onClick={handleViewPost}
       >
         {post.title}
       </Typography>
-      <hr/>
-      <Box sx={{ display: "flex", alignItems: "spaceBetween", mt: 2 }}>
+      <hr style={{ height: "1px", border: "none", backgroundColor: "#676f9d" }} />
+      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
         <Typography sx={{ ml: 1, color: "#ffffff" }}>
           <IconButton
             onClick={handleLike}
@@ -188,18 +188,21 @@ const BlogPost = ({ post }) => {
           </IconButton>
           {Array.isArray(post.likes) ? post.likes.length : 0} Likes
         </Typography>
-        <IconButton
-          onClick={handleBookmark}
-          sx={{
-            ml: 2,
-            color:
-              Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)
-                ? "#ffb17a"
-                : "#ffffff",
-          }}
-        >
-          <BookmarkIcon />
-        </IconButton>
+        <Typography sx={{ ml: 1, color: "#ffffff" }}>
+          <IconButton
+            onClick={handleBookmark}
+            sx={{
+              ml: 2,
+              color:
+                Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)
+                  ? "#ffb17a"
+                  : "#ffffff",
+            }}
+          >
+            <BookmarkIcon />
+          </IconButton>
+          {Array.isArray(post.bookmarks) ? post.bookmarks.length : 0} Bookmarks
+        </Typography>
       </Box>
     </Box>
   );

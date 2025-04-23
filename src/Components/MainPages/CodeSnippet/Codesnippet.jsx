@@ -14,21 +14,25 @@ import {
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CommentIcon from "@mui/icons-material/Comment";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { useUser } from "@clerk/clerk-react";
 import { db } from "../../../firebase";
 import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
-import { ref, onValue, push } from "firebase/database"; // Import Realtime Database functions
-import { realtimeDb } from "../../../firebase"; // Import the Realtime Database instance
+import { ref, onValue, push } from "firebase/database";
+import { realtimeDb } from "../../../firebase";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
 import "prismjs/themes/prism.css";
+import { useNavigate } from "react-router-dom";
 
 const CodeSnippet = ({ snippet }) => {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [likes, setLikes] = useState(snippet.likes.length);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
   const [liked, setLiked] = useState(snippet.likes.includes(user.id));
+  const [saved, setSaved] = useState(snippet.bookmarks?.includes(user.id));
   const [alertMessage, setAlertMessage] = useState('');
 
   useEffect(() => {
@@ -38,10 +42,10 @@ const CodeSnippet = ({ snippet }) => {
     const unsubscribe = onValue(commentsRef, (snapshot) => {
       const data = snapshot.val();
       const commentsArray = data ? Object.values(data) : [];
-      setComments(commentsArray); // Update comments state with real-time data
+      setComments(commentsArray);
     });
 
-    return () => unsubscribe(); // Clean up the listener
+    return () => unsubscribe();
   }, [snippet.id]);
 
   const handleLike = async () => {
@@ -60,6 +64,21 @@ const CodeSnippet = ({ snippet }) => {
     setLiked(!liked);
   };
 
+  const handleSave = async () => {
+    const snippetRef = doc(db, "codeSnippets", snippet.id);
+    if (saved) {
+      await updateDoc(snippetRef, {
+        bookmarks: arrayRemove(user.id),
+      });
+      setSaved(false);
+    } else {
+      await updateDoc(snippetRef, {
+        bookmarks: arrayUnion(user.id),
+      });
+      setSaved(true);
+    }
+  };
+
   const handleComment = async () => {
     if (!commentText.trim()) {
       setAlertMessage("Review required");
@@ -73,17 +92,21 @@ const CodeSnippet = ({ snippet }) => {
       userName: user.fullName,
       userAvatar: user.profileImageUrl,
       text: commentText,
-      createdAt: new Date().toISOString(), // Add a timestamp
+      createdAt: new Date().toISOString(),
     };
 
     try {
-      await push(commentsRef, newComment); // Push the new comment to the Realtime Database
-      setCommentText(""); // Clear the input field
+      await push(commentsRef, newComment);
+      setCommentText("");
       setAlertMessage("");
     } catch (error) {
       console.error("Error adding comment: ", error);
       setAlertMessage("Failed to add comment. Please try again.");
     }
+  };
+
+  const handleViewSnippet = () => {
+    navigate(`/snippet/${snippet.id}`);
   };
 
   return (
@@ -106,92 +129,35 @@ const CodeSnippet = ({ snippet }) => {
         }
       />
       <CardContent>
-        <Typography variant="h6" sx={{ color: "#ffb17a" }}>
+        <Typography
+          variant="h6"
+          sx={{
+            color: "#ffb17a",
+            cursor: "pointer",
+            textDecoration: "underline",mb: 2,
+          }}
+          onClick={handleViewSnippet}
+        >
           {snippet.description}
         </Typography>
-        <Typography variant="body2" sx={{ color: "#C17B49", mt: 1 }}>
-          Language: {snippet.language || "Unknown"} {/* Display the language */}
-        </Typography>
-        <Box sx={{ overflowY: "scroll", maxHeight: "250px", backgroundColor: "#424769", p: 2, mt: 2 }}>
-          <Editor
-            value={snippet.code}
-            onValueChange={() => {}}
-            highlight={(code) => highlight(code, languages[snippet.language] || languages.javascript, snippet.language)}
-            padding={10}
-            style={{
-              fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 14,
-              backgroundColor: "#424769",
-              color: "#ffffff",
-              border: "1px solid #676f9d",
-              borderRadius: "4px",
-              minHeight: "200px",
-              whiteSpace: "collapse", 
-            }}
-            readOnly
-          />
-        </Box>
+        <hr style={{ height: "1px", border: "none", backgroundColor: "#676f9d" }} />
       </CardContent>
+      
       <CardActions
         disableSpacing
-        sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
+        sx={{ display: "flex", justifyContent: "space-between" }}
       >
         <IconButton onClick={handleLike}>
           <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
-          <Typography sx={{ color: "#ffffff" }}>&nbsp; {likes}</Typography>
+          <Typography sx={{ color: "#ffffff" }}>&nbsp; {likes} Likes</Typography>
+        </IconButton>
+        <IconButton onClick={handleSave}>
+          <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
+          <Typography sx={{ color: "#ffffff" }}>
+            &nbsp; {snippet.bookmarks?.length || 0} Bookmarks
+          </Typography>
         </IconButton>
       </CardActions>
-      <CardContent>
-        <TextField
-          label="Add a code review..."
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-          fullWidth
-          margin="normal"
-          InputLabelProps={{ style: { color: "#C17B49" } }}
-          InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
-          sx={{
-            mb: 2,
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": { borderColor: "#676f9d" },
-              "&:hover fieldset": { borderColor: "#ffb17a" },
-              "&.Mui-focused fieldset": { borderColor: "#ffb17a" },
-            },
-          }}
-        />
-        <Button
-          onClick={handleComment}
-          startIcon={<CommentIcon />}
-          variant="contained"
-          sx={{ backgroundColor: "#ffb17a", color: "#000000" }}
-        >
-          Review Code
-        </Button>
-        {alertMessage && <Alert severity="error" sx={{ mt: 2 }}>{alertMessage}</Alert>}
-        {comments.map((comment, index) => (
-          <Box
-            key={index}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mt: 2,
-              backgroundColor: "#424769",
-              p: 1,
-              borderRadius: "4px",
-            }}
-          >
-            <Avatar src={comment.userAvatar} sx={{ mr: 2 }} />
-            <Box>
-              <Typography variant="body2" sx={{ color: "#ffb17a", fontWeight: "bold" }}>
-                {comment.userName}
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#ffffff" }}>
-                {comment.text}
-              </Typography>
-            </Box>
-          </Box>
-        ))}
-      </CardContent>
     </Card>
   );
 };

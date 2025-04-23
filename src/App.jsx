@@ -8,6 +8,7 @@ import Myaccount from './Components/MainPages/MyAccount/Myaccount';
 import Publicprofile from './Components/MainPages/PublicProfile/Publicprofile';
 import GroupDiscussion from './Components/MainPages/Forums/GroupDiscussion';
 import BlogPostDetail from "./Components/MainPages/BlogPosts/BlogPostDetail";
+import CodeSnippetDetail from './Components/MainPages/CodeSnippet/CodeSnippetDetail'; // Import CodeSnippetDetail
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/profile/:userId" element={<Publicprofile />} />
         <Route path="/forums/:groupId" element={<GroupDiscussion />} />
         <Route path="/blog/:id" element={<BlogPostDetail />} />
+        <Route path="/snippet/:id" element={<CodeSnippetDetail />} /> {/* Add new route */}
       </Routes>
     </Router>
   );
