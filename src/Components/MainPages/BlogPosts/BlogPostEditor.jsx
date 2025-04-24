@@ -9,7 +9,6 @@ const BlogPostEditor = () => {
   const { user } = useUser();
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
-  const [tags, setTags] = useState("");
   const [hashtags, setHashtags] = useState("");
   const [profilePic, setProfilePic] = useState(null);
   const [message, setMessage] = useState("");
@@ -38,11 +37,10 @@ const BlogPostEditor = () => {
         await addDoc(collection(db, "posts"), {
           userId: user.id,
           userName: user.fullName,
-          userProfilePic: profilePic || "", // Ensure profilePic is set correctly
+          userProfilePic: profilePic || "",
           title: title.trim(),
           content: content.trim(),
-          tags: tags.split(",").map((tag) => tag.trim()).filter(tag => tag),
-          hashtags: hashtags.split(",").map((hashtag) => hashtag.trim()).filter(hashtag => hashtag),
+          hashtags: hashtags.split(",").map((hashtag) => hashtag.trim()).filter((hashtag) => hashtag),
           createdAt: new Date(),
           likes: [],
           comments: [],
@@ -51,7 +49,6 @@ const BlogPostEditor = () => {
         });
         setTitle("");
         setContent("");
-        setTags("");
         setHashtags("");
         setMessage("Post created successfully!");
         setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
@@ -128,23 +125,7 @@ const BlogPostEditor = () => {
           }}
           onEditorChange={handleEditorChange}
         />
-        <TextField
-          fullWidth
-          label="Tags (comma separated)"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          InputLabelProps={{ style: { color: "#ffffff" } }}
-          InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
-          sx={{
-            mt: 2,
-            mb: 2,
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": { borderColor: "#676f9d" },
-              "&:hover fieldset": { borderColor: "#ffb17a" },
-              "&.Mui-focused fieldset": { borderColor: "#ffb17a" },
-            },
-          }}
-        />
+        <br/>
         <TextField
           fullWidth
           label="Hashtags (comma separated)"

@@ -348,46 +348,71 @@ const CodeSnippetDetail = () => {
               <Avatar src={snippet.userProfilePic} sx={{ mr: 2 }} />
               <Typography variant="h6">{snippet.userName}</Typography>
             </Box>
-            <Typography variant="h4" sx={{ mb: 2 }}>
-              {snippet.description}
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#C17B49", mb: 2 }}>
-              Language: {snippet.language || "Unknown"}
-            </Typography>
-            <Box sx={{ backgroundColor: "#424769", p: 2, borderRadius: "4px" }}>
-              <Editor
-                value={snippet.code}
-                onValueChange={() => {}}
-                highlight={(code) =>
-                  highlight(
-                    code,
-                    languages[snippet.language] || languages.javascript,
-                    snippet.language
-                  )
-                }
-                padding={10}
-                style={{
-                  fontFamily: '"Fira code", "Fira Mono", monospace',
-                  fontSize: 14,
-                  backgroundColor: "#424769",
-                  color: "#ffffff",
-                  border: "1px solid #676f9d",
-                  borderRadius: "4px",
-                  minHeight: "200px",
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h4" sx={{ mb: 2 }}>
+                  {snippet.description}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "#C17B49", mb: 2 }}>
+                  Language: {snippet.language || "Unknown"}
+                </Typography>
+                <Box sx={{ backgroundColor: "#424769", p: 2, borderRadius: "4px" }}>
+                  <Editor
+                    value={snippet.code}
+                    onValueChange={() => {}}
+                    highlight={(code) =>
+                      highlight(
+                        code,
+                        languages[snippet.language] || languages.javascript,
+                        snippet.language
+                      )
+                    }
+                    padding={10}
+                    style={{
+                      fontFamily: '"Fira code", "Fira Mono", monospace',
+                      fontSize: 14,
+                      backgroundColor: "#424769",
+                      color: "#ffffff",
+                      border: "1px solid #676f9d",
+                      borderRadius: "4px",
+                      minHeight: "200px",
+                    }}
+                    readOnly
+                  />
+                </Box>
+              </Box>
+              <Box
+                sx={{
+                  display: { xs: "none", md: "flex" },
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  ml: 4,
                 }}
-                readOnly
-              />
+              >
+                <IconButton onClick={handleLike}>
+                  <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
+                </IconButton>
+                <Typography sx={{ mt: 1, mb: 2 }}>
+                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0} Likes
+                </Typography>
+                <IconButton onClick={handleSave}>
+                  <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
+                </IconButton>
+              </Box>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
-              <IconButton onClick={handleLike}>
-                <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
-              </IconButton>
-              <Typography sx={{ ml: 1 }}>
-                {Array.isArray(snippet.likes) ? snippet.likes.length : 0} Likes
-              </Typography>
-              <IconButton onClick={handleSave} sx={{ ml: 2 }}>
-                <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
-              </IconButton>
+            <Box sx={{ display: { xs: "block", md: "none" }, mt: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <IconButton onClick={handleLike}>
+                  <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
+                </IconButton>
+                <Typography sx={{ ml: 1 }}>
+                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0} Likes
+                </Typography>
+                <IconButton onClick={handleSave} sx={{ ml: 2 }}>
+                  <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
+                </IconButton>
+              </Box>
             </Box>
             <Box sx={{ mt: 4 }}>
               <Typography variant="h6" sx={{ mb: 2 }}>
@@ -431,7 +456,6 @@ const CodeSnippetDetail = () => {
                       display: "flex",
                       alignItems: "center",
                       mt: 2,
-                      backgroundColor: "#424769",
                       p: 1,
                       borderRadius: "4px",
                     }}

@@ -335,45 +335,89 @@ const BlogPostDetail = () => {
             </ListItem>
           </List>
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8,  ml: drawerOpen ? 30 : 10 }}>
+        <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, ml: drawerOpen ? 30 : 10 }}>
           <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3 }}>
-            <Typography variant="h4" sx={{ mb: 2 }}>
-              {post.title}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{ mb: 4 }}
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar src={post.userProfilePic} sx={{ mr: 2 }} />
               <Typography variant="h6">{post.userName}</Typography>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
-              <IconButton
-                onClick={handleLike}
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h4" sx={{ mb: 1 }}>
+                  {post.title}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "#ffb17a", mb: 2 }}>
+                  {post.hashtags && post.hashtags.length > 0
+                    ? post.hashtags.map((hashtag) => `#${hashtag}`).join(" ")
+                    : "No hashtags"}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 4 }}
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                />
+              </Box>
+              <Box
                 sx={{
-                  color: Array.isArray(post.likes) && post.likes.includes(user.id)
-                    ? "#ffb17a"
-                    : "#ffffff",
+                  display: { xs: "none", md: "flex" },
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  ml: 4,
                 }}
               >
-                <FavoriteIcon />
-              </IconButton>
-              <Typography sx={{ ml: 1 }}>
-                {Array.isArray(post.likes) ? post.likes.length : 0} Likes
-              </Typography>
-              <IconButton
-                onClick={handleBookmark}
-                sx={{
-                  ml: 2,
-                  color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)
-                    ? "#ffb17a"
-                    : "#ffffff",
-                }}
-              >
-                <BookmarkIcon />
-              </IconButton>
+                <IconButton
+                  onClick={handleLike}
+                  sx={{
+                    color: Array.isArray(post.likes) && post.likes.includes(user.id)
+                      ? "#ffb17a"
+                      : "#ffffff",
+                  }}
+                >
+                  <FavoriteIcon />
+                </IconButton>
+                <Typography sx={{ mt: 1, mb: 2 }}>
+                  {Array.isArray(post.likes) ? post.likes.length : 0} Likes
+                </Typography>
+                <IconButton
+                  onClick={handleBookmark}
+                  sx={{
+                    color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)
+                      ? "#ffb17a"
+                      : "#ffffff",
+                  }}
+                >
+                  <BookmarkIcon />
+                </IconButton>
+              </Box>
+            </Box>
+            <Box sx={{ display: { xs: "block", md: "none" }, mb: 4 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <IconButton
+                  onClick={handleLike}
+                  sx={{
+                    color: Array.isArray(post.likes) && post.likes.includes(user.id)
+                      ? "#ffb17a"
+                      : "#ffffff",
+                  }}
+                >
+                  <FavoriteIcon />
+                </IconButton>
+                <Typography sx={{ ml: 1 }}>
+                  {Array.isArray(post.likes) ? post.likes.length : 0} Likes
+                </Typography>
+                <IconButton
+                  onClick={handleBookmark}
+                  sx={{
+                    ml: 2,
+                    color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)
+                      ? "#ffb17a"
+                      : "#ffffff",
+                  }}
+                >
+                  <BookmarkIcon />
+                </IconButton>
+              </Box>
             </Box>
             <Box>
               <Typography variant="h6" sx={{ mb: 2 }}>
@@ -408,9 +452,9 @@ const BlogPostDetail = () => {
                   {error}
                 </Alert>
               )}
-              <Box sx={{ mt: 2 }}>
+              <Box sx={{ mt: 2, mb: 2 }}>
                 {comments.map((comment, index) => (
-                  <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                  <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                     <Avatar src={comment.userProfilePic} sx={{ mr: 2 }} />
                     <Typography variant="body2" sx={{ color: "#676f9d" }}>
                       <strong>{comment.userName}:</strong> {comment.comment}
