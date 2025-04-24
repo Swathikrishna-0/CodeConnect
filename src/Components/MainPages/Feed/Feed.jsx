@@ -18,6 +18,7 @@ import MailIcon from "@mui/icons-material/Mail";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Avatar from "@mui/material/Avatar";
 import Container from "@mui/material/Container";
+import Button from "@mui/material/Button";
 import { useUser } from "@clerk/clerk-react";
 import { db } from "../../../firebase";
 import { doc, getDoc, collection, query, onSnapshot, orderBy, where } from "firebase/firestore";
@@ -179,6 +180,9 @@ export default function Feed() {
   const [showSavedPostsPage, setShowSavedPostsPage] = React.useState(false);
   const [bookmarkedPosts, setBookmarkedPosts] = React.useState([]);
   const [bookmarkedSnippets, setBookmarkedSnippets] = React.useState([]);
+  const [searchQuery, setSearchQuery] = React.useState(""); // State for search query
+  const [searchResults, setSearchResults] = React.useState([]); // State for search results
+  const [isSearching, setIsSearching] = React.useState(false); // State to track if a search is active
 
   React.useEffect(() => {
     if (user) {
@@ -253,6 +257,39 @@ export default function Feed() {
       fetchBookmarkedSnippets();
     }
   }, [user]);
+
+  const handleSearch = () => {
+    const lowerCaseQuery = searchQuery.toLowerCase();
+
+    // Filter posts and snippets based on the search query
+    const filteredPosts = posts.filter(
+      (post) =>
+        (post.title && post.title.toLowerCase().includes(lowerCaseQuery)) ||
+        (post.content && post.content.toLowerCase().includes(lowerCaseQuery)) ||
+        (post.hashtags || []).some(
+          (hashtag) => hashtag && hashtag.toLowerCase().includes(lowerCaseQuery)
+        )
+    );
+
+    const filteredSnippets = snippets.filter(
+      (snippet) =>
+        (snippet.description &&
+          snippet.description.toLowerCase().includes(lowerCaseQuery)) ||
+        (snippet.code && snippet.code.toLowerCase().includes(lowerCaseQuery)) ||
+        (snippet.language &&
+          snippet.language.toLowerCase().includes(lowerCaseQuery))
+    );
+
+    // Combine results
+    setSearchResults([...filteredPosts, ...filteredSnippets]);
+    setIsSearching(true); // Set search state to true
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery(""); // Clear the search query
+    setSearchResults([]); // Clear the search results
+    setIsSearching(false); // Reset search state
+  };
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -452,6 +489,46 @@ export default function Feed() {
             <span style={{ color: "#ffb17a" }}>Connect</span>
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
+          <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search blogs or snippets..."
+              inputProps={{ "aria-label": "search" }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") handleSearch(); // Trigger search on Enter key
+              }}
+            />
+          </Search>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#ffb17a",
+              color: "#000",
+              marginLeft: "10px",
+              "&:hover": { backgroundColor: "#e6a963" },
+            }}
+            onClick={handleSearch}
+          >
+            Search
+          </Button>
+          {isSearching && (
+            <Button
+              variant="outlined"
+              sx={{
+                marginLeft: "10px",
+                color: "#ffffff",
+                borderColor: "#ffb17a",
+                "&:hover": { borderColor: "#e6a963" },
+              }}
+              onClick={handleClearSearch}
+            >
+              Clear
+            </Button>
+          )}
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton
               size="large"
@@ -528,49 +605,75 @@ export default function Feed() {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
         <Container maxWidth="md" sx={{ mt: 4 }}>
-          {!showBlogPage && !showSnippetPage && !showPodcastPage && !showForumsPage && !activeGroup && !showSavedPostsPage && (
-            <Box sx={{ textAlign: "center", color: "#ffffff" }}>
-              <Typography variant="h4" sx={{ mb: 4 }}>
-                Welcome to <span style={{ color: "#ffb17a" }}>CodeConnect</span>
+          {isSearching ? (
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                Search Results ({searchResults.length})
               </Typography>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Explore the latest content from our community:
-              </Typography>
-              <Box sx={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap", gap: 4 }}>
-                <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
-                  <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
-                    Podcasts
-                  </Typography>
-                  <Typography variant="body2">
-                    Discover insightful podcasts created by our community members.
-                  </Typography>
-                </Box>
-                <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
-                  <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
-                    Groups
-                  </Typography>
-                  <Typography variant="body2">
-                    Join discussions and collaborate with like-minded individuals.
-                  </Typography>
-                </Box>
-                <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
-                  <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
-                    Blogs
-                  </Typography>
-                  <Typography variant="body2">
-                    Read and share blogs on various topics written by our users.
-                  </Typography>
-                </Box>
-                <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
-                  <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
-                    Code Snippets
-                  </Typography>
-                  <Typography variant="body2">
-                    Explore and contribute useful code snippets for the community.
-                  </Typography>
+              {searchResults.length > 0 ? (
+                searchResults.map((result) =>
+                  result.title ? (
+                    <BlogPost key={result.id} post={result} />
+                  ) : (
+                    <CodeSnippet key={result.id} snippet={result} />
+                  )
+                )
+              ) : (
+                <Typography variant="body1" sx={{ color: "#ffffff" }}>
+                  No results found for "{searchQuery}".
+                </Typography>
+              )}
+            </Box>
+          ) : (
+            !showBlogPage &&
+            !showSnippetPage &&
+            !showPodcastPage &&
+            !showForumsPage &&
+            !activeGroup &&
+            !showSavedPostsPage && (
+              <Box sx={{ textAlign: "center", color: "#ffffff" }}>
+                <Typography variant="h4" sx={{ mb: 4 }}>
+                  Welcome to <span style={{ color: "#ffb17a" }}>CodeConnect</span>
+                </Typography>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Explore the latest content from our community:
+                </Typography>
+                <Box sx={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap", gap: 4 }}>
+                  <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                    <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                      Podcasts
+                    </Typography>
+                    <Typography variant="body2">
+                      Discover insightful podcasts created by our community members.
+                    </Typography>
+                  </Box>
+                  <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                    <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                      Groups
+                    </Typography>
+                    <Typography variant="body2">
+                      Join discussions and collaborate with like-minded individuals.
+                    </Typography>
+                  </Box>
+                  <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                    <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                      Blogs
+                    </Typography>
+                    <Typography variant="body2">
+                      Read and share blogs on various topics written by our users.
+                    </Typography>
+                  </Box>
+                  <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                    <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                      Code Snippets
+                    </Typography>
+                    <Typography variant="body2">
+                      Explore and contribute useful code snippets for the community.
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
-            </Box>
+            )
           )}
           {showBlogPage && (
             <>
