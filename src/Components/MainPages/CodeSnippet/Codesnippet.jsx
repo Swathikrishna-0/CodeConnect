@@ -120,11 +120,11 @@ const CodeSnippet = ({ snippet }) => {
       <CardHeader
         avatar={<Avatar src={snippet.userProfilePic} />}
         title={
-          <Typography sx={{ color: "#ffb17a" }}>{snippet.userName}</Typography>
+          <Typography sx={{ color: "#ffffff" }}>{snippet.userName}</Typography>
         }
         subheader={
-          <Typography sx={{ color: "#C17B49" }}>
-            {new Date(snippet.createdAt.seconds * 1000).toLocaleDateString()}
+          <Typography sx={{ color: "#ffffff" }}>
+            {new Date(snippet.createdAt.seconds * 1000).toLocaleString()} {/* Display date and time */}
           </Typography>
         }
       />
@@ -132,9 +132,13 @@ const CodeSnippet = ({ snippet }) => {
         <Typography
           variant="h6"
           sx={{
-            color: "#ffb17a",
+            color: "#ffffff",
             cursor: "pointer",
-            textDecoration: "underline",mb: 2,
+            textDecoration: "underline",
+            mb: 2,
+            "&:hover": {
+              color: "#ffb17a",
+            },
           }}
           onClick={handleViewSnippet}
         >

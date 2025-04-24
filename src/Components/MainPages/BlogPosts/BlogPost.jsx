@@ -168,6 +168,9 @@ const BlogPost = ({ post }) => {
           cursor: "pointer",
           textDecoration: "underline",
           mb: 1,
+          "&:hover": {
+            color: "#ffb17a",
+          },
         }}
         onClick={handleViewPost}
       >
@@ -176,7 +179,7 @@ const BlogPost = ({ post }) => {
       <Typography variant="body2" sx={{ color: "#ffb17a", mb: 2 }}>
         {post.hashtags && post.hashtags.length > 0
           ? post.hashtags.map((hashtag) => `#${hashtag}`).join(" ")
-          : "No hashtags"}
+          : ""}
       </Typography>
       <hr style={{ height: "1px", border: "none", backgroundColor: "#676f9d" }} />
       <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>

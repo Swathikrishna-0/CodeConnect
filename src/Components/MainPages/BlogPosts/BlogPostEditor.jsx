@@ -32,6 +32,11 @@ const BlogPostEditor = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!title.trim()) {
+      setMessage("Title is required.");
+      setTimeout(() => setMessage(""), 3000);
+      return;
+    }
     if (user) {
       try {
         await addDoc(collection(db, "posts"), {

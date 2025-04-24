@@ -18,7 +18,6 @@ const GroupDiscussion = ({ groupId, groupName }) => {
     const db = getDatabase();
     const questionsRef = ref(db, `groups/${groupId}/questions`);
 
-    // Fetch questions from Firebase
     const unsubscribe = onValue(
       questionsRef,
       (snapshot) => {
@@ -27,9 +26,9 @@ const GroupDiscussion = ({ groupId, groupName }) => {
           const questionsList = Object.entries(data).map(([id, value]) => ({ id, ...value }));
           setQuestions(questionsList);
         } else {
-          setQuestions([]); // Clear questions if no data exists
+          setQuestions([]); 
         }
-        setError(null); // Clear any previous errors
+        setError(null);
       },
       (error) => {
         console.error('Error fetching questions:', error);
@@ -37,7 +36,7 @@ const GroupDiscussion = ({ groupId, groupName }) => {
       }
     );
 
-    return () => unsubscribe(); // Cleanup listener on component unmount
+    return () => unsubscribe(); 
   }, [groupId]);
 
   const handlePostQuestion = async () => {
@@ -55,7 +54,6 @@ const GroupDiscussion = ({ groupId, groupName }) => {
       const db = getDatabase();
       const questionsRef = ref(db, `groups/${groupId}/questions`);
 
-      // Push the new question to Firebase
       const newQuestion = {
         userId: user.id,
         userName: user.fullName,
@@ -67,7 +65,6 @@ const GroupDiscussion = ({ groupId, groupName }) => {
 
       await push(questionsRef, newQuestion);
 
-      // Clear input fields
       setTopic('');
       setDetails('');
       toast.success('Question posted successfully!', { position: 'top-right', autoClose: 3000 });
@@ -80,7 +77,7 @@ const GroupDiscussion = ({ groupId, groupName }) => {
   return (
     <Box sx={{ padding: '20px' }}>
       <ToastContainer />
-      <Typography variant="h4" sx={{ color: '#ffb17a', marginBottom: '20px' }}>
+      <Typography variant="h4" sx={{ color: '#ffffff', marginBottom: '20px' }}>
         Group Discussion: {groupName}
       </Typography>
       <Box
@@ -95,7 +92,7 @@ const GroupDiscussion = ({ groupId, groupName }) => {
           handlePostQuestion();
         }}
       >
-        <Typography variant="h5" sx={{ color: '#ffb17a', marginBottom: '10px' }}>
+        <Typography variant="h5" sx={{ color: '#ffffff', marginBottom: '10px' }}>
           Post a Question
         </Typography>
         <TextField
@@ -103,7 +100,7 @@ const GroupDiscussion = ({ groupId, groupName }) => {
           label="Topic of your question"
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
-          InputLabelProps={{ style: { color: '#C17B49' } }}
+          InputLabelProps={{ style: { color: '#ffffff' } }}
           InputProps={{ style: { color: '#ffffff', borderColor: '#ffb17a' } }}
           sx={{
             marginBottom: '20px',
@@ -121,7 +118,7 @@ const GroupDiscussion = ({ groupId, groupName }) => {
           label="Write your question in detail"
           value={details}
           onChange={(e) => setDetails(e.target.value)}
-          InputLabelProps={{ style: { color: '#C17B49' } }}
+          InputLabelProps={{ style: { color: '#ffffff' } }}
           InputProps={{ style: { color: '#ffffff', borderColor: '#ffb17a' } }}
           sx={{
             marginBottom: '20px',
@@ -161,7 +158,7 @@ const GroupDiscussion = ({ groupId, groupName }) => {
                 alt="User"
                 sx={{ width: '40px', height: '40px', marginRight: '10px' }}
               />
-              <Typography variant="h6" sx={{ color: '#ffb17a' }}>
+              <Typography variant="h6" sx={{ color: '#ffffff' }}>
                 {question.userName}
               </Typography>
             </Box>

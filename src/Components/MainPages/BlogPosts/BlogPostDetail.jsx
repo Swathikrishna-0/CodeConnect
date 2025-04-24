@@ -339,17 +339,29 @@ const BlogPostDetail = () => {
           <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar src={post.userProfilePic} sx={{ mr: 2 }} />
-              <Typography variant="h6">{post.userName}</Typography>
+              <Box>
+                <Typography variant="h6">{post.userName}</Typography>
+                <Typography variant="body2" sx={{ color: "#676f9d", fontSize: "0.9rem" }}>
+                  {new Date(post.createdAt.seconds * 1000).toLocaleString()}
+                </Typography>
+              </Box>
             </Box>
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h4" sx={{ mb: 1 }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    mb: 1,
+                    color: "#ffffff",
+                    
+                  }}
+                >
                   {post.title}
                 </Typography>
                 <Typography variant="body2" sx={{ color: "#ffb17a", mb: 2 }}>
                   {post.hashtags && post.hashtags.length > 0
                     ? post.hashtags.map((hashtag) => `#${hashtag}`).join(" ")
-                    : "No hashtags"}
+                    : ""}
                 </Typography>
                 <Typography
                   variant="body1"
@@ -423,30 +435,32 @@ const BlogPostDetail = () => {
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Comments
               </Typography>
-              <TextField
-                fullWidth
-                label="Add a comment"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                InputLabelProps={{ style: { color: "#ffffff" } }}
-                InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
-                sx={{
-                  mb: 2,
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": { borderColor: "#676f9d" },
-                    "&:hover fieldset": { borderColor: "#ffb17a" },
-                    "&.Mui-focused fieldset": { borderColor: "#ffb17a" },
-                  },
-                }}
-              />
-              <Button
-                onClick={handleComment}
-                variant="contained"
-                startIcon={<CommentIcon />}
-                sx={{ backgroundColor: "#ffb17a", color: "#000000" }}
-              >
-                Comment
-              </Button>
+              <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                <TextField
+                  fullWidth
+                  label="Add a comment"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  InputLabelProps={{ style: { color: '#ffffff' } }}
+                  InputProps={{ style: { color: '#ffffff', borderColor: '#ffb17a' } }}
+                  sx={{
+                    marginRight: '10px',
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': { borderColor: '#676f9d' },
+                      '&:hover fieldset': { borderColor: '#ffb17a' },
+                      '&.Mui-focused fieldset': { borderColor: '#ffb17a' },
+                    },
+                  }}
+                />
+                <Button
+                  onClick={handleComment}
+                  variant="contained"
+                  startIcon={<CommentIcon />}
+                  sx={{ backgroundColor: '#ffb17a', color: '#000000',p:1,pl:3,pr:3,height:50 }}
+                >
+                  Comment
+                </Button>
+              </Box>
               {error && (
                 <Alert severity="error" sx={{ mt: 2 }}>
                   {error}
@@ -456,9 +470,14 @@ const BlogPostDetail = () => {
                 {comments.map((comment, index) => (
                   <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                     <Avatar src={comment.userProfilePic} sx={{ mr: 2 }} />
-                    <Typography variant="body2" sx={{ color: "#676f9d" }}>
-                      <strong>{comment.userName}:</strong> {comment.comment}
-                    </Typography>
+                    <Box>
+                      <Typography variant="body2" sx={{ color: "#ffffff" }}>
+                        {comment.userName}: <strong>{comment.comment}</strong>
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: "#676f9d", fontSize: "0.8rem" }}>
+                        {new Date(comment.createdAt).toLocaleString()}
+                      </Typography>
+                    </Box>
                   </Box>
                 ))}
               </Box>

@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { db } from '../../../firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { Box, Typography, Avatar, Button, Divider } from '@mui/material';
+import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { Box, Typography, Avatar, Button, Divider, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import BlogPost from '../BlogPosts/BlogPost';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CodeSnippet from '../CodeSnippet/Codesnippet';
 
 const Myaccount = () => {
   const { user } = useUser();
   const [posts, setPosts] = useState([]);
   const [likes, setLikes] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [codeSnippets, setCodeSnippets] = useState([]); // State for code snippets
+  const [likedCodeSnippets, setLikedCodeSnippets] = useState([]); // State for liked code snippets
+  const [bookmarkedPosts, setBookmarkedPosts] = useState([]); // State for bookmarked posts
+  const [bookmarkedCodeSnippets, setBookmarkedCodeSnippets] = useState([]); // State for bookmarked code snippets
   const [showPosts, setShowPosts] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
+  const [showCodeSnippets, setShowCodeSnippets] = useState(false); // State for toggling code snippets
+  const [showLikedCodeSnippets, setShowLikedCodeSnippets] = useState(false); // State for toggling liked code snippets
+  const [showBookmarkedPosts, setShowBookmarkedPosts] = useState(false); // State for toggling bookmarked posts
+  const [showBookmarkedCodeSnippets, setShowBookmarkedCodeSnippets] = useState(false); // State for toggling bookmarked code snippets
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,10 +39,59 @@ const Myaccount = () => {
         const reviewsQuery = query(collection(db, 'posts'), where('reviews', 'array-contains', { userId: user.id }));
         const reviewsSnapshot = await getDocs(reviewsQuery);
         setReviews(reviewsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+        const codeSnippetsQuery = query(collection(db, 'codeSnippets'), where('userId', '==', user.id));
+        const codeSnippetsSnapshot = await getDocs(codeSnippetsQuery);
+        setCodeSnippets(codeSnippetsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+        const likedCodeSnippetsQuery = query(
+          collection(db, 'codeSnippets'),
+          where('likes', 'array-contains', user.id)
+        );
+        const likedCodeSnippetsSnapshot = await getDocs(likedCodeSnippetsQuery);
+        setLikedCodeSnippets(
+          likedCodeSnippetsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+
+        const bookmarkedPostsQuery = query(
+          collection(db, 'posts'),
+          where('bookmarks', 'array-contains', user.id)
+        );
+        const bookmarkedPostsSnapshot = await getDocs(bookmarkedPostsQuery);
+        setBookmarkedPosts(
+          bookmarkedPostsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+
+        const bookmarkedCodeSnippetsQuery = query(
+          collection(db, 'codeSnippets'),
+          where('bookmarks', 'array-contains', user.id)
+        );
+        const bookmarkedCodeSnippetsSnapshot = await getDocs(bookmarkedCodeSnippetsQuery);
+        setBookmarkedCodeSnippets(
+          bookmarkedCodeSnippetsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
       };
       fetchUserData();
     }
   }, [user]);
+
+  const handleDeletePost = async (postId) => {
+    try {
+      await deleteDoc(doc(db, 'posts', postId));
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
+
+  const handleDeleteCodeSnippet = async (snippetId) => {
+    try {
+      await deleteDoc(doc(db, 'codeSnippets', snippetId));
+      setCodeSnippets((prevSnippets) => prevSnippets.filter((snippet) => snippet.id !== snippetId));
+    } catch (error) {
+      console.error('Error deleting code snippet:', error);
+    }
+  };
 
   const handleShowPostsClick = () => {
     setShowPosts(!showPosts);
@@ -42,40 +101,169 @@ const Myaccount = () => {
     setShowLikes(!showLikes);
   };
 
+  const handleShowCodeSnippetsClick = () => {
+    setShowCodeSnippets(!showCodeSnippets);
+  };
+
+  const handleShowLikedCodeSnippetsClick = () => {
+    setShowLikedCodeSnippets(!showLikedCodeSnippets);
+  };
+
+  const handleShowBookmarkedPostsClick = () => {
+    setShowBookmarkedPosts(!showBookmarkedPosts);
+  };
+
+  const handleShowBookmarkedCodeSnippetsClick = () => {
+    setShowBookmarkedCodeSnippets(!showBookmarkedCodeSnippets);
+  };
+
   return (
-    <Box sx={{ p: 4 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-        <Avatar src={user.profileImageUrl} sx={{ mr: 2 }} />
-        <Typography variant="h5" sx={{ color: '#ffb17a' }}>{user.fullName}</Typography>
+    <Box
+      sx={{
+        p: 4,
+        backgroundColor: "#202338",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+        maxWidth: "800px",
+        margin: "auto",
+        color: "#ffffff",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          mb: 4,
+          backgroundColor: "#2c2f48",
+          p: 2,
+          borderRadius: "8px",
+        }}
+      >
+        <Avatar
+          src={user.profileImageUrl}
+          sx={{ width: 80, height: 80, mr: 3, border: "2px solid #ffb17a" }}
+        />
+        <Box>
+          <Typography variant="h5" sx={{ color: "#ffb17a", fontWeight: "bold" }}>
+            {user.fullName}
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#d1d1e0" }}>
+            {user.emailAddress}
+          </Typography>
+        </Box>
       </Box>
-      <Typography variant="h6" sx={{ color: '#ffb17a', mb: 2 }}>My Posts ({posts.length})</Typography>
-      <Button onClick={handleShowPostsClick} sx={{ color: '#ffb17a' }}>
-        {showPosts ? 'Hide Posts' : 'Show Posts'}
-      </Button>
-      {showPosts && (
-        <Box>
-          {posts.map(post => (
-            <React.Fragment key={post.id}>
-              <BlogPost post={post} />
-              <Divider />
-            </React.Fragment>
-          ))}
+
+      {[
+        {
+          title: "My Posts",
+          count: posts.length,
+          show: showPosts,
+          toggle: handleShowPostsClick,
+          items: posts,
+          component: BlogPost,
+          deleteHandler: handleDeletePost,
+        },
+        {
+          title: "Posts I Liked",
+          count: likes.length,
+          show: showLikes,
+          toggle: handleShowLikesClick,
+          items: likes,
+          component: BlogPost,
+        },
+        {
+          title: "My Code Snippets",
+          count: codeSnippets.length,
+          show: showCodeSnippets,
+          toggle: handleShowCodeSnippetsClick,
+          items: codeSnippets,
+          component: CodeSnippet,
+          deleteHandler: handleDeleteCodeSnippet,
+        },
+        {
+          title: "Code Snippets I Liked",
+          count: likedCodeSnippets.length,
+          show: showLikedCodeSnippets,
+          toggle: handleShowLikedCodeSnippetsClick,
+          items: likedCodeSnippets,
+          component: CodeSnippet,
+        },
+        {
+          title: "Bookmarked Posts",
+          count: bookmarkedPosts.length,
+          show: showBookmarkedPosts,
+          toggle: handleShowBookmarkedPostsClick,
+          items: bookmarkedPosts,
+          component: BlogPost,
+        },
+        {
+          title: "Bookmarked Code Snippets",
+          count: bookmarkedCodeSnippets.length,
+          show: showBookmarkedCodeSnippets,
+          toggle: handleShowBookmarkedCodeSnippetsClick,
+          items: bookmarkedCodeSnippets,
+          component: CodeSnippet,
+        },
+      ].map((section, index) => (
+        <Box
+          key={index}
+          sx={{
+            mb: 4,
+            backgroundColor: "#2c2f48",
+            p: 3,
+            borderRadius: "8px",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ color: "#ffb17a", fontWeight: "bold", mb: 2 }}
+          >
+            {section.title} ({section.count})
+          </Typography>
+          <Button
+            onClick={section.toggle}
+            sx={{
+              color: "#000000",
+              backgroundColor: "#ffb17a",
+              "&:hover": { backgroundColor: "#e6a963" },
+              mb: 2,
+            }}
+          >
+            {section.show ? `Hide ${section.title}` : `Show ${section.title}`}
+          </Button>
+          {section.show && (
+            <Box>
+              {section.items.map((item) => (
+                <Box
+                  key={item.id}
+                  sx={{
+                    position: "relative",
+                    
+                    borderRadius: "8px",
+                    backgroundColor: "#202338",
+                  }}
+                >
+                  {section.deleteHandler && (
+                    <IconButton
+                      onClick={() => section.deleteHandler(item.id)}
+                      sx={{
+                        position: "absolute",
+                        top: 10,
+                        right: 10,
+                        color: "#ffb17a",
+                        "&:hover": { color: "#e6a963" },
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
+                  <section.component {...{ [section.component === BlogPost ? "post" : "snippet"]: item }} />
+                </Box>
+              ))}
+            </Box>
+          )}
         </Box>
-      )}
-      <Typography variant="h6" sx={{ color: '#ffb17a', mt: 4, mb: 2 }}>Posts I Liked ({likes.length})</Typography>
-      <Button onClick={handleShowLikesClick} sx={{ color: '#ffb17a' }}>
-        {showLikes ? 'Hide Liked Posts' : 'Show Liked Posts'}
-      </Button>
-      {showLikes && (
-        <Box>
-          {likes.map(post => (
-            <React.Fragment key={post.id}>
-              <BlogPost post={post} />
-              <Divider />
-            </React.Fragment>
-          ))}
-        </Box>
-      )}
+      ))}
     </Box>
   );
 };

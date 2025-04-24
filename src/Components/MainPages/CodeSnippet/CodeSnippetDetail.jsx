@@ -1,9 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db, realtimeDb } from "../../../firebase";
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
 import { ref, onValue, push } from "firebase/database";
-import { Box, Typography, Avatar, TextField, Button, Alert, IconButton, Menu, MenuItem, Drawer, Divider, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Avatar,
+  TextField,
+  Button,
+  Alert,
+  IconButton,
+  Menu,
+  MenuItem,
+  Drawer,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
 import "prismjs/themes/prism.css";
@@ -244,7 +266,10 @@ const CodeSnippetDetail = () => {
   return (
     <>
       <Box sx={{ display: "flex" }}>
-        <AppBar position="fixed" sx={{ backgroundColor: "#202338", zIndex: 1201 }}>
+        <AppBar
+          position="fixed"
+          sx={{ backgroundColor: "#202338", zIndex: 1201 }}
+        >
           <Toolbar>
             <IconButton
               size="large"
@@ -311,7 +336,11 @@ const CodeSnippetDetail = () => {
         >
           <DrawerHeader>
             <IconButton onClick={handleDrawerToggle}>
-              {drawerOpen ? <ChevronLeftIcon sx={{ color: "#ffffff" }} /> : <ChevronRightIcon sx={{ color: "#ffffff" }} />}
+              {drawerOpen ? (
+                <ChevronLeftIcon sx={{ color: "#ffffff" }} />
+              ) : (
+                <ChevronRightIcon sx={{ color: "#ffffff" }} />
+              )}
             </IconButton>
           </DrawerHeader>
           <Divider />
@@ -342,13 +371,26 @@ const CodeSnippetDetail = () => {
             </ListItem>
           </List>
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, ml: drawerOpen ? 30 : 10 }}>
+        <Box
+          component="main"
+          sx={{ flexGrow: 1, p: 3, mt: 8, ml: drawerOpen ? 30 : 10 }}
+        >
           <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar src={snippet.userProfilePic} sx={{ mr: 2 }} />
-              <Typography variant="h6">{snippet.userName}</Typography>
+              <Box>
+                <Typography variant="h6">{snippet.userName}</Typography>
+                <Typography variant="body2" sx={{ color: "#676f9d", fontSize: "0.9rem" }}>
+                  {new Date(snippet.createdAt.seconds * 1000).toLocaleString()}
+                </Typography>
+              </Box>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+              }}
+            >
               <Box sx={{ flex: 1 }}>
                 <Typography variant="h4" sx={{ mb: 2 }}>
                   {snippet.description}
@@ -356,7 +398,9 @@ const CodeSnippetDetail = () => {
                 <Typography variant="body2" sx={{ color: "#C17B49", mb: 2 }}>
                   Language: {snippet.language || "Unknown"}
                 </Typography>
-                <Box sx={{ backgroundColor: "#424769", p: 2, borderRadius: "4px" }}>
+                <Box
+                  sx={{ backgroundColor: "#424769", p: 2, borderRadius: "4px" }}
+                >
                   <Editor
                     value={snippet.code}
                     onValueChange={() => {}}
@@ -394,7 +438,8 @@ const CodeSnippetDetail = () => {
                   <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
                 </IconButton>
                 <Typography sx={{ mt: 1, mb: 2 }}>
-                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0} Likes
+                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0}{" "}
+                  Likes
                 </Typography>
                 <IconButton onClick={handleSave}>
                   <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
@@ -407,7 +452,8 @@ const CodeSnippetDetail = () => {
                   <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
                 </IconButton>
                 <Typography sx={{ ml: 1 }}>
-                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0} Likes
+                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0}{" "}
+                  Likes
                 </Typography>
                 <IconButton onClick={handleSave} sx={{ ml: 2 }}>
                   <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
@@ -418,31 +464,47 @@ const CodeSnippetDetail = () => {
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Code Reviews
               </Typography>
-              <TextField
-                label="Add a code review..."
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                fullWidth
-                margin="normal"
-                InputLabelProps={{ style: { color: "#C17B49" } }}
-                InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+              <Box
                 sx={{
-                  mb: 2,
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": { borderColor: "#676f9d" },
-                    "&:hover fieldset": { borderColor: "#ffb17a" },
-                    "&.Mui-focused fieldset": { borderColor: "#ffb17a" },
-                  },
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "20px",
                 }}
-              />
-              <Button
-                onClick={handleComment}
-                startIcon={<CommentIcon />}
-                variant="contained"
-                sx={{ backgroundColor: "#ffb17a", color: "#000000" }}
               >
-                Review Code
-              </Button>
+                <TextField
+                  fullWidth
+                  label="Add a code review..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  InputLabelProps={{ style: { color: "#ffffff" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
+                  sx={{
+                    marginRight: "10px",
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": { borderColor: "#676f9d" },
+                      "&:hover fieldset": { borderColor: "#ffb17a" },
+                      "&.Mui-focused fieldset": { borderColor: "#ffb17a" },
+                    },
+                  }}
+                />
+                <Button
+                  onClick={handleComment}
+                  startIcon={<CommentIcon />}
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#ffb17a",
+                    color: "#000000",
+                    pl: 2,
+                    pr: 2,
+                    width: 220,
+                    height: 50,
+                  }}
+                >
+                  Review Code
+                </Button>
+              </Box>
               {alertMessage && (
                 <Alert severity="error" sx={{ mt: 2 }}>
                   {alertMessage}
@@ -462,14 +524,15 @@ const CodeSnippetDetail = () => {
                   >
                     <Avatar src={comment.userAvatar} sx={{ mr: 2 }} />
                     <Box>
+                      <Typography variant="body2" sx={{ color: "#ffffff" }}>
+                        {comment.userName}: <strong>{comment.text}</strong>
+                      </Typography>
+
                       <Typography
                         variant="body2"
-                        sx={{ color: "#ffb17a", fontWeight: "bold" }}
+                        sx={{ color: "#676f9d", fontSize: "0.8rem" }}
                       >
-                        {comment.userName}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#ffffff" }}>
-                        {comment.text}
+                        {new Date(comment.createdAt).toLocaleString()}
                       </Typography>
                     </Box>
                   </Box>

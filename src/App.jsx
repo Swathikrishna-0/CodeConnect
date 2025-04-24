@@ -8,7 +8,7 @@ import Myaccount from './Components/MainPages/MyAccount/Myaccount';
 import Publicprofile from './Components/MainPages/PublicProfile/Publicprofile';
 import GroupDiscussion from './Components/MainPages/Forums/GroupDiscussion';
 import BlogPostDetail from "./Components/MainPages/BlogPosts/BlogPostDetail";
-import CodeSnippetDetail from './Components/MainPages/CodeSnippet/CodeSnippetDetail'; // Import CodeSnippetDetail
+import CodeSnippetDetail from './Components/MainPages/CodeSnippet/CodeSnippetDetail'; 
 
 function App() {
   return (

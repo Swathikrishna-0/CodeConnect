@@ -44,6 +44,11 @@ const CodeSnippetEditor = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!description.trim()) {
+      setMessage("Description is required.");
+      setTimeout(() => setMessage(""), 3000);
+      return;
+    }
     if (user) {
       try {
         await addDoc(collection(db, "codeSnippets"), {
@@ -72,7 +77,7 @@ const CodeSnippetEditor = () => {
 
   return (
     <Box sx={{ mb: 4 }}>
-      <Typography variant="h5" sx={{ mb: 2, color: "#ffb17a" }}>
+      <Typography variant="h5" sx={{ mb: 2, color: "#ffffff" }}>
         Create a Code Snippet
       </Typography>
       <form onSubmit={handleSubmit}>
@@ -81,7 +86,7 @@ const CodeSnippetEditor = () => {
           label="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          InputLabelProps={{ style: { color: "#C17B49" } }}
+          InputLabelProps={{ style: { color: "#ffffff" } }}
           InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
           sx={{
             mb: 2,

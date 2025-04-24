@@ -10,7 +10,6 @@ const Podcasts = () => {
   const navigate = useNavigate();
   const { isSignedIn } = useUser();
 
-  // Framer Motion animations
   const podcastVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
@@ -31,7 +30,6 @@ const Podcasts = () => {
 
   return (
     <section id="podcasts" className="podcasts-section">
-      {/* Podcasts Content (Left Side) */}
       <motion.div
         className="podcasts-image"
         initial="hidden"
@@ -40,13 +38,12 @@ const Podcasts = () => {
         viewport={{ once: true }}
       >
         <img
-          src={podcast} // Replace with your image URL
+          src={podcast} 
           alt="Podcasts"
           className="image"
         />
       </motion.div>
 
-      {/* Podcasts Image (Right Side) */}
       <motion.div
         className="podcasts-content"
         initial="hidden"

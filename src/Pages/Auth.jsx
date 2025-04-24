@@ -11,9 +11,7 @@ import Myaccount from "../Components/MainPages/MyAccount/Myaccount";
 const Auth = () => {
   return (
     <Routes>
-      {/* Protected Route: Only signed-in users can access */}
       <Route path="/" element={<SignedIn><Landing /></SignedIn>} />
-      {/* Show login/signup page when user is signed out */}
       <Route
         path="/login"
         element={

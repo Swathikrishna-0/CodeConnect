@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getDatabase, ref, push, onValue } from 'firebase/database';
+import { Card, CardContent, CardActions, Typography, Button, Box } from '@mui/material';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const Forums = ({ onOpenGroup }) => {
   const [groups, setGroups] = useState([
@@ -39,13 +41,14 @@ const Forums = ({ onOpenGroup }) => {
 
   const handleCreateGroup = async () => {
     if (!newGroupName.trim() || !newGroupDescription.trim()) {
-      alert('Both fields are required.');
+      setError("Group title and description are required.");
+      setTimeout(() => setError(null), 3000);
       return;
     }
 
     try {
       const db = getDatabase();
-      const groupsRef = ref(db, 'groups');
+      const groupsRef = ref(db, "groups");
 
       // Push the new group to Firebase
       const newGroup = {
@@ -56,11 +59,11 @@ const Forums = ({ onOpenGroup }) => {
       await push(groupsRef, newGroup);
 
       // Clear input fields
-      setNewGroupName('');
-      setNewGroupDescription('');
+      setNewGroupName("");
+      setNewGroupDescription("");
     } catch (error) {
-      console.error('Error creating group:', error);
-      alert('Failed to create group. Please try again.');
+      console.error("Error creating group:", error);
+      setError("Failed to create group. Please try again.");
     }
   };
 
@@ -109,37 +112,58 @@ const Forums = ({ onOpenGroup }) => {
         </button>
         {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
       </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+          gap: '20px',
+        }}
+      >
         {groups.map((group) => (
-          <div
+          <Card
             key={group.id}
-            style={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '16px',
-              width: '300px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-              color: '#fff',
+            sx={{
+              backgroundColor: '#2c2f48',
+              color: '#ffffff',
+              borderRadius: '12px',
+              boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
+              transition: 'transform 0.3s, box-shadow 0.3s',
+              '&:hover': {
+                transform: 'scale(1.05)',
+                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+              },
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              padding: '20px',
             }}
           >
-            <h2>{group.name}</h2>
-            <p>{group.description}</p>
-            <button
+            <Box>
+              <Typography variant="h5" sx={{ color: '#ffb17a', marginBottom: '10px', fontWeight: 'bold' }}>
+                {group.name}
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#d1d1e0', marginBottom: '20px' }}>
+                {group.description}
+              </Typography>
+            </Box>
+            <Button
               onClick={() => onOpenGroup(group.id, group.name)}
-              style={{
-                padding: '8px 16px',
+              variant="contained"
+              startIcon={<OpenInNewIcon />}
+              sx={{
                 backgroundColor: '#ffb17a',
                 color: '#000',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
+                '&:hover': { backgroundColor: '#e6a963' },
+                padding: '10px 20px',
+                borderRadius: '8px',
+                alignSelf: 'flex-end',
               }}
             >
               Open Group Discussion
-            </button>
-          </div>
+            </Button>
+          </Card>
         ))}
-      </div>
+      </Box>
     </div>
   );
 };
