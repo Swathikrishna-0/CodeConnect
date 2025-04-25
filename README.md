@@ -16,24 +16,15 @@ CodeConnect is a collaborative platform designed to connect techies, it's a deve
 
 ## Features
 
-- 👤 User Profiles
-Users can create and update personal profiles with GitHub, LinkedIn, education, and role details.
-- 📝 Blogging Platform
-Users can write, edit, and publish technical blogs with rich text formatting.
-- 💬 Discussion Forums
-Engage in technical discussions, ask questions, and share knowledge with other developers.
-- 🔍 Code Snippet Sharing
-Share reusable code snippets with syntax highlighting and optional explanations.
-- 🎙️ Developer Podcasts
-Access curated or community-created podcasts centered on development trends and tutorials.
-- 🔐 Authentication with Clerk
-Secure login/signup using email, Google, GitHub, etc., with user session management.
-- 📦 Firebase Backend Integration
-User data and content are stored and retrieved using Firebase Firestore & Storage.
-- 📲 Responsive UI Design
-Optimized for mobile, tablet, and desktop using SCSS, MUI, and Bootstrap.
-- 🌈 Interactive Animations
-Engaging transitions and effects using Framer Motion.
+- 👤 **User Profiles:** Users can create and update personal profiles with GitHub, LinkedIn, education, and role details.
+- 📝 **Blogging Platform:** Users can write, edit, and publish technical blogs with rich text formatting.
+- 💬 **Discussion Forums:** Engage in technical discussions, ask questions, and share knowledge with other developers.
+- 🔍 **Code Snippet Sharing:** Share reusable code snippets with syntax highlighting and optional explanations.
+- 🎙️ **Developer Podcasts:** Access curated or community-created podcasts centered on development trends and tutorials.
+- 🔐 **Authentication with Clerk:** Secure login/signup using email, Google, GitHub, etc., with user session management.
+- 📦 **Firebase Backend Integration:** User data and content are stored and retrieved using Firebase Firestore & Storage.
+- 📲 **Responsive UI Design:** Optimized for mobile, tablet, and desktop using SCSS, MUI, and Bootstrap.
+- 🌈 **Interactive Animations:** Engaging transitions and effects using Framer Motion.
 
 ---
 
@@ -110,8 +101,8 @@ CODECONNECT/
 ### 1. 📥 Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/codeconnect.git
-cd codeconnect
+git clone https://github.com/your-username/CodeConnect.git
+cd CodeConnect
 ```
 
 ### 2. 📦 Install Dependencies
