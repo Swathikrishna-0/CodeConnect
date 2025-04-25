@@ -27,15 +27,21 @@ const Publicprofile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const docRef = doc(db, 'profiles', userId);
+      const docRef = doc(db, 'profiles', userId); // Fetch profile of the user whose post was clicked
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const profileData = docSnap.data();
-        if (auth.currentUser?.providerData[0]?.providerId === "google.com") {
-          // Use Google account details
+
+        // Check if the user logged in with Gmail
+        const userDocRef = doc(db, 'users', userId);
+        const userDocSnap = await getDoc(userDocRef);
+        const isGoogleUser = userDocSnap.exists() && userDocSnap.data().email?.endsWith('@gmail.com');
+
+        if (isGoogleUser) {
+          // Use Gmail account details
           setProfile({
-            firstName: auth.currentUser.displayName,
-            profilePic: auth.currentUser.photoURL,
+            firstName: userDocSnap.data().username || "Google User",
+            profilePic: userDocSnap.data().photoURL || "/default-avatar.png", // Fetch Gmail profile picture
             role: profileData.role || "User",
           });
         } else {
