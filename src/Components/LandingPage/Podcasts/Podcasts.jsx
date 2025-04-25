@@ -1,14 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import "./Podcasts.scss";
 import podcast from "../../../assets/podcast.svg";
 import EastIcon from "@mui/icons-material/East";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { auth } from "../../../firebase"; // Import Firebase auth
 
 const Podcasts = () => {
   const navigate = useNavigate();
-  const { isSignedIn } = useUser();
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsSignedIn(!!user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const podcastVariants = {
     hidden: { opacity: 0, y: 50 },

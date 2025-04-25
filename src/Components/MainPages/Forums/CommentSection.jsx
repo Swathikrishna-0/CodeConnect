@@ -1,14 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { getDatabase, ref, push, onValue } from "firebase/database";
 import { Box, TextField, Button, Typography, Avatar } from "@mui/material";
-import { useUser } from "@clerk/clerk-react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../../firebase";
 
 import CommentIcon from "@mui/icons-material/Comment";
 
 const CommentSection = ({ questionId, groupId }) => {
-  const { user } = useUser();
+  const [user, setUser] = useState(null);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const fetchProfile = async () => {
+          const docRef = doc(db, "profiles", currentUser.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const profileData = docSnap.data();
+            if (!currentUser.displayName) {
+              currentUser.displayName = profileData.firstName; // Use first name if displayName is not available
+            }
+            currentUser.photoURL = profileData.profilePic || currentUser.photoURL; // Use profilePic if available
+          }
+        };
+        fetchProfile();
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const db = getDatabase();
@@ -49,8 +71,8 @@ const CommentSection = ({ questionId, groupId }) => {
       const newComment = {
         text: comment,
         createdAt: new Date().toISOString(),
-        userName: user.fullName || "Anonymous",
-        userAvatar: user.profileImageUrl || "/default-avatar.png",
+        userName: user.displayName || "Anonymous", // Use updated displayName
+        userAvatar: user.photoURL || "/default-avatar.png", // Use updated photoURL
       };
 
       console.log("Posting Comment:", newComment);

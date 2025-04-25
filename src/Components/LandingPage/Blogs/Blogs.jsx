@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import "./Blogs.scss";
 import EastIcon from "@mui/icons-material/East";
@@ -7,11 +7,19 @@ import Blog2 from "../../../assets/blog2.png";
 import Blog3 from "../../../assets/blog3.png";
 import Blog4 from "../../../assets/blog4.png";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { auth } from "../../../firebase"; // Import Firebase auth
 
 const Blogs = () => {
   const navigate = useNavigate();
-  const { isSignedIn } = useUser();
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsSignedIn(!!user);
+    });
+    return () => unsubscribe();
+  }, []);
+
   // Refs to track the visibility of blog sections
   const blogLeftRef = useRef(null);
   const blogRightRef = useRef(null);

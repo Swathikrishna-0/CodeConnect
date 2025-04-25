@@ -19,7 +19,8 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import Avatar from "@mui/material/Avatar";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import { useUser } from "@clerk/clerk-react";
+import { auth } from "../../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import { db } from "../../../firebase";
 import { doc, getDoc, collection, query, onSnapshot, orderBy, where } from "firebase/firestore";
 import BlogPostEditor from "../BlogPosts/BlogPostEditor";
@@ -46,6 +47,7 @@ import Forums from '../Forums/Forums'; // Import Forums component
 import GroupDiscussion from '../Forums/GroupDiscussion'; // Import GroupDiscussion component
 import BookmarkIcon from '@mui/icons-material/Bookmark'; // Import Bookmark icon
 import SavedPosts from "../SavedPosts/SavedPosts"; // Import SavedPosts component
+import { signOut } from "firebase/auth";
 
 const drawerWidth = 240;
 
@@ -170,7 +172,7 @@ export default function Feed() {
   const [snippets, setSnippets] = React.useState([]);
   const [showBlogPage, setShowBlogPage] = React.useState(false);
   const [showSnippetPage, setShowSnippetPage] = React.useState(false);
-  const { user } = useUser();
+  const [user, setUser] = React.useState(null);
   const navigate = useNavigate();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -185,9 +187,16 @@ export default function Feed() {
   const [isSearching, setIsSearching] = React.useState(false); // State to track if a search is active
 
   React.useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  React.useEffect(() => {
     if (user) {
       const fetchProfilePic = async () => {
-        const docRef = doc(db, "profiles", user.id);
+        const docRef = doc(db, "profiles", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setProfilePic(docSnap.data().profilePic);
@@ -224,7 +233,7 @@ export default function Feed() {
   React.useEffect(() => {
     if (user) {
       const fetchBookmarkedPosts = async () => {
-        const q = query(collection(db, "posts"), where("bookmarks", "array-contains", user.id));
+        const q = query(collection(db, "posts"), where("bookmarks", "array-contains", user.uid));
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
           const bookmarksData = [];
           querySnapshot.forEach((doc) => {
@@ -243,7 +252,7 @@ export default function Feed() {
       const fetchBookmarkedSnippets = async () => {
         const q = query(
           collection(db, "codeSnippets"),
-          where("bookmarks", "array-contains", user.id)
+          where("bookmarks", "array-contains", user.uid)
         );
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
           const snippetsData = [];
@@ -283,6 +292,14 @@ export default function Feed() {
     // Combine results
     setSearchResults([...filteredPosts, ...filteredSnippets]);
     setIsSearching(true); // Set search state to true
+
+    // Hide all other pages when searching
+    setShowBlogPage(false);
+    setShowSnippetPage(false);
+    setShowPodcastPage(false);
+    setShowForumsPage(false);
+    setActiveGroup(null);
+    setShowSavedPostsPage(false);
   };
 
   const handleClearSearch = () => {
@@ -403,6 +420,15 @@ export default function Feed() {
     setShowForumsPage(true);
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login"); // Redirect to login page after sign-out
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -458,10 +484,7 @@ export default function Feed() {
   );
 
   return (
-    <Box
-      sx={{ display: "flex", backgroundColor: "#202338" }}
-      className="feed-container"
-    >
+    <Box sx={{ display: "flex", backgroundColor: "#202338" }} className="feed-container">
       <CssBaseline />
       <AppBarStyled position="fixed" open={open}>
         <Toolbar>
@@ -541,6 +564,18 @@ export default function Feed() {
             >
               {profilePic ? <Avatar src={profilePic} /> : <AccountCircle />}
             </IconButton>
+            <Button
+              variant="outlined"
+              sx={{
+                marginLeft: "10px",
+                color: "#ffffff",
+                borderColor: "#ffb17a",
+                "&:hover": { borderColor: "#e6a963" },
+              }}
+              onClick={handleSignOut}
+            >
+              Sign Out
+            </Button>
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -625,94 +660,96 @@ export default function Feed() {
               )}
             </Box>
           ) : (
-            !showBlogPage &&
-            !showSnippetPage &&
-            !showPodcastPage &&
-            !showForumsPage &&
-            !activeGroup &&
-            !showSavedPostsPage && (
-              <Box sx={{ textAlign: "center", color: "#ffffff" }}>
-                <Typography variant="h4" sx={{ mb: 4 }}>
-                  Welcome to <span style={{ color: "#ffb17a" }}>CodeConnect</span>
-                </Typography>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Explore the latest content from our community:
-                </Typography>
-                <Box sx={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap", gap: 4 }}>
-                  <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
-                    <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
-                      Podcasts
-                    </Typography>
-                    <Typography variant="body2">
-                      Discover insightful podcasts created by our community members.
-                    </Typography>
-                  </Box>
-                  <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
-                    <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
-                      Groups
-                    </Typography>
-                    <Typography variant="body2">
-                      Join discussions and collaborate with like-minded individuals.
-                    </Typography>
-                  </Box>
-                  <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
-                    <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
-                      Blogs
-                    </Typography>
-                    <Typography variant="body2">
-                      Read and share blogs on various topics written by our users.
-                    </Typography>
-                  </Box>
-                  <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
-                    <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
-                      Code Snippets
-                    </Typography>
-                    <Typography variant="body2">
-                      Explore and contribute useful code snippets for the community.
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-            )
-          )}
-          {showBlogPage && (
             <>
-              <BlogPostEditor />
-              {posts.map((post) => (
-                <BlogPost key={post.id} post={post} />
-              ))}
+              {!showBlogPage &&
+                !showSnippetPage &&
+                !showPodcastPage &&
+                !showForumsPage &&
+                !activeGroup &&
+                !showSavedPostsPage && (
+                  <Box sx={{ textAlign: "center", color: "#ffffff" }}>
+                    <Typography variant="h4" sx={{ mb: 4 }}>
+                      Welcome to <span style={{ color: "#ffb17a" }}>CodeConnect</span>
+                    </Typography>
+                    <Typography variant="h6" sx={{ mb: 2 }}>
+                      Explore the latest content from our community:
+                    </Typography>
+                    <Box sx={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap", gap: 4 }}>
+                      <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                        <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                          Podcasts
+                        </Typography>
+                        <Typography variant="body2">
+                          Discover insightful podcasts created by our community members.
+                        </Typography>
+                      </Box>
+                      <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                        <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                          Groups
+                        </Typography>
+                        <Typography variant="body2">
+                          Join discussions and collaborate with like-minded individuals.
+                        </Typography>
+                      </Box>
+                      <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                        <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                          Blogs
+                        </Typography>
+                        <Typography variant="body2">
+                          Read and share blogs on various topics written by our users.
+                        </Typography>
+                      </Box>
+                      <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                        <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                          Code Snippets
+                        </Typography>
+                        <Typography variant="body2">
+                          Explore and contribute useful code snippets for the community.
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                )}
+              {showBlogPage && (
+                <>
+                  <BlogPostEditor />
+                  {posts.map((post) => (
+                    <BlogPost key={post.id} post={post} />
+                  ))}
+                </>
+              )}
+              {showSnippetPage && (
+                <>
+                  <CodeSnippetEditor />
+                  {snippets.map((snippet) => (
+                    <CodeSnippet key={snippet.id} snippet={snippet} />
+                  ))}
+                </>
+              )}
+              {showPodcastPage && <PodcastPage />}
+              {showForumsPage && <Forums onOpenGroup={handleOpenGroup} />}
+              {activeGroup && (
+                <>
+                  <button
+                    onClick={handleBackToForums}
+                    style={{
+                      marginBottom: "20px",
+                      padding: "10px 20px",
+                      backgroundColor: "#ffb17a",
+                      color: "#000",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Back to Forums
+                  </button>
+                  <GroupDiscussion groupId={activeGroup.groupId} groupName={activeGroup.groupName} />
+                </>
+              )}
+              {showSavedPostsPage && <SavedPosts bookmarkedPosts={bookmarkedPosts} bookmarkedSnippets={bookmarkedSnippets} />}
             </>
           )}
-          {showSnippetPage && (
-            <>
-              <CodeSnippetEditor />
-              {snippets.map((snippet) => (
-                <CodeSnippet key={snippet.id} snippet={snippet} />
-              ))}
-            </>
-          )}
-          {showPodcastPage && <PodcastPage />}
-          {showForumsPage && <Forums onOpenGroup={handleOpenGroup} />}
-          {activeGroup && (
-            <>
-              <button
-                onClick={handleBackToForums}
-                style={{
-                  marginBottom: "20px",
-                  padding: "10px 20px",
-                  backgroundColor: "#ffb17a",
-                  color: "#000",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                Back to Forums
-              </button>
-              <GroupDiscussion groupId={activeGroup.groupId} groupName={activeGroup.groupName} />
-            </>
-          )}
-          {showSavedPostsPage && <SavedPosts bookmarkedPosts={bookmarkedPosts} bookmarkedSnippets={bookmarkedSnippets} />}
         </Container>
       </Box>
     </Box>

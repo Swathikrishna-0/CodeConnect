@@ -8,11 +8,11 @@ import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import codesnippet1 from "../../../assets/code snippet 1.png";
 import codesnippet2 from "../../../assets/code snippet 2.png";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { auth } from "../../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const CodeSnippets = () => {
   const navigate = useNavigate();
-  const { isSignedIn } = useUser();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true });
 
@@ -33,11 +33,13 @@ const CodeSnippets = () => {
   };
 
   const handleSeeAllClick = () => {
-    if (isSignedIn) {
-      navigate("/feed");
-    } else {
-      navigate("/login", { state: { from: "/feed" } });
-    }
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/feed");
+      } else {
+        navigate("/login", { state: { from: "/feed" } });
+      }
+    });
   };
 
   return (

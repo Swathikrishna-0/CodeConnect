@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useUser } from "@clerk/clerk-react";
 import { db } from "../../../firebase";
 import { collection, addDoc, doc, getDoc } from "firebase/firestore";
 import { TextField, Button, Box, Typography, Alert } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
+import { auth } from "../../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const BlogPostEditor = () => {
-  const { user } = useUser();
+  const [user, setUser] = useState(null);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const [hashtags, setHashtags] = useState("");
@@ -14,15 +15,31 @@ const BlogPostEditor = () => {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
     if (user) {
-      const fetchProfilePic = async () => {
-        const docRef = doc(db, "profiles", user.id);
+      const fetchProfile = async () => {
+        const docRef = doc(db, "profiles", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setProfilePic(docSnap.data().profilePic);
+          const profileData = docSnap.data();
+          if (user.providerData[0].providerId === "google.com") {
+            // Use Google account details
+            user.displayName = user.displayName || profileData.firstName;
+            setProfilePic(user.photoURL);
+          } else {
+            // Use profile details from Firestore
+            user.displayName = profileData.firstName || user.displayName;
+            setProfilePic(profileData.profilePic);
+          }
         }
       };
-      fetchProfilePic();
+      fetchProfile();
     }
   }, [user]);
 
@@ -40,14 +57,15 @@ const BlogPostEditor = () => {
     if (user) {
       try {
         await addDoc(collection(db, "posts"), {
-          userId: user.id,
-          userName: user.fullName,
+          userId: user.uid,
+          userName: user.displayName, // Use updated displayName
           userProfilePic: profilePic || "",
           title: title.trim(),
           content: content.trim(),
           hashtags: hashtags.split(",").map((hashtag) => hashtag.trim()).filter((hashtag) => hashtag),
           createdAt: new Date(),
           likes: [],
+          bookmarks: [], // Initialize bookmarks
           comments: [],
           shares: 0,
           reviews: [],

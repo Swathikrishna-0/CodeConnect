@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import "./Forums.scss";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -8,14 +8,22 @@ import forums from "../../../assets/forums.svg";
 import ArrowCircleDownIcon from "@mui/icons-material/ArrowCircleDown";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { auth } from "../../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const Forums = () => {
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleExploreForumsClick = () => {
-    if (isSignedIn) {
+    if (user) {
       navigate("/feed");
     } else {
       navigate("/login", { state: { from: "/feed" } });

@@ -1,18 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { getDatabase, ref, push, onValue } from 'firebase/database';
-import { useUser } from '@clerk/clerk-react';
 import { Box, TextField, Button, Typography, Avatar, Alert } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CommentSection from './CommentSection';
+import { auth } from "../../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore"; 
 
 const GroupDiscussion = ({ groupId, groupName }) => {
-  const { user } = useUser();
+  const [user, setUser] = useState(null);
   const [topic, setTopic] = useState('');
   const [details, setDetails] = useState('');
   const [questions, setQuestions] = useState([]);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const fetchProfile = async () => {
+          const docRef = doc(db, "profiles", currentUser.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const profileData = docSnap.data();
+            if (!currentUser.displayName) {
+              currentUser.displayName = profileData.firstName; // Use first name if displayName is not available
+            }
+            currentUser.photoURL = profileData.profilePic || currentUser.photoURL; // Use profilePic if available
+          }
+        };
+        fetchProfile();
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const db = getDatabase();
@@ -55,9 +78,9 @@ const GroupDiscussion = ({ groupId, groupName }) => {
       const questionsRef = ref(db, `groups/${groupId}/questions`);
 
       const newQuestion = {
-        userId: user.id,
-        userName: user.fullName,
-        userProfilePic: user.profileImageUrl || '',
+        userId: user.uid,
+        userName: user.displayName, // Use updated displayName
+        userProfilePic: user.photoURL || '', // Use updated photoURL
         topic,
         details,
         createdAt: new Date().toISOString(),

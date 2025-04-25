@@ -1,17 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { useUser, SignedIn, SignedOut, SignOutButton } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Avatar } from "@mui/material";
-import { db } from '../../../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from "../../../firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import "../Navbar/Navbar.scss";
 
 const Navbar = () => {
-  const { user } = useUser();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Home");
   const [profilePic, setProfilePic] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const fetchProfilePic = async () => {
+          const docRef = doc(db, "profiles", currentUser.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setProfilePic(docSnap.data().profilePic);
+          }
+        };
+        fetchProfilePic();
+      } else {
+        setProfilePic(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    navigate("/login");
+  };
 
   const tabs = [
     { name: "HOME", id: "home" },
@@ -29,11 +53,14 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = tabs.map(tab => document.getElementById(tab.id));
+      const sections = tabs.map((tab) => document.getElementById(tab.id));
       const scrollPosition = window.scrollY + window.innerHeight / 2;
 
-      sections.forEach(section => {
-        if (section.offsetTop <= scrollPosition && section.offsetTop + section.offsetHeight > scrollPosition) {
+      sections.forEach((section) => {
+        if (
+          section.offsetTop <= scrollPosition &&
+          section.offsetTop + section.offsetHeight > scrollPosition
+        ) {
           setActiveTab(section.id.replace("-", " ").toUpperCase());
         }
       });
@@ -44,19 +71,6 @@ const Navbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [tabs]);
-
-  useEffect(() => {
-    if (user) {
-      const fetchProfilePic = async () => {
-        const docRef = doc(db, 'profiles', user.id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setProfilePic(docSnap.data().profilePic);
-        }
-      };
-      fetchProfilePic();
-    }
-  }, [user]);
 
   return (
     <motion.div className="navbar-container-main">
@@ -78,33 +92,53 @@ const Navbar = () => {
         </nav>
 
         <div className="auth-buttons">
-          {/* If user is signed in, show Sign Out button */}
-          <SignedIn>
-            <span style={{ marginRight: "10px", color: "#ffb17a", textDecoration: "underline" }}>Hi, {user?.firstName}!</span>
-            {profilePic && <Avatar src={profilePic} sx={{ width: 30, height: 30, marginRight: "10px" }} />}
-            <SignOutButton className="login-button" />
-          </SignedIn>
+          {user ? (
+            <>
+              <span
+                style={{
+                  marginRight: "10px",
+                  color: "#ffb17a",
+                  textDecoration: "underline",
+                }}
+              >
+                Hi, {user.displayName || "User"}!
+              </span>
+              {profilePic && (
+                <Avatar
+                  src={profilePic}
+                  sx={{ width: 30, height: 30, marginRight: "10px" }}
+                />
+              )}
+              <motion.button
+                className="login-button"
+                onClick={handleSignOut}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Sign Out
+              </motion.button>
+            </>
+          ) : (
+            <>
+              <motion.button
+                className="login-button"
+                onClick={() => navigate("/login")}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Login
+              </motion.button>
 
-          {/* If user is signed out, show login/signup buttons */}
-          <SignedOut>
-            <motion.button
-              className="login-button"
-              onClick={() => navigate("/login")}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Login
-            </motion.button>
-
-            <motion.button
-              className="signup-button"
-              onClick={() => navigate("/signup")}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Sign Up
-            </motion.button>
-          </SignedOut>
+              <motion.button
+                className="signup-button"
+                onClick={() => navigate("/signup")}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Sign Up
+              </motion.button>
+            </>
+          )}
         </div>
       </div>
     </motion.div>

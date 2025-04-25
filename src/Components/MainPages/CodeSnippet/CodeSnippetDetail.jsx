@@ -29,7 +29,8 @@ import {
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
 import "prismjs/themes/prism.css";
-import { useUser } from "@clerk/clerk-react";
+import { auth } from "../../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import CommentIcon from "@mui/icons-material/Comment";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
@@ -56,7 +57,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const CodeSnippetDetail = () => {
   const { id } = useParams();
-  const { user } = useUser();
   const navigate = useNavigate();
   const [snippet, setSnippet] = useState(null);
   const [comments, setComments] = useState([]);
@@ -68,6 +68,14 @@ const CodeSnippetDetail = () => {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchSnippet = async () => {
@@ -76,12 +84,12 @@ const CodeSnippetDetail = () => {
       if (docSnap.exists()) {
         const snippetData = docSnap.data();
         setSnippet(snippetData);
-        setLiked(snippetData.likes?.includes(user.id));
-        setSaved(snippetData.bookmarks?.includes(user.id));
+        setLiked(snippetData.likes?.includes(user.uid));
+        setSaved(snippetData.bookmarks?.includes(user.uid));
       }
     };
-    fetchSnippet();
-  }, [id, user.id]);
+    if (user) fetchSnippet();
+  }, [id, user]);
 
   useEffect(() => {
     if (!id) return;
@@ -99,7 +107,7 @@ const CodeSnippetDetail = () => {
   useEffect(() => {
     if (user) {
       const fetchProfilePic = async () => {
-        const docRef = doc(db, "profiles", user.id);
+        const docRef = doc(db, "profiles", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setProfilePic(docSnap.data().profilePic);
@@ -201,16 +209,16 @@ const CodeSnippetDetail = () => {
     if (!snippet) return;
     const snippetRef = doc(db, "codeSnippets", id);
     if (liked) {
-      await updateDoc(snippetRef, { likes: arrayRemove(user.id) });
+      await updateDoc(snippetRef, { likes: arrayRemove(user.uid) });
       setSnippet((prev) => ({
         ...prev,
-        likes: prev.likes.filter((like) => like !== user.id),
+        likes: prev.likes.filter((like) => like !== user.uid),
       }));
     } else {
-      await updateDoc(snippetRef, { likes: arrayUnion(user.id) });
+      await updateDoc(snippetRef, { likes: arrayUnion(user.uid) });
       setSnippet((prev) => ({
         ...prev,
-        likes: [...(prev.likes || []), user.id],
+        likes: [...(prev.likes || []), user.uid],
       }));
     }
     setLiked(!liked);
@@ -220,16 +228,16 @@ const CodeSnippetDetail = () => {
     if (!snippet) return;
     const snippetRef = doc(db, "codeSnippets", id);
     if (saved) {
-      await updateDoc(snippetRef, { bookmarks: arrayRemove(user.id) });
+      await updateDoc(snippetRef, { bookmarks: arrayRemove(user.uid) });
       setSnippet((prev) => ({
         ...prev,
-        bookmarks: prev.bookmarks.filter((bookmark) => bookmark !== user.id),
+        bookmarks: prev.bookmarks.filter((bookmark) => bookmark !== user.uid),
       }));
     } else {
-      await updateDoc(snippetRef, { bookmarks: arrayUnion(user.id) });
+      await updateDoc(snippetRef, { bookmarks: arrayUnion(user.uid) });
       setSnippet((prev) => ({
         ...prev,
-        bookmarks: [...(prev.bookmarks || []), user.id],
+        bookmarks: [...(prev.bookmarks || []), user.uid],
       }));
     }
     setSaved(!saved);
@@ -244,9 +252,9 @@ const CodeSnippetDetail = () => {
 
     const commentsRef = ref(realtimeDb, `codeSnippets/${id}/comments`);
     const newComment = {
-      userId: user.id,
-      userName: user.fullName,
-      userAvatar: user.profileImageUrl,
+      userId: user.uid,
+      userName: user.displayName,
+      userAvatar: user.photoURL,
       text: commentText,
       createdAt: new Date().toISOString(),
     };
@@ -377,9 +385,19 @@ const CodeSnippetDetail = () => {
         >
           <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <Avatar src={snippet.userProfilePic} sx={{ mr: 2 }} />
+              <Avatar
+                src={snippet.userProfilePic}
+                sx={{ mr: 2, cursor: "pointer" }}
+                onClick={() => navigate(`/profile/${snippet.userId}`)} // Redirect to public profile
+              />
               <Box>
-                <Typography variant="h6">{snippet.userName}</Typography>
+                <Typography
+                  variant="h6"
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => navigate(`/profile/${snippet.userId}`)} // Redirect to public profile
+                >
+                  {snippet.userName}
+                </Typography>
                 <Typography variant="body2" sx={{ color: "#676f9d", fontSize: "0.9rem" }}>
                   {new Date(snippet.createdAt.seconds * 1000).toLocaleString()}
                 </Typography>
@@ -438,12 +456,14 @@ const CodeSnippetDetail = () => {
                   <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
                 </IconButton>
                 <Typography sx={{ mt: 1, mb: 2 }}>
-                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0}{" "}
-                  Likes
+                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0} Likes
                 </Typography>
                 <IconButton onClick={handleSave}>
                   <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
                 </IconButton>
+                <Typography sx={{ mt: 1 }}>
+                  {Array.isArray(snippet.bookmarks) ? snippet.bookmarks.length : 0} Bookmarks
+                </Typography>
               </Box>
             </Box>
             <Box sx={{ display: { xs: "block", md: "none" }, mt: 2 }}>
@@ -452,12 +472,14 @@ const CodeSnippetDetail = () => {
                   <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
                 </IconButton>
                 <Typography sx={{ ml: 1 }}>
-                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0}{" "}
-                  Likes
+                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0} Likes
                 </Typography>
                 <IconButton onClick={handleSave} sx={{ ml: 2 }}>
                   <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
                 </IconButton>
+                <Typography sx={{ ml: 1 }}>
+                  {Array.isArray(snippet.bookmarks) ? snippet.bookmarks.length : 0} Bookmarks
+                </Typography>
               </Box>
             </Box>
             <Box sx={{ mt: 4 }}>

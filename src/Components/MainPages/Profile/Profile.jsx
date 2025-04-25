@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { useUser } from '@clerk/clerk-react';
+import { auth } from "../../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import { TextField, Button, Typography, Container, Box, Alert, Grid, Avatar, IconButton } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 
 const Profile = () => {
-  const { user } = useUser(); 
+  const [user, setUser] = useState(null);
   const [message, setMessage] = useState('');
   const [profilePic, setProfilePic] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -24,18 +32,12 @@ const Profile = () => {
       linkedin: ''
     },
     validationSchema: Yup.object({
-      firstName: Yup.string().required('Required'),
-      lastName: Yup.string().required('Required'),
-      company: Yup.string().required('Required'),
-      university: Yup.string().required('Required'),
-      education: Yup.string().required('Required'),
-      role: Yup.string().required('Required'),
-      github: Yup.string().url('Invalid URL').required('Required'),
-      linkedin: Yup.string().url('Invalid URL').required('Required')
+      firstName: Yup.string().required('First Name is required'),
+      lastName: Yup.string().required('Last Name is required'),
     }),
     onSubmit: async (values) => {
       if (user) {
-        await setDoc(doc(db, 'profiles', user.id), { ...values, profilePic }); // Use user ID from Clerk
+        await setDoc(doc(db, 'profiles', user.uid), { ...values, profilePic });
         setMessage('Profile saved successfully!');
         setTimeout(() => setMessage(''), 3000); // Clear message after 3 seconds
       }
@@ -45,7 +47,7 @@ const Profile = () => {
   useEffect(() => {
     if (user) {
       const fetchProfile = async () => {
-        const docRef = doc(db, 'profiles', user.id); // Use user ID from Clerk
+        const docRef = doc(db, 'profiles', user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();

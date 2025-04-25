@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useUser } from "@clerk/clerk-react";
+import React, { useState, useEffect } from "react";
 import { db } from "../../../firebase";
 import { collection, addDoc, doc, getDoc } from "firebase/firestore";
 import { TextField, Button, Box, Typography, Alert, Menu, MenuItem } from "@mui/material";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
 import "prismjs/themes/prism.css";
+import { auth } from "../../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const CodeSnippetEditor = () => {
-  const { user } = useUser();
+  const [user, setUser] = useState(null);
   const [code, setCode] = useState("");
   const [description, setDescription] = useState("");
   const [profilePic, setProfilePic] = useState(null);
@@ -17,15 +18,31 @@ const CodeSnippetEditor = () => {
   const [anchorEl, setAnchorEl] = useState(null); // Anchor element for the dropdown
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
     if (user) {
-      const fetchProfilePic = async () => {
-        const docRef = doc(db, "profiles", user.id);
+      const fetchProfile = async () => {
+        const docRef = doc(db, "profiles", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setProfilePic(docSnap.data().profilePic);
+          const profileData = docSnap.data();
+          if (user.providerData[0].providerId === "google.com") {
+            // Use Google account details
+            user.displayName = user.displayName || profileData.firstName;
+            setProfilePic(user.photoURL);
+          } else {
+            // Use profile details from Firestore
+            user.displayName = profileData.firstName || user.displayName;
+            setProfilePic(profileData.profilePic);
+          }
         }
       };
-      fetchProfilePic();
+      fetchProfile();
     }
   }, [user]);
 
@@ -52,14 +69,15 @@ const CodeSnippetEditor = () => {
     if (user) {
       try {
         await addDoc(collection(db, "codeSnippets"), {
-          userId: user.id,
-          userName: user.fullName,
+          userId: user.uid,
+          userName: user.displayName, // Use updated displayName
           userProfilePic: profilePic || "",
           code: code.trim(),
           description: description.trim(),
           language,
           createdAt: new Date(),
           likes: [],
+          bookmarks: [], // Initialize bookmarks
           comments: [],
           shares: 0,
         });

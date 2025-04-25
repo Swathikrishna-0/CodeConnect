@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { auth } from "../../../firebase"; // Import Firebase auth
 import "../Hero/Hero.scss";
 import HeroImg from "../../../assets/HeroImg.png";
 
 const Hero = () => {
   const navigate = useNavigate();
-  const { isSignedIn } = useUser();
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsSignedIn(!!user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Framer Motion animations
   const boxVariants = {

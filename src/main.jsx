@@ -1,15 +1,27 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { ClerkProvider } from "@clerk/clerk-react";
 import App from "./App.jsx";
 import "./index.scss";
+// Import Firebase Authentication
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import React, { useState, useEffect } from "react";
 
-const CLERK_FRONTEND_API = "pk_test_Zml0LXN0dWQtMTEuY2xlcmsuYWNjb3VudHMuZGV2JA"; // Replace with your Clerk API key
+const Root = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  return <App user={user} />;
+};
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ClerkProvider publishableKey={CLERK_FRONTEND_API}>
-      <App />
-    </ClerkProvider>
+    <Root />
   </StrictMode>
 );

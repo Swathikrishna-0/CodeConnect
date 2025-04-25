@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useUser } from '@clerk/clerk-react';
 import { db } from '../../../firebase';
-import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, deleteDoc, doc, getDoc } from 'firebase/firestore';
 import { Box, Typography, Avatar, Button, Divider, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import BlogPost from '../BlogPosts/BlogPost';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CodeSnippet from '../CodeSnippet/Codesnippet';
+import { auth } from "../../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const Myaccount = () => {
-  const { user } = useUser();
+  const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [likes, setLikes] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -23,30 +24,38 @@ const Myaccount = () => {
   const [showLikedCodeSnippets, setShowLikedCodeSnippets] = useState(false); // State for toggling liked code snippets
   const [showBookmarkedPosts, setShowBookmarkedPosts] = useState(false); // State for toggling bookmarked posts
   const [showBookmarkedCodeSnippets, setShowBookmarkedCodeSnippets] = useState(false); // State for toggling bookmarked code snippets
+  const [following, setFollowing] = useState([]); // State for following users
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (user) {
       const fetchUserData = async () => {
-        const postsQuery = query(collection(db, 'posts'), where('userId', '==', user.id));
+        const postsQuery = query(collection(db, 'posts'), where('userId', '==', user.uid));
         const postsSnapshot = await getDocs(postsQuery);
         setPosts(postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
-        const likesQuery = query(collection(db, 'posts'), where('likes', 'array-contains', user.id));
+        const likesQuery = query(collection(db, 'posts'), where('likes', 'array-contains', user.uid));
         const likesSnapshot = await getDocs(likesQuery);
         setLikes(likesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
-        const reviewsQuery = query(collection(db, 'posts'), where('reviews', 'array-contains', { userId: user.id }));
+        const reviewsQuery = query(collection(db, 'posts'), where('reviews', 'array-contains', { userId: user.uid }));
         const reviewsSnapshot = await getDocs(reviewsQuery);
         setReviews(reviewsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
-        const codeSnippetsQuery = query(collection(db, 'codeSnippets'), where('userId', '==', user.id));
+        const codeSnippetsQuery = query(collection(db, 'codeSnippets'), where('userId', '==', user.uid));
         const codeSnippetsSnapshot = await getDocs(codeSnippetsQuery);
         setCodeSnippets(codeSnippetsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
         const likedCodeSnippetsQuery = query(
           collection(db, 'codeSnippets'),
-          where('likes', 'array-contains', user.id)
+          where('likes', 'array-contains', user.uid)
         );
         const likedCodeSnippetsSnapshot = await getDocs(likedCodeSnippetsQuery);
         setLikedCodeSnippets(
@@ -55,7 +64,7 @@ const Myaccount = () => {
 
         const bookmarkedPostsQuery = query(
           collection(db, 'posts'),
-          where('bookmarks', 'array-contains', user.id)
+          where('bookmarks', 'array-contains', user.uid)
         );
         const bookmarkedPostsSnapshot = await getDocs(bookmarkedPostsQuery);
         setBookmarkedPosts(
@@ -64,7 +73,7 @@ const Myaccount = () => {
 
         const bookmarkedCodeSnippetsQuery = query(
           collection(db, 'codeSnippets'),
-          where('bookmarks', 'array-contains', user.id)
+          where('bookmarks', 'array-contains', user.uid)
         );
         const bookmarkedCodeSnippetsSnapshot = await getDocs(bookmarkedCodeSnippetsQuery);
         setBookmarkedCodeSnippets(
@@ -72,6 +81,47 @@ const Myaccount = () => {
         );
       };
       fetchUserData();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchFollowing = async () => {
+        const q = query(
+          collection(db, "followers"),
+          where("followerId", "==", user.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const followingList = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const followData = doc.data();
+            const profileRef = doc(db, "profiles", followData.followingId);
+            const profileSnap = await getDoc(profileRef);
+            return {
+              followingId: followData.followingId,
+              followingName: profileSnap.exists() ? profileSnap.data().firstName : "Unknown",
+              followingProfilePic: profileSnap.exists() ? profileSnap.data().profilePic : "/default-avatar.png",
+            };
+          })
+        );
+        setFollowing(followingList);
+      };
+      fetchFollowing();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchProfile = async () => {
+        const docRef = doc(db, "profiles", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const profileData = docSnap.data();
+          user.displayName = profileData.firstName || user.displayName; // Update displayName
+          user.photoURL = profileData.profilePic || user.photoURL; // Update photoURL
+        }
+      };
+      fetchProfile();
     }
   }, [user]);
 
@@ -140,15 +190,15 @@ const Myaccount = () => {
         }}
       >
         <Avatar
-          src={user.profileImageUrl}
+          src={user?.photoURL || "/default-avatar.png"}
           sx={{ width: 80, height: 80, mr: 3, border: "2px solid #ffb17a" }}
         />
         <Box>
           <Typography variant="h5" sx={{ color: "#ffb17a", fontWeight: "bold" }}>
-            {user.fullName}
+            {user?.displayName || "Anonymous"}
           </Typography>
           <Typography variant="body2" sx={{ color: "#d1d1e0" }}>
-            {user.emailAddress}
+            {user?.email}
           </Typography>
         </Box>
       </Box>

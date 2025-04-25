@@ -9,7 +9,7 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import MenuIcon from "@mui/icons-material/Menu";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { useUser } from "@clerk/clerk-react";
+import { auth } from "../../../firebase"; // Import Firebase auth
 import { ref, onValue, push } from "firebase/database";
 import { realtimeDb } from "../../../firebase";
 import AppBar from "@mui/material/AppBar";
@@ -38,7 +38,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const BlogPostDetail = () => {
   const { id } = useParams();
-  const { user } = useUser();
+  const user = auth.currentUser; // Get the current user from Firebase
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [comment, setComment] = useState("");
@@ -75,7 +75,7 @@ const BlogPostDetail = () => {
   useEffect(() => {
     if (user) {
       const fetchProfilePic = async () => {
-        const docRef = doc(db, "profiles", user.id);
+        const docRef = doc(db, "profiles", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setProfilePic(docSnap.data().profilePic);
@@ -175,34 +175,34 @@ const BlogPostDetail = () => {
 
   const handleLike = async () => {
     const postRef = doc(db, "posts", id);
-    if (Array.isArray(post.likes) && post.likes.includes(user.id)) {
-      await updateDoc(postRef, { likes: arrayRemove(user.id) });
+    if (Array.isArray(post.likes) && post.likes.includes(user.uid)) {
+      await updateDoc(postRef, { likes: arrayRemove(user.uid) });
       setPost((prevPost) => ({
         ...prevPost,
-        likes: prevPost.likes.filter((like) => like !== user.id),
+        likes: prevPost.likes.filter((like) => like !== user.uid),
       }));
     } else {
-      await updateDoc(postRef, { likes: arrayUnion(user.id) });
+      await updateDoc(postRef, { likes: arrayUnion(user.uid) });
       setPost((prevPost) => ({
         ...prevPost,
-        likes: [...(prevPost.likes || []), user.id],
+        likes: [...(prevPost.likes || []), user.uid],
       }));
     }
   };
 
   const handleBookmark = async () => {
     const postRef = doc(db, "posts", id);
-    if (Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)) {
-      await updateDoc(postRef, { bookmarks: arrayRemove(user.id) });
+    if (Array.isArray(post.bookmarks) && post.bookmarks.includes(user.uid)) {
+      await updateDoc(postRef, { bookmarks: arrayRemove(user.uid) });
       setPost((prevPost) => ({
         ...prevPost,
-        bookmarks: prevPost.bookmarks.filter((bookmark) => bookmark !== user.id),
+        bookmarks: prevPost.bookmarks.filter((bookmark) => bookmark !== user.uid),
       }));
     } else {
-      await updateDoc(postRef, { bookmarks: arrayUnion(user.id) });
+      await updateDoc(postRef, { bookmarks: arrayUnion(user.uid) });
       setPost((prevPost) => ({
         ...prevPost,
-        bookmarks: [...(prevPost.bookmarks || []), user.id],
+        bookmarks: [...(prevPost.bookmarks || []), user.uid],
       }));
     }
   };
@@ -215,9 +215,9 @@ const BlogPostDetail = () => {
 
     const commentsRef = ref(realtimeDb, `blogPosts/${id}/comments`);
     const newComment = {
-      userId: user.id,
-      userName: user.fullName,
-      userProfilePic: user.profileImageUrl,
+      userId: user.uid,
+      userName: user.displayName || "Anonymous",
+      userProfilePic: user.photoURL || "/default-avatar.png",
       comment,
       createdAt: new Date().toISOString(),
     };
@@ -338,9 +338,19 @@ const BlogPostDetail = () => {
         <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, ml: drawerOpen ? 30 : 10 }}>
           <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <Avatar src={post.userProfilePic} sx={{ mr: 2 }} />
+              <Avatar
+                src={post.userProfilePic}
+                sx={{ mr: 2, cursor: "pointer" }}
+                onClick={() => navigate(`/profile/${post.userId}`)} // Redirect to public profile
+              />
               <Box>
-                <Typography variant="h6">{post.userName}</Typography>
+                <Typography
+                  variant="h6"
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => navigate(`/profile/${post.userId}`)} // Redirect to public profile
+                >
+                  {post.userName}
+                </Typography>
                 <Typography variant="body2" sx={{ color: "#676f9d", fontSize: "0.9rem" }}>
                   {new Date(post.createdAt.seconds * 1000).toLocaleString()}
                 </Typography>
@@ -381,7 +391,7 @@ const BlogPostDetail = () => {
                 <IconButton
                   onClick={handleLike}
                   sx={{
-                    color: Array.isArray(post.likes) && post.likes.includes(user.id)
+                    color: Array.isArray(post.likes) && post.likes.includes(user.uid)
                       ? "#ffb17a"
                       : "#ffffff",
                   }}
@@ -394,13 +404,16 @@ const BlogPostDetail = () => {
                 <IconButton
                   onClick={handleBookmark}
                   sx={{
-                    color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)
+                    color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.uid)
                       ? "#ffb17a"
                       : "#ffffff",
                   }}
                 >
                   <BookmarkIcon />
                 </IconButton>
+                <Typography sx={{ mt: 1 }}>
+                  {Array.isArray(post.bookmarks) ? post.bookmarks.length : 0} Bookmarks
+                </Typography>
               </Box>
             </Box>
             <Box sx={{ display: { xs: "block", md: "none" }, mb: 4 }}>
@@ -408,7 +421,7 @@ const BlogPostDetail = () => {
                 <IconButton
                   onClick={handleLike}
                   sx={{
-                    color: Array.isArray(post.likes) && post.likes.includes(user.id)
+                    color: Array.isArray(post.likes) && post.likes.includes(user.uid)
                       ? "#ffb17a"
                       : "#ffffff",
                   }}
@@ -422,13 +435,16 @@ const BlogPostDetail = () => {
                   onClick={handleBookmark}
                   sx={{
                     ml: 2,
-                    color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)
+                    color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.uid)
                       ? "#ffb17a"
                       : "#ffffff",
                   }}
                 >
                   <BookmarkIcon />
                 </IconButton>
+                <Typography sx={{ ml: 1 }}>
+                  {Array.isArray(post.bookmarks) ? post.bookmarks.length : 0} Bookmarks
+                </Typography>
               </Box>
             </Box>
             <Box>

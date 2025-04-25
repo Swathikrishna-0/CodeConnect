@@ -15,7 +15,6 @@ import {
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CommentIcon from "@mui/icons-material/Comment";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
-import { useUser } from "@clerk/clerk-react";
 import { db } from "../../../firebase";
 import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { ref, onValue, push } from "firebase/database";
@@ -24,16 +23,29 @@ import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
 import "prismjs/themes/prism.css";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const CodeSnippet = ({ snippet }) => {
-  const { user } = useUser();
   const navigate = useNavigate();
   const [likes, setLikes] = useState(snippet.likes.length);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
-  const [liked, setLiked] = useState(snippet.likes.includes(user.id));
-  const [saved, setSaved] = useState(snippet.bookmarks?.includes(user.id));
+  const [liked, setLiked] = useState(false); // Initialize with false
+  const [saved, setSaved] = useState(false); // Initialize with false
   const [alertMessage, setAlertMessage] = useState('');
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        setLiked(snippet.likes.includes(currentUser.uid)); // Use `uid` instead of `id`
+        setSaved(snippet.bookmarks?.includes(currentUser.uid)); // Use `uid` instead of `id`
+      }
+    });
+    return () => unsubscribe();
+  }, [snippet]);
 
   useEffect(() => {
     if (!snippet.id) return;
@@ -49,15 +61,16 @@ const CodeSnippet = ({ snippet }) => {
   }, [snippet.id]);
 
   const handleLike = async () => {
+    if (!user) return; // Ensure user is logged in
     const snippetRef = doc(db, "codeSnippets", snippet.id);
     if (liked) {
       await updateDoc(snippetRef, {
-        likes: arrayRemove(user.id)
+        likes: arrayRemove(user.uid), // Use `uid` instead of `id`
       });
       setLikes(likes - 1);
     } else {
       await updateDoc(snippetRef, {
-        likes: arrayUnion(user.id)
+        likes: arrayUnion(user.uid), // Use `uid` instead of `id`
       });
       setLikes(likes + 1);
     }
@@ -65,15 +78,16 @@ const CodeSnippet = ({ snippet }) => {
   };
 
   const handleSave = async () => {
+    if (!user) return; // Ensure user is logged in
     const snippetRef = doc(db, "codeSnippets", snippet.id);
     if (saved) {
       await updateDoc(snippetRef, {
-        bookmarks: arrayRemove(user.id),
+        bookmarks: arrayRemove(user.uid), // Use `uid` instead of `id`
       });
       setSaved(false);
     } else {
       await updateDoc(snippetRef, {
-        bookmarks: arrayUnion(user.id),
+        bookmarks: arrayUnion(user.uid), // Use `uid` instead of `id`
       });
       setSaved(true);
     }
@@ -118,13 +132,24 @@ const CodeSnippet = ({ snippet }) => {
       }}
     >
       <CardHeader
-        avatar={<Avatar src={snippet.userProfilePic} />}
+        avatar={
+          <Avatar
+            src={snippet.userProfilePic}
+            sx={{ cursor: "pointer" }}
+            onClick={() => navigate(`/profile/${snippet.userId}`)} // Redirect to public profile
+          />
+        }
         title={
-          <Typography sx={{ color: "#ffffff" }}>{snippet.userName}</Typography>
+          <Typography
+            sx={{ color: "#ffffff", cursor: "pointer" }}
+            onClick={() => navigate(`/profile/${snippet.userId}`)} // Redirect to public profile
+          >
+            {snippet.userName}
+          </Typography>
         }
         subheader={
           <Typography sx={{ color: "#ffffff" }}>
-            {new Date(snippet.createdAt.seconds * 1000).toLocaleString()} {/* Display date and time */}
+            {new Date(snippet.createdAt.seconds * 1000).toLocaleString()}
           </Typography>
         }
       />

@@ -22,12 +22,12 @@ import {
   Alert,
 } from "@mui/material";
 import CommentIcon from "@mui/icons-material/Comment";
-import { useUser } from "@clerk/clerk-react";
 import { ref, onValue, push } from "firebase/database";
 import { realtimeDb } from "../../../firebase";
+import { auth } from "../../../firebase"; // Import Firebase auth
 
 const BlogPost = ({ post }) => {
-  const { user } = useUser();
+  const user = auth.currentUser; // Get the current user from Firebase
   const navigate = useNavigate();
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
@@ -37,7 +37,7 @@ const BlogPost = ({ post }) => {
   useEffect(() => {
     const fetchUserProfilePic = async () => {
       if (user) {
-        const docRef = doc(db, "profiles", user.id);
+        const docRef = doc(db, "profiles", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -50,10 +50,10 @@ const BlogPost = ({ post }) => {
 
   useEffect(() => {
     const checkFollowing = async () => {
-      if (user) {
-        const docRef = doc(db, "followers", `${user.id}_${post.userId}`);
-        const docSnap = await getDoc(docRef);
-        setIsFollowing(docSnap.exists());
+      if (user && user.uid !== post.userId) {
+        const followRef = doc(db, "followers", `${user.uid}_${post.userId}`);
+        const followSnap = await getDoc(followRef);
+        setIsFollowing(followSnap.exists());
       }
     };
     checkFollowing();
@@ -74,27 +74,19 @@ const BlogPost = ({ post }) => {
 
   const handleLike = async () => {
     const postRef = doc(db, "posts", post.id);
-    if (Array.isArray(post.likes) && post.likes.includes(user.id)) {
-      await updateDoc(postRef, {
-        likes: arrayRemove(user.id),
-      });
+    if (Array.isArray(post.likes) && post.likes.includes(user.uid)) {
+      await updateDoc(postRef, { likes: arrayRemove(user.uid) });
     } else {
-      await updateDoc(postRef, {
-        likes: arrayUnion(user.id),
-      });
+      await updateDoc(postRef, { likes: arrayUnion(user.uid) });
     }
   };
 
   const handleBookmark = async () => {
     const postRef = doc(db, "posts", post.id);
-    if (Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)) {
-      await updateDoc(postRef, {
-        bookmarks: arrayRemove(user.id),
-      });
+    if (Array.isArray(post.bookmarks) && post.bookmarks.includes(user.uid)) {
+      await updateDoc(postRef, { bookmarks: arrayRemove(user.uid) });
     } else {
-      await updateDoc(postRef, {
-        bookmarks: arrayUnion(user.id),
-      });
+      await updateDoc(postRef, { bookmarks: arrayUnion(user.uid) });
     }
   };
 
@@ -106,16 +98,16 @@ const BlogPost = ({ post }) => {
 
     const commentsRef = ref(realtimeDb, `blogPosts/${post.id}/comments`);
     const newComment = {
-      userId: user.id,
-      userName: user.fullName,
-      userProfilePic: user.profileImageUrl,
+      userId: user.uid,
+      userName: user.displayName || "Anonymous",
+      userProfilePic: user.photoURL || "/default-avatar.png",
       comment,
-      createdAt: new Date().toISOString(), // Add a timestamp
+      createdAt: new Date().toISOString(),
     };
 
     try {
-      await push(commentsRef, newComment); // Push the new comment to the Realtime Database
-      setComment(""); // Clear the input field
+      await push(commentsRef, newComment);
+      setComment("");
       setError("");
     } catch (error) {
       console.error("Error adding comment: ", error);
@@ -124,20 +116,18 @@ const BlogPost = ({ post }) => {
   };
 
   const handleFollow = async () => {
-    if (user.id === post.userId) {
-      setError("You cannot follow yourself");
-      return;
-    }
-    const followRef = doc(db, "followers", `${user.id}_${post.userId}`);
+    if (!user || user.uid === post.userId) return; // Prevent following self
+    const followRef = doc(db, "followers", `${user.uid}_${post.userId}`);
     if (isFollowing) {
       await deleteDoc(followRef);
+      setIsFollowing(false);
     } else {
       await setDoc(followRef, {
-        followerId: user.id,
+        followerId: user.uid,
         followingId: post.userId,
       });
+      setIsFollowing(true);
     }
-    setIsFollowing(!isFollowing);
   };
 
   const handleProfileClick = () => {
@@ -151,12 +141,20 @@ const BlogPost = ({ post }) => {
   return (
     <Box sx={{ mb: 4, p: 2, border: "1px solid #676f9d", borderRadius: "8px" }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-        <Avatar src={post.userProfilePic} sx={{ mr: 2 }} />
+        <Avatar
+          src={post.userProfilePic}
+          sx={{ mr: 2, cursor: "pointer" }}
+          onClick={() => navigate(`/profile/${post.userId}`)} // Redirect to public profile
+        />
         <Box>
-          <Typography variant="body1" sx={{ color: "#ffffff" }}>
+          <Typography
+            variant="body1"
+            sx={{ color: "#ffffff", cursor: "pointer" }}
+            onClick={() => navigate(`/profile/${post.userId}`)} // Redirect to public profile
+          >
             {post.userName}
           </Typography>
-          <Typography variant="body2" sx={{ color: "#676f9d" }}>
+          <Typography variant="body2" sx={{ color: "#676f9d", fontSize: "0.9rem" }}>
             {new Date(post.createdAt.seconds * 1000).toLocaleString()}
           </Typography>
         </Box>
@@ -188,7 +186,7 @@ const BlogPost = ({ post }) => {
             onClick={handleLike}
             sx={{
               color:
-                Array.isArray(post.likes) && post.likes.includes(user.id)
+                Array.isArray(post.likes) && post.likes.includes(user.uid)
                   ? "#ffb17a"
                   : "#ffffff",
             }}
@@ -203,7 +201,7 @@ const BlogPost = ({ post }) => {
             sx={{
               ml: 2,
               color:
-                Array.isArray(post.bookmarks) && post.bookmarks.includes(user.id)
+                Array.isArray(post.bookmarks) && post.bookmarks.includes(user.uid)
                   ? "#ffb17a"
                   : "#ffffff",
             }}
