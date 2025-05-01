@@ -120,7 +120,7 @@ const CodeSnippet = ({ snippet }) => {
   };
 
   const handleViewSnippet = () => {
-    navigate(`/snippet/${snippet.id}`);
+    navigate(`/feed/codesnippets/${snippet.id}`); // Navigate to CodeSnippetDetail
   };
 
   return (

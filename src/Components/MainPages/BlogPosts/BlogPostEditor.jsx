@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../../firebase";
-import { collection, addDoc, doc, getDoc } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, query, onSnapshot } from "firebase/firestore";
 import { TextField, Button, Box, Typography, Alert } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { useParams } from "react-router-dom";
+import BlogPost from "./BlogPost";
 
 const BlogPostEditor = () => {
+  const { id } = useParams();
   const [user, setUser] = useState(null);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const [hashtags, setHashtags] = useState("");
   const [profilePic, setProfilePic] = useState(null);
   const [message, setMessage] = useState("");
+  const [post, setPost] = useState(null);
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -29,11 +34,9 @@ const BlogPostEditor = () => {
         if (docSnap.exists()) {
           const profileData = docSnap.data();
           if (user.providerData[0].providerId === "google.com") {
-            // Use Google account details
             user.displayName = user.displayName || profileData.firstName;
             setProfilePic(user.photoURL);
           } else {
-            // Use profile details from Firestore
             user.displayName = profileData.firstName || user.displayName;
             setProfilePic(profileData.profilePic);
           }
@@ -42,6 +45,31 @@ const BlogPostEditor = () => {
       fetchProfile();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (id) {
+      const fetchPost = async () => {
+        const docRef = doc(db, "posts", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setPost(docSnap.data());
+        }
+      };
+      fetchPost();
+    }
+  }, [id]);
+
+  useEffect(() => {
+    const q = query(collection(db, "posts"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const postsData = [];
+      querySnapshot.forEach((doc) => {
+        postsData.push({ id: doc.id, ...doc.data() });
+      });
+      setPosts(postsData);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleEditorChange = (content) => {
     setContent(content);
@@ -58,14 +86,14 @@ const BlogPostEditor = () => {
       try {
         await addDoc(collection(db, "posts"), {
           userId: user.uid,
-          userName: user.displayName, // Use updated displayName
+          userName: user.displayName,
           userProfilePic: profilePic || "",
           title: title.trim(),
           content: content.trim(),
           hashtags: hashtags.split(",").map((hashtag) => hashtag.trim()).filter((hashtag) => hashtag),
           createdAt: new Date(),
           likes: [],
-          bookmarks: [], // Initialize bookmarks
+          bookmarks: [],
           comments: [],
           shares: 0,
           reviews: [],
@@ -74,7 +102,7 @@ const BlogPostEditor = () => {
         setContent("");
         setHashtags("");
         setMessage("Post created successfully!");
-        setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
+        setTimeout(() => setMessage(""), 3000);
       } catch (error) {
         console.error("Error adding document: ", error);
         setMessage("Error creating post. Please try again.");
@@ -82,10 +110,30 @@ const BlogPostEditor = () => {
     }
   };
 
+  if (id && post) {
+    return (
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ mb: 2, color: "#ffffff" }}>
+          {post.title}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#ffb17a", mb: 2 }}>
+          {post.hashtags && post.hashtags.length > 0
+            ? post.hashtags.map((hashtag) => `#${hashtag}`).join(" ")
+            : ""}
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{ color: "#ffffff" }}
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ mb: 4 }}>
       <Typography variant="h5" sx={{ mb: 2, color: "#ffffff" }}>
-        Create a Post
+        Create a Blog Post
       </Typography>
       <form onSubmit={handleSubmit}>
         <TextField
@@ -148,7 +196,7 @@ const BlogPostEditor = () => {
           }}
           onEditorChange={handleEditorChange}
         />
-        <br/>
+        <br />
         <TextField
           fullWidth
           label="Hashtags (comma separated)"
@@ -174,6 +222,14 @@ const BlogPostEditor = () => {
         </Button>
       </form>
       {message && <Alert severity="success" sx={{ mt: 2 }}>{message}</Alert>}
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6" sx={{ mb: 2, color: "#ffffff" }}>
+          All Blog Posts
+        </Typography>
+        {posts.map((post) => (
+          <BlogPost key={post.id} post={post} />
+        ))}
+      </Box>
     </Box>
   );
 };

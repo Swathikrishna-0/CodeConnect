@@ -135,7 +135,7 @@ const BlogPost = ({ post }) => {
   };
 
   const handleViewPost = () => {
-    navigate(`/blog/${post.id}`);
+    navigate(`/feed/blogposts/${post.id}`); // Navigate to BlogPostDetail
   };
 
   return (

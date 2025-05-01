@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../../firebase";
-import { collection, addDoc, doc, getDoc } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, query, onSnapshot } from "firebase/firestore";
 import { TextField, Button, Box, Typography, Alert, Menu, MenuItem } from "@mui/material";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
 import "prismjs/themes/prism.css";
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import CodeSnippet from "./Codesnippet"; // Import CodeSnippet
 
 const CodeSnippetEditor = () => {
   const [user, setUser] = useState(null);
@@ -16,6 +17,7 @@ const CodeSnippetEditor = () => {
   const [message, setMessage] = useState("");
   const [language, setLanguage] = useState("javascript");
   const [anchorEl, setAnchorEl] = useState(null); // Anchor element for the dropdown
+  const [snippets, setSnippets] = useState([]); // State for all code snippets
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -45,6 +47,18 @@ const CodeSnippetEditor = () => {
       fetchProfile();
     }
   }, [user]);
+
+  useEffect(() => {
+    const q = query(collection(db, "codeSnippets")); // Query to fetch all code snippets
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const snippetsData = [];
+      querySnapshot.forEach((doc) => {
+        snippetsData.push({ id: doc.id, ...doc.data() });
+      });
+      setSnippets(snippetsData); // Update the snippets state
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleDropdownOpen = (event) => {
     setAnchorEl(event.currentTarget); // Open the dropdown
@@ -176,6 +190,14 @@ const CodeSnippetEditor = () => {
         </Button>
       </form>
       {message && <Alert severity="success" sx={{ mt: 2 }}>{message}</Alert>}
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6" sx={{ mb: 2, color: "#ffffff" }}>
+          All Code Snippets
+        </Typography>
+        {snippets.map((snippet) => (
+          <CodeSnippet key={snippet.id} snippet={snippet} />
+        ))}
+      </Box>
     </Box>
   );
 };

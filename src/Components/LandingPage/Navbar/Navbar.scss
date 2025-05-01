@@ -109,6 +109,32 @@
   }
 }
 
+.menu-button {
+  background-color: #424769; // Menu background color
+  color: #ffffff; // Text color
+  border-radius: 8px; // Rounded corners
+  padding: 10px 15px; // Padding for spacing
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Subtle shadow
+  margin-top: 10px; // Space below the avatar
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  &:hover {
+    background-color: #676f9d; // Hover background color
+    cursor: pointer;
+  }
+}
+
+.menu-item {
+  color: #ffffff; // Text color for menu items
+  padding: 8px 12px; // Padding for menu items
+  border-radius: 4px; // Rounded corners for menu items
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #676f9d; // Hover background color for menu items
+  }
+}
+
 //tablet and medium devices view
 @media screen and (max-width: 1900px) {
   .logo {
@@ -511,7 +537,7 @@
     }
   }
 }
-.auth-buttons{
+.auth-buttons {
   display: flex;
   justify-content: center;
   align-items: center;

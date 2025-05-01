@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, Routes, Route } from "react-router-dom";
 import { styled, alpha, useTheme } from "@mui/material/styles";
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import AppBar from "@mui/material/AppBar";
@@ -19,14 +19,17 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import Avatar from "@mui/material/Avatar";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
+import Popover from "@mui/material/Popover";
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { db } from "../../../firebase";
 import { doc, getDoc, collection, query, onSnapshot, orderBy, where } from "firebase/firestore";
 import BlogPostEditor from "../BlogPosts/BlogPostEditor";
 import BlogPost from "../BlogPosts/BlogPost";
+import BlogPostDetail from "../BlogPosts/BlogPostDetail";
 import CodeSnippetEditor from "../CodeSnippet/CodeSnippetEditor";
 import CodeSnippet from "../CodeSnippet/Codesnippet";
+import CodeSnippetDetail from "../CodeSnippet/CodeSnippetDetail"; // Import CodeSnippetDetail
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -48,6 +51,7 @@ import GroupDiscussion from '../Forums/GroupDiscussion'; // Import GroupDiscussi
 import BookmarkIcon from '@mui/icons-material/Bookmark'; // Import Bookmark icon
 import SavedPosts from "../SavedPosts/SavedPosts"; // Import SavedPosts component
 import { signOut } from "firebase/auth";
+import ClearIcon from "@mui/icons-material/Clear"; // Import Clear icon
 
 const drawerWidth = 240;
 
@@ -150,12 +154,25 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
   justifyContent: "center",
 }));
 
+const ClearButtonWrapper = styled("div")(({ theme }) => ({
+  position: "absolute",
+  right: 0,
+  top: 0,
+  bottom: 0,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: theme.spacing(0, 2),
+  cursor: "pointer",
+  color: theme.palette.common.white,
+}));
+
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    paddingRight: `calc(1em + ${theme.spacing(4)})`, // Add space for the clear button
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("md")]: {
@@ -308,34 +325,24 @@ export default function Feed() {
     setIsSearching(false); // Reset search state
   };
 
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const handleProfileMenuOpen = (event) => {
+  const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
+  const isPopoverOpen = Boolean(anchorEl);
 
   const handleProfileClick = () => {
-    handleMenuClose();
+    handlePopoverClose();
     navigate("/profile");
   };
 
   const handleAccountClick = () => {
-    handleMenuClose();
+    handlePopoverClose();
     navigate("/myaccount");
-  };
-
-  const handleMobileMenuOpen = (event) => {
-    setMobileMoreAnchorEl(event.currentTarget);
   };
 
   const handleDrawerOpen = () => {
@@ -347,36 +354,15 @@ export default function Feed() {
   };
 
   const handleCreatePostClick = () => {
-    setActiveGroup(null); // Reset active group
-    setShowBlogPage((prevShowBlogPage) => !prevShowBlogPage);
-    if (!showBlogPage) {
-      setShowSnippetPage(false);
-      setShowPodcastPage(false);
-      setShowForumsPage(false);
-      setShowSavedPostsPage(false);
-    }
+    navigate("/feed/blogposts"); // Navigate to /feed/blogposts
   };
 
   const handleCreateSnippetClick = () => {
-    setActiveGroup(null); // Reset active group
-    setShowSnippetPage((prevShowSnippetPage) => !prevShowSnippetPage);
-    if (!showSnippetPage) {
-      setShowBlogPage(false);
-      setShowPodcastPage(false);
-      setShowForumsPage(false);
-      setShowSavedPostsPage(false);
-    }
+    navigate("/feed/codesnippets"); // Navigate to /feed/codesnippets
   };
 
   const handleCreatePodcastClick = () => {
-    setActiveGroup(null); // Reset active group
-    setShowPodcastPage((prevShowPodcastPage) => !prevShowPodcastPage);
-    if (!showPodcastPage) {
-      setShowBlogPage(false);
-      setShowSnippetPage(false);
-      setShowForumsPage(false);
-      setShowSavedPostsPage(false);
-    }
+    navigate("/feed/podcasts"); // Navigate to the Podcasts page
   };
 
   const handleCreateForumsClick = () => {
@@ -402,6 +388,7 @@ export default function Feed() {
   };
 
   const handleLogoClick = () => {
+    navigate("/feed"); // Navigate to /feed
     setActiveGroup(null); // Reset active group
     setShowBlogPage(false);
     setShowSnippetPage(false);
@@ -423,65 +410,11 @@ export default function Feed() {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      navigate("/login"); // Redirect to login page after sign-out
+      navigate("/"); // Redirect to the home page after sign-out
     } catch (error) {
       console.error("Error signing out:", error);
     }
   };
-
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleProfileClick}>My Profile</MenuItem>
-      <MenuItem onClick={handleAccountClick}>My Account</MenuItem>
-    </Menu>
-  );
-
-  const mobileMenuId = "primary-search-account-menu-mobile";
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          {profilePic ? <Avatar src={profilePic} /> : <AccountCircle />}
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
 
   return (
     <Box sx={{ display: "flex", backgroundColor: "#202338" }} className="feed-container">
@@ -525,74 +458,58 @@ export default function Feed() {
                 if (e.key === "Enter") handleSearch(); // Trigger search on Enter key
               }}
             />
+            {searchQuery && (
+              <ClearButtonWrapper onClick={handleClearSearch}>
+                <ClearIcon />
+              </ClearButtonWrapper>
+            )}
           </Search>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#ffb17a",
-              color: "#000",
-              marginLeft: "10px",
-              "&:hover": { backgroundColor: "#e6a963" },
-            }}
-            onClick={handleSearch}
-          >
-            Search
-          </Button>
-          {isSearching && (
-            <Button
-              variant="outlined"
-              sx={{
-                marginLeft: "10px",
-                color: "#ffffff",
-                borderColor: "#ffb17a",
-                "&:hover": { borderColor: "#e6a963" },
-              }}
-              onClick={handleClearSearch}
-            >
-              Clear
-            </Button>
-          )}
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton
               size="large"
               edge="end"
               aria-label="account of current user"
-              aria-controls={menuId}
               aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
+              onClick={handleAvatarClick}
               color="inherit"
             >
               {profilePic ? <Avatar src={profilePic} /> : <AccountCircle />}
             </IconButton>
-            <Button
-              variant="outlined"
-              sx={{
-                marginLeft: "10px",
-                color: "#ffffff",
-                borderColor: "#ffb17a",
-                "&:hover": { borderColor: "#e6a963" },
-              }}
-              onClick={handleSignOut}
-            >
-              Sign Out
-            </Button>
-          </Box>
-          <Box sx={{ display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
           </Box>
         </Toolbar>
       </AppBarStyled>
-      {renderMobileMenu}
-      {renderMenu}
+      <Popover
+        open={isPopoverOpen}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        sx={{
+          "& .MuiPaper-root": {
+            backgroundColor: "#424769", // Tooltip background color
+            color: "#ffffff", // Text color
+            borderRadius: "8px", // Rounded corners
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Subtle shadow
+            padding: "10px", // Padding inside the tooltip
+          },
+        }}
+      >
+        <MenuItem onClick={handleProfileClick} sx={{ "&:hover": { backgroundColor: "#676f9d" } }}>
+          My Profile
+        </MenuItem>
+        <MenuItem onClick={handleAccountClick} sx={{ "&:hover": { backgroundColor: "#676f9d" } }}>
+          My Account
+        </MenuItem>
+        <MenuItem onClick={handleSignOut} sx={{ "&:hover": { backgroundColor: "#676f9d" } }}>
+          Sign Out
+        </MenuItem>
+      </Popover>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
@@ -640,30 +557,13 @@ export default function Feed() {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
         <Container maxWidth="md" sx={{ mt: 4 }}>
-          {isSearching ? (
-            <Box sx={{ mt: 4 }}>
-              <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
-                Search Results ({searchResults.length})
-              </Typography>
-              {searchResults.length > 0 ? (
-                searchResults.map((result) =>
-                  result.title ? (
-                    <BlogPost key={result.id} post={result} />
-                  ) : (
-                    <CodeSnippet key={result.id} snippet={result} />
-                  )
-                )
-              ) : (
-                <Typography variant="body1" sx={{ color: "#ffffff" }}>
-                  No results found for "{searchQuery}".
-                </Typography>
-              )}
-            </Box>
-          ) : (
-            <>
-              {!showBlogPage &&
+          <Routes>
+            {/* Default Feed Content */}
+            <Route
+              path="/"
+              element={
+                !showBlogPage &&
                 !showSnippetPage &&
-                !showPodcastPage &&
                 !showForumsPage &&
                 !activeGroup &&
                 !showSavedPostsPage && (
@@ -709,47 +609,19 @@ export default function Feed() {
                       </Box>
                     </Box>
                   </Box>
-                )}
-              {showBlogPage && (
-                <>
-                  <BlogPostEditor />
-                  {posts.map((post) => (
-                    <BlogPost key={post.id} post={post} />
-                  ))}
-                </>
-              )}
-              {showSnippetPage && (
-                <>
-                  <CodeSnippetEditor />
-                  {snippets.map((snippet) => (
-                    <CodeSnippet key={snippet.id} snippet={snippet} />
-                  ))}
-                </>
-              )}
-              {showPodcastPage && <PodcastPage />}
-              {showForumsPage && <Forums onOpenGroup={handleOpenGroup} />}
-              {activeGroup && (
-                <>
-                  <button
-                    onClick={handleBackToForums}
-                    style={{
-                      marginBottom: "20px",
-                      padding: "10px 20px",
-                      backgroundColor: "#ffb17a",
-                      color: "#000",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Back to Forums
-                  </button>
-                  <GroupDiscussion groupId={activeGroup.groupId} groupName={activeGroup.groupName} />
-                </>
-              )}
-              {showSavedPostsPage && <SavedPosts bookmarkedPosts={bookmarkedPosts} bookmarkedSnippets={bookmarkedSnippets} />}
-            </>
-          )}
+                )
+              }
+            />
+            {/* Nested BlogPosts Route */}
+            <Route path="blogposts" element={<BlogPostEditor />} />
+            <Route path="blogposts/:id" element={<BlogPostDetail />} />
+            {/* Nested CodeSnippets Route */}
+            <Route path="codesnippets" element={<CodeSnippetEditor />} />
+            <Route path="codesnippets/:id" element={<CodeSnippetDetail />} />
+            {/* Nested Podcasts Route */}
+            <Route path="podcasts" element={<PodcastPage />} />
+            {/* Other nested routes can be added here */}
+          </Routes>
         </Container>
       </Box>
     </Box>
