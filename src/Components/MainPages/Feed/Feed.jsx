@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useNavigate, Link, Routes, Route } from "react-router-dom";
+import { useNavigate, Link, Routes, Route, useLocation } from "react-router-dom"; // Import useLocation
 import { styled, alpha, useTheme } from "@mui/material/styles";
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import AppBar from "@mui/material/AppBar";
@@ -11,7 +11,6 @@ import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
@@ -32,13 +31,9 @@ import CodeSnippet from "../CodeSnippet/Codesnippet";
 import CodeSnippetDetail from "../CodeSnippet/CodeSnippetDetail"; // Import CodeSnippetDetail
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
@@ -94,14 +89,6 @@ const AppBarStyled = styled(MuiAppBar, {
   }),
   backgroundColor: "#202338",
   boxShadow: "none",
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
 }));
 
 const Drawer = styled(MuiDrawer, {
@@ -112,20 +99,11 @@ const Drawer = styled(MuiDrawer, {
   whiteSpace: "nowrap",
   boxSizing: "border-box",
   backgroundColor: "#424769",
-  ...(open && {
-    ...openedMixin(theme),
-    "& .MuiDrawer-paper": {
-      ...openedMixin(theme),
-      backgroundColor: "#424769",
-    },
-  }),
-  ...(!open && {
+  ...closedMixin(theme),
+  "& .MuiDrawer-paper": {
     ...closedMixin(theme),
-    "& .MuiDrawer-paper": {
-      ...closedMixin(theme),
-      backgroundColor: "#424769",
-    },
-  }),
+    backgroundColor: "#424769",
+  },
 }));
 
 const Search = styled("div")(({ theme }) => ({
@@ -182,6 +160,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Feed() {
+  const location = useLocation(); // Get the current route
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [profilePic, setProfilePic] = React.useState(null);
@@ -192,7 +171,6 @@ export default function Feed() {
   const [user, setUser] = React.useState(null);
   const navigate = useNavigate();
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
   const [showPodcastPage, setShowPodcastPage] = React.useState(false);
   const [showForumsPage, setShowForumsPage] = React.useState(false);
   const [activeGroup, setActiveGroup] = React.useState(null);
@@ -345,14 +323,6 @@ export default function Feed() {
     navigate("/myaccount");
   };
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   const handleCreatePostClick = () => {
     navigate("/feed/blogposts"); // Navigate to /feed/blogposts
   };
@@ -366,25 +336,11 @@ export default function Feed() {
   };
 
   const handleCreateForumsClick = () => {
-    setActiveGroup(null); // Reset active group
-    setShowForumsPage((prevShowForumsPage) => !prevShowForumsPage);
-    if (!showForumsPage) {
-      setShowBlogPage(false);
-      setShowSnippetPage(false);
-      setShowPodcastPage(false);
-      setShowSavedPostsPage(false);
-    }
+    navigate("/feed/forums"); // Navigate to /feed/forums
   };
 
   const handleSavedPostsClick = () => {
-    setActiveGroup(null); // Reset active group
-    setShowSavedPostsPage((prevShowSavedPostsPage) => !prevShowSavedPostsPage);
-    if (!showSavedPostsPage) {
-      setShowBlogPage(false);
-      setShowSnippetPage(false);
-      setShowPodcastPage(false);
-      setShowForumsPage(false);
-    }
+    navigate("/feed/savedposts"); // Navigate to /feed/savedposts
   };
 
   const handleLogoClick = () => {
@@ -398,8 +354,7 @@ export default function Feed() {
   };
 
   const handleOpenGroup = (groupId, groupName) => {
-    setActiveGroup({ groupId, groupName });
-    setShowForumsPage(false);
+    navigate(`/feed/forums/${groupId}`, { state: { groupName } }); // Navigate to the group discussion page
   };
 
   const handleBackToForums = () => {
@@ -419,21 +374,8 @@ export default function Feed() {
   return (
     <Box sx={{ display: "flex", backgroundColor: "#202338" }} className="feed-container">
       <CssBaseline />
-      <AppBarStyled position="fixed" open={open}>
+      <AppBarStyled position="fixed" open={false}>
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              marginRight: 5,
-              ...(open && { display: "none" }),
-              color: "#ffffff",
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography
             variant="h6"
             noWrap
@@ -510,53 +452,55 @@ export default function Feed() {
           Sign Out
         </MenuItem>
       </Popover>
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "rtl" ? (
-              <MenuIcon sx={{ color: "#ffffff" }} />
-            ) : (
-              <MenuIcon sx={{ color: "#ffffff" }} />
-            )}
-          </IconButton>
-        </DrawerHeader>
+      <Drawer variant="permanent" open={false}>
+        <DrawerHeader />
         <Divider />
         <List>
-          <ListItem button onClick={handleCreatePostClick} sx={{ cursor: 'pointer' }}>
-            <ListItemIcon>
-              <PostAddIcon sx={{ color: showBlogPage ? "#ffb17a" : "#ffffff" }} />
+          <ListItem button onClick={handleCreatePostClick} sx={{ cursor: 'pointer', flexDirection: 'column' }}>
+            <ListItemIcon sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center' }}>
+              <PostAddIcon sx={{ color: location.pathname.includes("/feed/blogposts") ? "#ffb17a" : "#ffffff" }} />
             </ListItemIcon>
-            <ListItemText primary="Write a Blog" sx={{ color: "#ffffff" }} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes("/feed/blogposts") ? "#ffb17a" : "#ffffff", fontSize: "10px", mt: 1 }}>
+              Blogs
+            </Typography>
           </ListItem>
-          <ListItem button onClick={handleCreateSnippetClick} sx={{ cursor: 'pointer' }}>
-            <ListItemIcon>
-              <CodeIcon sx={{ color: showSnippetPage ? "#ffb17a" : "#ffffff" }} />
+          <ListItem button onClick={handleCreateSnippetClick} sx={{ cursor: 'pointer', flexDirection: 'column' }}>
+            <ListItemIcon sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center' }}>
+              <CodeIcon sx={{ color: location.pathname.includes("/feed/codesnippets") ? "#ffb17a" : "#ffffff" }} />
             </ListItemIcon>
-            <ListItemText primary="Write a Code Snippet" sx={{ color: "#ffffff" }} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes("/feed/codesnippets") ? "#ffb17a" : "#ffffff", fontSize: "10px", mt: 1 }}>
+              Code
+            </Typography>
           </ListItem>
-          <ListItem button onClick={handleCreatePodcastClick} sx={{ cursor: 'pointer' }}>
-            <ListItemIcon>
-              <PodcastsIcon sx={{ color: showPodcastPage ? "#ffb17a" : "#ffffff" }} />
+          <ListItem button onClick={handleCreatePodcastClick} sx={{ cursor: 'pointer', flexDirection: 'column' }}>
+            <ListItemIcon sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center' }}>
+              <PodcastsIcon sx={{ color: location.pathname.includes("/feed/podcasts") ? "#ffb17a" : "#ffffff" }} />
             </ListItemIcon>
-            <ListItemText primary="Podcasts" sx={{ color: "#ffffff" }} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes("/feed/podcasts") ? "#ffb17a" : "#ffffff", fontSize: "10px", mt: 1 }}>
+              Podcasts
+            </Typography>
           </ListItem>
-          <ListItem button onClick={handleCreateForumsClick} sx={{ cursor: 'pointer' }}>
-            <ListItemIcon>
-              <ForumIcon sx={{ color: showForumsPage ? "#ffb17a" : "#ffffff" }} />
+          <ListItem button onClick={handleCreateForumsClick} sx={{ cursor: 'pointer', flexDirection: 'column' }}>
+            <ListItemIcon sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center' }}>
+              <ForumIcon sx={{ color: location.pathname.includes("/feed/forums") ? "#ffb17a" : "#ffffff" }} />
             </ListItemIcon>
-            <ListItemText primary="Forums" sx={{ color: "#ffffff" }} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes("/feed/forums") ? "#ffb17a" : "#ffffff", fontSize: "10px", mt: 1 }}>
+              Forums
+            </Typography>
           </ListItem>
-          <ListItem button onClick={handleSavedPostsClick} sx={{ cursor: 'pointer' }}>
-            <ListItemIcon>
-              <BookmarkIcon sx={{ color: showSavedPostsPage ? "#ffb17a" : "#ffffff" }} />
+          <ListItem button onClick={handleSavedPostsClick} sx={{ cursor: 'pointer', flexDirection: 'column' }}>
+            <ListItemIcon  sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center' }}>
+              <BookmarkIcon sx={{ color: location.pathname.includes("/feed/savedposts") ? "#ffb17a" : "#ffffff" }} />
             </ListItemIcon>
-            <ListItemText primary="Saved Posts" sx={{ color: "#ffffff" }} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes("/feed/savedposts") ? "#ffb17a" : "#ffffff", fontSize: "10px", mt: 1,textAlign: "center" }}>
+              Saved
+            </Typography>
           </ListItem>
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Container maxWidth="md" >
           <Routes>
             {/* Default Feed Content */}
             <Route
@@ -620,6 +564,21 @@ export default function Feed() {
             <Route path="codesnippets/:id" element={<CodeSnippetDetail />} />
             {/* Nested Podcasts Route */}
             <Route path="podcasts" element={<PodcastPage />} />
+            {/* Nested Forums Route */}
+            <Route path="forums" element={<Forums onOpenGroup={handleOpenGroup} />} /> {/* Pass handleOpenGroup */}
+            <Route
+              path="forums/:groupId"
+              element={<GroupDiscussion />} // Render GroupDiscussion for specific group
+            />
+            <Route
+              path="savedposts"
+              element={
+                <SavedPosts
+                  bookmarkedPosts={bookmarkedPosts} // Pass bookmarked posts
+                  bookmarkedSnippets={bookmarkedSnippets} // Pass bookmarked snippets
+                />
+              }
+            />
             {/* Other nested routes can be added here */}
           </Routes>
         </Container>

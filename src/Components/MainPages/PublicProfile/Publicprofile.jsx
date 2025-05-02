@@ -77,7 +77,7 @@ const Publicprofile = () => {
   };
 
   if (!profile) {
-    return <Typography>Loading...</Typography>;
+    return <Typography sx="{color: '#ffffff'}">Loading...</Typography>;
   }
 
   return (

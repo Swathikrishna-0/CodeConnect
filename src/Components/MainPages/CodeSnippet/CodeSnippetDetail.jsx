@@ -269,7 +269,7 @@ const CodeSnippetDetail = () => {
     }
   };
 
-  if (!snippet) return <Typography>Loading...</Typography>;
+  if (!snippet) return <Typography sx="{color: '#ffffff'}">Loading...</Typography>;
 
   return (
     <>
@@ -280,7 +280,7 @@ const CodeSnippetDetail = () => {
         
         <Box
           component="main"
-          sx={{ flexGrow: 1, p: 3, mt: 8, ml: drawerOpen ? 30 : 10 }}
+          sx={{ flexGrow: 1, p: 3, ml: drawerOpen ? 30 : 10 }}
         >
           <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>

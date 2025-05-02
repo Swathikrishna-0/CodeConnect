@@ -232,12 +232,12 @@ const BlogPostDetail = () => {
     }
   };
 
-  if (!post) return <Typography>Loading...</Typography>;
+  if (!post) return <Typography sx="{color: '#ffffff'}">Loading...</Typography>;
 
   return (
     <>
       <Box sx={{ display: "flex"}}>
-        <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, ml: drawerOpen ? 30 : 10 }}>
+        <Box component="main" sx={{ flexGrow: 1, p: 3, ml: drawerOpen ? 30 : 10 }}>
           <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar

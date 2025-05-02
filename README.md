@@ -44,7 +44,7 @@ CodeConnect is a collaborative platform designed to connect techies, it's a deve
 
 ### Backend
 - **Node.js & Express.js**(v4.21.2) – REST API layer
-- **Clerk.js** – Authentication
+- **Firebase** – Authentication
 - **Firebase (Firestore + Storage)**(v11.4.0) – Cloud-hosted NoSQL database and file storage
 - **dotenv & cors** – Configuration and API security
 

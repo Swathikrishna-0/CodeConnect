@@ -147,7 +147,7 @@ const Forums = ({ onOpenGroup }) => {
               </Typography>
             </Box>
             <Button
-              onClick={() => onOpenGroup(group.id, group.name)}
+              onClick={() => onOpenGroup(group.id, group.name)} // Pass groupId and groupName
               variant="contained"
               startIcon={<OpenInNewIcon />}
               sx={{

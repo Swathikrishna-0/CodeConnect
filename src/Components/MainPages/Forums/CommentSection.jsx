@@ -3,7 +3,6 @@ import { getDatabase, ref, push, onValue } from "firebase/database";
 import { Box, TextField, Button, Typography, Avatar } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebase";
-
 import CommentIcon from "@mui/icons-material/Comment";
 
 const CommentSection = ({ questionId, groupId }) => {
@@ -34,10 +33,7 @@ const CommentSection = ({ questionId, groupId }) => {
 
   useEffect(() => {
     const db = getDatabase();
-    const commentsRef = ref(
-      db,
-      `groups/${groupId}/questions/${questionId}/comments`
-    );
+    const commentsRef = ref(db, `groups/${groupId}/questions/${questionId}/comments`); // Use groupId and questionId for scoping
 
     const unsubscribe = onValue(commentsRef, (snapshot) => {
       const data = snapshot.val();
@@ -53,7 +49,7 @@ const CommentSection = ({ questionId, groupId }) => {
     });
 
     return () => unsubscribe();
-  }, [groupId, questionId]);
+  }, [groupId, questionId]); // Re-fetch data when groupId or questionId changes
 
   const handlePostComment = async () => {
     if (!comment.trim()) {

@@ -6,9 +6,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import CommentSection from './CommentSection';
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore"; 
+import { doc, getDoc } from "firebase/firestore";
+import { useParams, useLocation } from "react-router-dom";
 
-const GroupDiscussion = ({ groupId, groupName }) => {
+const GroupDiscussion = () => {
+  const { groupId } = useParams();
+  const location = useLocation();
+  const groupName = location.state?.groupName || "Group";
+
   const [user, setUser] = useState(null);
   const [topic, setTopic] = useState('');
   const [details, setDetails] = useState('');
@@ -26,9 +31,9 @@ const GroupDiscussion = ({ groupId, groupName }) => {
           if (docSnap.exists()) {
             const profileData = docSnap.data();
             if (!currentUser.displayName) {
-              currentUser.displayName = profileData.firstName; // Use first name if displayName is not available
+              currentUser.displayName = profileData.firstName;
             }
-            currentUser.photoURL = profileData.profilePic || currentUser.photoURL; // Use profilePic if available
+            currentUser.photoURL = profileData.profilePic || currentUser.photoURL;
           }
         };
         fetchProfile();
@@ -49,7 +54,7 @@ const GroupDiscussion = ({ groupId, groupName }) => {
           const questionsList = Object.entries(data).map(([id, value]) => ({ id, ...value }));
           setQuestions(questionsList);
         } else {
-          setQuestions([]); 
+          setQuestions([]);
         }
         setError(null);
       },
@@ -59,7 +64,7 @@ const GroupDiscussion = ({ groupId, groupName }) => {
       }
     );
 
-    return () => unsubscribe(); 
+    return () => unsubscribe();
   }, [groupId]);
 
   const handlePostQuestion = async () => {
@@ -79,8 +84,8 @@ const GroupDiscussion = ({ groupId, groupName }) => {
 
       const newQuestion = {
         userId: user.uid,
-        userName: user.displayName, // Use updated displayName
-        userProfilePic: user.photoURL || '', // Use updated photoURL
+        userName: user.displayName,
+        userProfilePic: user.photoURL || '',
         topic,
         details,
         createdAt: new Date().toISOString(),
@@ -195,7 +200,6 @@ const GroupDiscussion = ({ groupId, groupName }) => {
               Posted on: {new Date(question.createdAt).toLocaleString()}
             </Typography>
 
-            {/* Add Comment Section */}
             <CommentSection questionId={question.id} groupId={groupId} />
           </Box>
         ))}

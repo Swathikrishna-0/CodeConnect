@@ -156,7 +156,7 @@ const BlogPostEditor = () => {
           apiKey="wqheav2fbolvt7xe3m7fsnt5o9u29p25j51j3q2jd7lygpzh"
           value={content}
           init={{
-            height: 500,
+            height: 200,
             menubar: true,
             plugins: [
               "advlist autolink lists link image charmap print preview anchor",
