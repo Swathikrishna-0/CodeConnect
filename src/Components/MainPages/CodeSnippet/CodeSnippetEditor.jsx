@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../../firebase";
-import { collection, addDoc, doc, getDoc, query, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, query, onSnapshot, orderBy } from "firebase/firestore";
 import { TextField, Button, Box, Typography, Alert, Menu, MenuItem } from "@mui/material";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
@@ -49,7 +49,7 @@ const CodeSnippetEditor = () => {
   }, [user]);
 
   useEffect(() => {
-    const q = query(collection(db, "codeSnippets")); // Query to fetch all code snippets
+    const q = query(collection(db, "codeSnippets"), orderBy("createdAt", "desc")); // Sort code snippets by createdAt
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const snippetsData = [];
       querySnapshot.forEach((doc) => {

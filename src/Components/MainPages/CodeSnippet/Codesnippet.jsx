@@ -127,8 +127,8 @@ const CodeSnippet = ({ snippet }) => {
     <Card
       sx={{
         marginBottom: 2,
-        backgroundColor: "transparent",
-        border: "1px solid #676f9d",
+        backgroundColor: "#1a1a2e" ,
+        border: "0.5px solid #676f9d",
       }}
     >
       <CardHeader
@@ -169,6 +169,49 @@ const CodeSnippet = ({ snippet }) => {
         >
           {snippet.description}
         </Typography>
+        <Box
+          sx={{
+            backgroundColor: "#424769",
+            p: 2,
+            borderRadius: "4px",
+            overflow: "hidden",
+            maxHeight: "100px", // Limit the height for preview
+            position: "relative",
+          }}
+        >
+          <Editor
+            value={snippet.code}
+            onValueChange={() => {}}
+            highlight={(code) =>
+              highlight(
+                code,
+                languages[snippet.language] || languages.javascript,
+                snippet.language
+              )
+            }
+            padding={10}
+            style={{
+              fontFamily: '"Fira code", "Fira Mono", monospace',
+              fontSize: 14,
+              backgroundColor: "#424769",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "4px",
+              pointerEvents: "none", // Make it non-editable
+            }}
+            readOnly
+          />
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: "30px",
+              background: "linear-gradient(to top, #424769, transparent)",
+            }}
+          />
+        </Box>
         <hr style={{ height: "1px", border: "none", backgroundColor: "#676f9d" }} />
       </CardContent>
       

@@ -47,6 +47,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark'; // Import Bookmark icon
 import SavedPosts from "../SavedPosts/SavedPosts"; // Import SavedPosts component
 import { signOut } from "firebase/auth";
 import ClearIcon from "@mui/icons-material/Clear"; // Import Clear icon
+import SearchResults from "../Search/SearchResults"; // Import the new SearchResults component
 
 const drawerWidth = 240;
 
@@ -202,7 +203,7 @@ export default function Feed() {
   }, [user]);
 
   React.useEffect(() => {
-    const q = query(collection(db, "posts"));
+    const q = query(collection(db, "posts"), orderBy("createdAt", "desc")); // Sort blog posts by createdAt
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const postsData = [];
       querySnapshot.forEach((doc) => {
@@ -214,7 +215,7 @@ export default function Feed() {
   }, []);
 
   React.useEffect(() => {
-    const q = query(collection(db, 'codeSnippets'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, "codeSnippets"), orderBy("createdAt", "desc")); // Sort code snippets by createdAt
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const snippetsData = [];
       querySnapshot.forEach((doc) => {
@@ -285,16 +286,10 @@ export default function Feed() {
     );
 
     // Combine results
-    setSearchResults([...filteredPosts, ...filteredSnippets]);
-    setIsSearching(true); // Set search state to true
+    const results = [...filteredPosts, ...filteredSnippets];
 
-    // Hide all other pages when searching
-    setShowBlogPage(false);
-    setShowSnippetPage(false);
-    setShowPodcastPage(false);
-    setShowForumsPage(false);
-    setActiveGroup(null);
-    setShowSavedPostsPage(false);
+    // Navigate to the search results page with the results
+    navigate("/feed/searchresults", { state: { results } });
   };
 
   const handleClearSearch = () => {
@@ -518,8 +513,25 @@ export default function Feed() {
                     <Typography variant="h6" sx={{ mb: 2 }}>
                       Explore the latest content from our community:
                     </Typography>
-                    <Box sx={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap", gap: 4 }}>
-                      <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-around",
+                        flexWrap: "wrap",
+                        gap: 4,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: "300px",
+                          backgroundColor: "#424769",
+                          p: 3,
+                          borderRadius: 2,
+                          cursor: "pointer",
+                          "&:hover": { backgroundColor: "#676f9d" },
+                        }}
+                        onClick={() => navigate("/feed/podcasts")} // Navigate to Podcasts page
+                      >
                         <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
                           Podcasts
                         </Typography>
@@ -527,7 +539,17 @@ export default function Feed() {
                           Discover insightful podcasts created by our community members.
                         </Typography>
                       </Box>
-                      <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                      <Box
+                        sx={{
+                          width: "300px",
+                          backgroundColor: "#424769",
+                          p: 3,
+                          borderRadius: 2,
+                          cursor: "pointer",
+                          "&:hover": { backgroundColor: "#676f9d" },
+                        }}
+                        onClick={() => navigate("/feed/forums")} // Navigate to Forums page
+                      >
                         <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
                           Groups
                         </Typography>
@@ -535,7 +557,17 @@ export default function Feed() {
                           Join discussions and collaborate with like-minded individuals.
                         </Typography>
                       </Box>
-                      <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                      <Box
+                        sx={{
+                          width: "300px",
+                          backgroundColor: "#424769",
+                          p: 3,
+                          borderRadius: 2,
+                          cursor: "pointer",
+                          "&:hover": { backgroundColor: "#676f9d" },
+                        }}
+                        onClick={() => navigate("/feed/blogposts")} // Navigate to BlogPosts page
+                      >
                         <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
                           Blogs
                         </Typography>
@@ -543,7 +575,17 @@ export default function Feed() {
                           Read and share blogs on various topics written by our users.
                         </Typography>
                       </Box>
-                      <Box sx={{ width: "300px", backgroundColor: "#424769", p: 3, borderRadius: 2 }}>
+                      <Box
+                        sx={{
+                          width: "300px",
+                          backgroundColor: "#424769",
+                          p: 3,
+                          borderRadius: 2,
+                          cursor: "pointer",
+                          "&:hover": { backgroundColor: "#676f9d" },
+                        }}
+                        onClick={() => navigate("/feed/codesnippets")} // Navigate to CodeSnippets page
+                      >
                         <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
                           Code Snippets
                         </Typography>
@@ -578,6 +620,10 @@ export default function Feed() {
                   bookmarkedSnippets={bookmarkedSnippets} // Pass bookmarked snippets
                 />
               }
+            />
+            <Route
+              path="searchresults"
+              element={<SearchResults />} // Add the SearchResults route
             />
             {/* Other nested routes can be added here */}
           </Routes>

@@ -51,7 +51,9 @@ const GroupDiscussion = () => {
       (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          const questionsList = Object.entries(data).map(([id, value]) => ({ id, ...value }));
+          const questionsList = Object.entries(data)
+            .map(([id, value]) => ({ id, ...value }))
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by createdAt in descending order
           setQuestions(questionsList);
         } else {
           setQuestions([]);

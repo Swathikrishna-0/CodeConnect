@@ -139,7 +139,7 @@ const BlogPost = ({ post }) => {
   };
 
   return (
-    <Box sx={{ mb: 4, p: 2, border: "1px solid #676f9d", borderRadius: "8px" }}>
+    <Box sx={{ mb: 4, p: 2, border: "0.5px solid #676f9d", borderRadius: "8px", backgroundColor: "#1a1a2e" }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <Avatar
           src={post.userProfilePic}

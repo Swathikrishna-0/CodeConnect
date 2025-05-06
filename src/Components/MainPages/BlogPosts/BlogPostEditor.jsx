@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../../firebase";
-import { collection, addDoc, doc, getDoc, query, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, query, onSnapshot, orderBy} from "firebase/firestore";
 import { TextField, Button, Box, Typography, Alert } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { auth } from "../../../firebase";
@@ -60,7 +60,7 @@ const BlogPostEditor = () => {
   }, [id]);
 
   useEffect(() => {
-    const q = query(collection(db, "posts"));
+    const q = query(collection(db, "posts"), orderBy("createdAt", "desc")); // Sort blog posts by createdAt
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const postsData = [];
       querySnapshot.forEach((doc) => {
