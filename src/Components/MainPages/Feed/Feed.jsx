@@ -49,7 +49,7 @@ import { signOut } from "firebase/auth";
 import ClearIcon from "@mui/icons-material/Clear"; // Import Clear icon
 import SearchResults from "../Search/SearchResults"; // Import the new SearchResults component
 import Profile from "../Profile/Profile"; // Import the Profile component
-import MyAccount from "../MyAccount/MyAccount"; // Import the MyAccount component
+import Myaccount from "../MyAccount/Myaccount";
 
 const drawerWidth = 240;
 
@@ -644,7 +644,7 @@ export default function Feed() {
             />
             {/* Add Profile Route */}
             <Route path="profile" element={<Profile />} />
-            <Route path="myaccount" element={<MyAccount />} /> {/* Add MyAccount route */}
+            <Route path="myaccount" element={<Myaccount />} /> {/* Add MyAccount route */}
             {/* Other nested routes can be added here */}
           </Routes>
         </Container>
