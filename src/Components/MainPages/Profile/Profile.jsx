@@ -3,10 +3,9 @@ import { db } from '../../../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { TextField, Button, Typography, Container, Box, Alert, Grid, Avatar, IconButton } from '@mui/material';
+import { TextField, Button, Typography, Container, Box, Alert, Grid, Avatar } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -37,7 +36,7 @@ const Profile = () => {
     }),
     onSubmit: async (values) => {
       if (user) {
-        await setDoc(doc(db, 'profiles', user.uid), { ...values, profilePic });
+        await setDoc(doc(db, 'profiles', user.uid), { ...values });
         setMessage('Profile saved successfully!');
         setTimeout(() => setMessage(''), 3000); // Clear message after 3 seconds
       }
@@ -52,23 +51,11 @@ const Profile = () => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           formik.setValues(data);
-          setProfilePic(data.profilePic || null);
         }
       };
       fetchProfile();
     }
   }, [user]);
-
-  const handleProfilePicChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   return (
     <Container maxWidth="md">
@@ -77,21 +64,7 @@ const Profile = () => {
           Profile
         </Typography>
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-        <Avatar src={profilePic} sx={{ width: 100, height: 100 }} />
-        <input
-          accept="image/*"
-          style={{ display: 'none' }}
-          id="profile-pic-upload"
-          type="file"
-          onChange={handleProfilePicChange}
-        />
-        <label htmlFor="profile-pic-upload">
-          <IconButton color="primary" aria-label="upload picture" component="span">
-            <PhotoCamera />
-          </IconButton>
-        </label>
-      </Box>
+     
       <form onSubmit={formik.handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>

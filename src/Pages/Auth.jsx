@@ -7,7 +7,7 @@ import SignUp from "./SignUp";
 import Landing from "./Landing";
 import Feed from "../Components/MainPages/Feed/Feed";
 import Profile from "../Components/MainPages/Profile/Profile";
-import Myaccount from "../Components/MainPages/MyAccount/Myaccount";
+import Myaccount from "../Components/MainPages/MyAccount/MyAccount";
 import Podcasts from "../Components/MainPages/Podcasts/PodcastPage"; // Import Podcasts component
 
 const Auth = () => {

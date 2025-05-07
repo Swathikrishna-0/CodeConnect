@@ -1,25 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { getDatabase, ref, push, onValue } from 'firebase/database';
-import { Box, TextField, Button, Typography, Avatar, Alert } from '@mui/material';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import CommentSection from './CommentSection';
+import React, { useState, useEffect } from "react";
+import { getDatabase, ref, push, onValue } from "firebase/database";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Avatar,
+  Alert,
+} from "@mui/material";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CommentSection from "./CommentSection";
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { color } from "framer-motion";
+import SendIcon from "@mui/icons-material/Send";
 
 const GroupDiscussion = () => {
   const { groupId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const groupName = location.state?.groupName || "Group";
 
   const [user, setUser] = useState(null);
-  const [topic, setTopic] = useState('');
-  const [details, setDetails] = useState('');
+  const [topic, setTopic] = useState("");
+  const [details, setDetails] = useState("");
   const [questions, setQuestions] = useState([]);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -33,7 +43,8 @@ const GroupDiscussion = () => {
             if (!currentUser.displayName) {
               currentUser.displayName = profileData.firstName;
             }
-            currentUser.photoURL = profileData.profilePic || currentUser.photoURL;
+            currentUser.photoURL =
+              profileData.profilePic || currentUser.photoURL;
           }
         };
         fetchProfile();
@@ -61,8 +72,10 @@ const GroupDiscussion = () => {
         setError(null);
       },
       (error) => {
-        console.error('Error fetching questions:', error);
-        setError('Failed to fetch questions. Please check your database connection.');
+        console.error("Error fetching questions:", error);
+        setError(
+          "Failed to fetch questions. Please check your database connection."
+        );
       }
     );
 
@@ -71,12 +84,18 @@ const GroupDiscussion = () => {
 
   const handlePostQuestion = async () => {
     if (!topic.trim() || !details.trim()) {
-      toast.error('Both fields are required.', { position: 'top-right', autoClose: 3000 });
+      toast.error("Both fields are required.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
     if (!user) {
-      toast.error('You must be logged in to post a question.', { position: 'top-right', autoClose: 3000 });
+      toast.error("You must be logged in to post a question.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
@@ -87,7 +106,7 @@ const GroupDiscussion = () => {
       const newQuestion = {
         userId: user.uid,
         userName: user.displayName,
-        userProfilePic: user.photoURL || '',
+        userProfilePic: user.photoURL || "",
         topic,
         details,
         createdAt: new Date().toISOString(),
@@ -95,34 +114,47 @@ const GroupDiscussion = () => {
 
       await push(questionsRef, newQuestion);
 
-      setTopic('');
-      setDetails('');
-      toast.success('Question posted successfully!', { position: 'top-right', autoClose: 3000 });
+      setTopic("");
+      setDetails("");
+      toast.success("Question posted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     } catch (error) {
-      console.error('Error posting question:', error);
-      toast.error('Failed to post question. Please try again.', { position: 'top-right', autoClose: 3000 });
+      console.error("Error posting question:", error);
+      toast.error("Failed to post question. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
   return (
-    <Box sx={{ padding: '20px' }}>
+    <Box sx={{ padding: "20px" }}>
       <ToastContainer />
-      <Typography variant="h4" sx={{ color: '#ffffff', marginBottom: '20px' }}>
-        Group Discussion: {groupName}
+      <Typography variant="h4" sx={{ color: "#676f9d", marginBottom: "20px" }}>
+        Group:{" "}
+        <Typography variant="h4" sx={{ fontWeight: "bold", color: "#fff" }}>
+          {groupName}
+        </Typography>
       </Typography>
       <Box
         component="form"
         sx={{
-          padding: '20px',
-          borderRadius: '8px',
-          marginBottom: '20px',
+          backgroundColor: "#2c2f48",
+          padding: "20px",
+          borderRadius: "12px",
+          marginBottom: "40px",
         }}
         onSubmit={(e) => {
           e.preventDefault();
           handlePostQuestion();
         }}
       >
-        <Typography variant="h5" sx={{ color: '#ffffff', marginBottom: '10px' }}>
+        <Typography
+          variant="h5"
+          sx={{ color: "#ffffff", marginBottom: "10px" }}
+        >
           Post a Question
         </Typography>
         <TextField
@@ -130,14 +162,14 @@ const GroupDiscussion = () => {
           label="Topic of your question"
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
-          InputLabelProps={{ style: { color: '#ffffff' } }}
-          InputProps={{ style: { color: '#ffffff', borderColor: '#ffb17a' } }}
+          InputLabelProps={{ style: { color: "#ffffff" } }}
+          InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
           sx={{
-            marginBottom: '20px',
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: '#676f9d' },
-              '&:hover fieldset': { borderColor: '#ffb17a' },
-              '&.Mui-focused fieldset': { borderColor: '#ffb17a' },
+            marginBottom: "20px",
+            "& .MuiOutlinedInput-root": {
+              "&:hover fieldset": { borderColor: "#676f9d" },
+              "&.Mui-focused fieldset": { borderColor: "#676f9d" },
+              backgroundColor: "#202338",
             },
           }}
         />
@@ -148,57 +180,99 @@ const GroupDiscussion = () => {
           label="Write your question in detail"
           value={details}
           onChange={(e) => setDetails(e.target.value)}
-          InputLabelProps={{ style: { color: '#ffffff' } }}
-          InputProps={{ style: { color: '#ffffff', borderColor: '#ffb17a' } }}
+          InputLabelProps={{ style: { color: "#ffffff" } }}
+          InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
           sx={{
-            marginBottom: '20px',
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: '#676f9d' },
-              '&:hover fieldset': { borderColor: '#ffb17a' },
-              '&.Mui-focused fieldset': { borderColor: '#ffb17a' },
+            marginBottom: "20px",
+            "& .MuiOutlinedInput-root": {
+              "&:hover fieldset": { borderColor: "#676f9d" },
+              "&.Mui-focused fieldset": { borderColor: "#676f9d" },
+              backgroundColor: "#202338",
             },
           }}
         />
         <Button
           type="submit"
           variant="contained"
-          sx={{ backgroundColor: '#ffb17a', color: '#000000' }}
+          startIcon={<SendIcon />}
+          sx={{
+            backgroundColor: "#ffb17a",
+            color: "#000000",
+            marginTop: "10px",
+          }}
         >
           Post Question
         </Button>
       </Box>
       <Box>
-        <Typography variant="h5" sx={{ color: '#ffb17a', marginBottom: '20px' }}>
-          Questions
+        <Typography
+          variant="h5"
+          sx={{
+            color: "#fff",
+            marginBottom: "25px",
+            fontWeight: "bold",
+            fontSize: "28px",
+          }}
+        >
+          All Questions
         </Typography>
-        {error && <Alert severity="error" sx={{ marginBottom: '20px' }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ marginBottom: "20px" }}>
+            {error}
+          </Alert>
+        )}
         {questions.map((question) => (
           <Box
             key={question.id}
             sx={{
-              padding: '20px',
-              borderRadius: '8px',
-              marginBottom: '20px',
-              color: '#fff', borderColor: "#676f9d", borderWidth: "1px", borderStyle: "solid",
+              mb: 4,
+              p: 3,
+              borderRadius: "12px",
+              background: "linear-gradient(145deg, #2c2f48, #1a1a2e)",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+              transition: "transform 0.3s, box-shadow 0.3s",
+              "&:hover": {
+                transform: "scale(1.02)",
+                boxShadow: "0 6px 12px rgba(0, 0, 0, 0.4)",
+              },
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
               <Avatar
-                src={question.userProfilePic}
+                src={question.userProfilePic || "/default-avatar.png"} // Fallback to default avatar
                 alt="User"
-                sx={{ width: '40px', height: '40px', marginRight: '10px' }}
+                sx={{
+                  width: "40px",
+                  height: "40px",
+                  marginRight: "10px",
+                  cursor: "pointer", // Make the avatar clickable
+                  transition: "box-shadow 0.3s",
+                  "&:hover": {
+                    boxShadow: "0 0 10px #ffb17a", // Add glowing effect on hover
+                  },
+                }}
+                onClick={() => navigate(`/profile/${question.userId}`)} // Navigate to the user's public profile
               />
-              <Typography variant="h6" sx={{ color: '#ffffff' }}>
+              <Typography variant="h6" sx={{ color: "#ffffff" }}>
                 {question.userName}
               </Typography>
             </Box>
-            <Typography variant="h6" sx={{ color: '#ffb17a' }}>
+            <Typography variant="h6" sx={{ color: "#ffb17a" }}>
               {question.topic}
             </Typography>
-            <Typography variant="body1" sx={{ color: '#ffffff', marginBottom: '10px' }}>
+            <Typography
+              variant="body1"
+              sx={{ color: "#ffffff", marginBottom: "10px" }}
+            >
               {question.details}
             </Typography>
-            <Typography variant="body2" sx={{ color: '#676f9d' }}>
+            <Typography variant="body2" sx={{ color: "#676f9d" }}>
               Posted on: {new Date(question.createdAt).toLocaleString()}
             </Typography>
 

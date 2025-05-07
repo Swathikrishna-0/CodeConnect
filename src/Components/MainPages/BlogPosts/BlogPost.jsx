@@ -62,7 +62,7 @@ const BlogPost = ({ post }) => {
     >
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <Avatar
-          src={post.userProfilePic || "/default-avatar.png"} // Fallback to default avatar
+          src={post.userProfilePic || "/default-avatar.png"} // Use Gmail profile picture or fallback
           sx={{
             width: 50,
             height: 50,
@@ -73,7 +73,7 @@ const BlogPost = ({ post }) => {
               boxShadow: "0 0 10px #ffb17a",
             },
           }}
-          onClick={() => navigate(`/profile/${post.userId}`)}
+          onClick={() => navigate(`/profile/${post.userId}`)} // Navigate to user's public profile
         />
         <Box>
           <Typography

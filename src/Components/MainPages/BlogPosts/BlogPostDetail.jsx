@@ -272,13 +272,13 @@ const BlogPostDetail = () => {
           <Box sx={{ color: "#ffffff", p: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar
-                src={post.userProfilePic || "/default-avatar.png"} // Fallback to default avatar
+                src={post.userProfilePic || "/default-avatar.png"} // Use Gmail profile picture or fallback
                 sx={{
                   mr: 2,
                   cursor: "pointer",
-                  display: { xs: "block", sm: "block", md: "block" }, // Ensure visibility on all devices
+                  display: { xs: "block", sm: "block", md: "block" },
                 }}
-                onClick={() => navigate(`/profile/${post.userId}`)} // Redirect to public profile
+                onClick={() => navigate(`/profile/${post.userId}`)} // Navigate to user's public profile
               />
               <Box>
                 <Typography

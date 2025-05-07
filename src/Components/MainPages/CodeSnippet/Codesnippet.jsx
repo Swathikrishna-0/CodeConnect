@@ -76,7 +76,7 @@ const CodeSnippet = ({ snippet }) => {
       <CardHeader
         avatar={
           <Avatar
-            src={snippet.userProfilePic || "/default-avatar.png"} // Fallback to default avatar
+            src={snippet.userProfilePic || "/default-avatar.png"} // Use Gmail profile picture or fallback
             sx={{
               width: 50,
               height: 50,
@@ -86,7 +86,7 @@ const CodeSnippet = ({ snippet }) => {
                 boxShadow: "0 0 10px #ffb17a",
               },
             }}
-            onClick={() => navigate(`/profile/${snippet.userId}`)}
+            onClick={() => navigate(`/profile/${snippet.userId}`)} // Navigate to user's public profile
           />
         }
         title={

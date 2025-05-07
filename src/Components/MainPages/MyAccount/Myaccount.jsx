@@ -188,6 +188,7 @@ const Myaccount = () => {
           p: 2,
           borderRadius: "8px",
         }}
+       
       >
         <Avatar
           src={user?.photoURL || "/default-avatar.png"}
@@ -288,9 +289,8 @@ const Myaccount = () => {
                   key={item.id}
                   sx={{
                     position: "relative",
-                    
                     borderRadius: "8px",
-                    backgroundColor: "#202338",
+                    p: 1, // Add padding for better layout
                   }}
                 >
                   {section.deleteHandler && (
@@ -298,16 +298,21 @@ const Myaccount = () => {
                       onClick={() => section.deleteHandler(item.id)}
                       sx={{
                         position: "absolute",
-                        top: 10,
-                        right: 10,
-                        color: "#ffb17a",
-                        "&:hover": { color: "#e6a963" },
+                        top: -10,
+                        right: -10,
+                        color: "#fff",
+                        p:2,
+                        m:2,
+                        backgroundColor: "#424769",
+                        "&:hover": { color: "#ffb17a",backgroundColor: "#424769", },
                       }}
                     >
                       <DeleteIcon />
                     </IconButton>
                   )}
-                  <section.component {...{ [section.component === BlogPost ? "post" : "snippet"]: item }} />
+                  <Box sx={{ mt: 4 }}>
+                    <section.component {...{ [section.component === BlogPost ? "post" : "snippet"]: item }} />
+                  </Box>
                 </Box>
               ))}
             </Box>

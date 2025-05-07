@@ -22,7 +22,8 @@ const CommentSection = ({ questionId, groupId }) => {
             if (!currentUser.displayName) {
               currentUser.displayName = profileData.firstName; // Use first name if displayName is not available
             }
-            currentUser.photoURL = profileData.profilePic || currentUser.photoURL; // Use profilePic if available
+            currentUser.photoURL =
+              profileData.profilePic || currentUser.photoURL; // Use profilePic if available
           }
         };
         fetchProfile();
@@ -33,7 +34,10 @@ const CommentSection = ({ questionId, groupId }) => {
 
   useEffect(() => {
     const db = getDatabase();
-    const commentsRef = ref(db, `groups/${groupId}/questions/${questionId}/comments`); // Use groupId and questionId for scoping
+    const commentsRef = ref(
+      db,
+      `groups/${groupId}/questions/${questionId}/comments`
+    ); // Use groupId and questionId for scoping
 
     const unsubscribe = onValue(commentsRef, (snapshot) => {
       const data = snapshot.val();
@@ -82,20 +86,29 @@ const CommentSection = ({ questionId, groupId }) => {
 
   return (
     <Box sx={{ marginTop: "10px" }}>
-      <Box sx={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "20px",
+          justifyContent: "center",
+        }}
+      >
         <TextField
           fullWidth
           label="Write a comment"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           InputLabelProps={{ style: { color: "#ffffff" } }}
-          InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+          InputProps={{
+            style: { color: "#ffffff", borderColor: "#ffb17a" },
+          }}
           sx={{
-            marginRight: "10px",
+            marginRight: 3,
             "& .MuiOutlinedInput-root": {
-              "& fieldset": { borderColor: "#676f9d" },
-              "&:hover fieldset": { borderColor: "#ffb17a" },
-              "&.Mui-focused fieldset": { borderColor: "#ffb17a" },
+              "&:hover fieldset": { borderColor: "#676f9d" },
+              "&.Mui-focused fieldset": { borderColor: "#676f9d" },
+              backgroundColor: "#202338",
             },
           }}
         />

@@ -296,13 +296,13 @@ const CodeSnippetDetail = () => {
           <Box sx={{ color: "#ffffff", p: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar
-                src={snippet.userProfilePic || "/default-avatar.png"} // Fallback to default avatar
+                src={snippet.userProfilePic || "/default-avatar.png"} // Use Gmail profile picture or fallback
                 sx={{
                   mr: 2,
                   cursor: "pointer",
-                  display: { xs: "block", sm: "block", md: "block" }, // Ensure visibility on all devices
+                  display: { xs: "block", sm: "block", md: "block" },
                 }}
-                onClick={() => navigate(`/profile/${snippet.userId}`)} // Redirect to public profile
+                onClick={() => navigate(`/profile/${snippet.userId}`)} // Navigate to user's public profile
               />
               <Box>
                 <Typography

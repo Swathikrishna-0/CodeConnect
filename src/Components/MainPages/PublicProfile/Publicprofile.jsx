@@ -32,26 +32,26 @@ const Publicprofile = () => {
       if (docSnap.exists()) {
         const profileData = docSnap.data();
 
-        // Fetch userName from blog posts or code snippets
-        let userName = null;
-        const postsQuery = query(collection(db, 'posts'), where('userId', '==', userId));
-        const postsSnapshot = await getDocs(postsQuery);
-        if (!postsSnapshot.empty) {
-          userName = postsSnapshot.docs[0].data().userName; // Use userName from the first blog post
-        } else {
-          const snippetsQuery = query(collection(db, 'codeSnippets'), where('userId', '==', userId));
-          const snippetsSnapshot = await getDocs(snippetsQuery);
-          if (!snippetsSnapshot.empty) {
-            userName = snippetsSnapshot.docs[0].data().userName; // Use userName from the first code snippet
-          }
-        }
+        // Check if the user logged in with Gmail
+        const userDocRef = doc(db, 'users', userId);
+        const userDocSnap = await getDoc(userDocRef);
+        const isGoogleUser = userDocSnap.exists() && userDocSnap.data().email?.endsWith('@gmail.com');
 
-        // Set profile data
-        setProfile({
-          firstName: userName || profileData.firstName || profileData.fullName || profileData.email,
-          profilePic: profileData.profilePic,
-          role: profileData.role || "User",
-        });
+        if (isGoogleUser) {
+          // Use Gmail account details
+          setProfile({
+            firstName: userDocSnap.data().username || "Google User",
+            profilePic: userDocSnap.data().photoURL || "/default-avatar.png", // Fetch Gmail profile picture
+            role: profileData.role || "User",
+          });
+        } else {
+          // Use profile details from Firestore
+          setProfile({
+            firstName: profileData.firstName || profileData.fullName || profileData.email,
+            profilePic: profileData.profilePic,
+            role: profileData.role || "User",
+          });
+        }
       }
     };
 

@@ -48,6 +48,8 @@ import SavedPosts from "../SavedPosts/SavedPosts"; // Import SavedPosts componen
 import { signOut } from "firebase/auth";
 import ClearIcon from "@mui/icons-material/Clear"; // Import Clear icon
 import SearchResults from "../Search/SearchResults"; // Import the new SearchResults component
+import Profile from "../Profile/Profile"; // Import the Profile component
+import MyAccount from "../MyAccount/MyAccount"; // Import the MyAccount component
 
 const drawerWidth = 240;
 
@@ -190,23 +192,29 @@ export default function Feed() {
 
   React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        // Use Gmail profile picture if available
+        setProfilePic(currentUser.photoURL || null);
+      } else {
+        setProfilePic(null); // Reset profilePic if user is not logged in
+      }
       setUser(currentUser);
     });
     return () => unsubscribe();
   }, []);
 
   React.useEffect(() => {
-    if (user) {
+    if (user && !profilePic) {
       const fetchProfilePic = async () => {
         const docRef = doc(db, "profiles", user.uid);
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
+        if (docSnap.exists() && docSnap.data().profilePic) {
           setProfilePic(docSnap.data().profilePic);
         }
       };
       fetchProfilePic();
     }
-  }, [user]);
+  }, [user, profilePic]);
 
   React.useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("createdAt", "desc")); // Sort blog posts by createdAt
@@ -316,12 +324,12 @@ export default function Feed() {
 
   const handleProfileClick = () => {
     handlePopoverClose();
-    navigate("/profile");
+    navigate("/feed/profile"); // Update the URL to include /feed
   };
 
   const handleAccountClick = () => {
     handlePopoverClose();
-    navigate("/myaccount");
+    navigate("/feed/myaccount"); // Update the URL to include /feed
   };
 
   const handleCreatePostClick = () => {
@@ -634,6 +642,9 @@ export default function Feed() {
               path="searchresults"
               element={<SearchResults />} // Add the SearchResults route
             />
+            {/* Add Profile Route */}
+            <Route path="profile" element={<Profile />} />
+            <Route path="myaccount" element={<MyAccount />} /> {/* Add MyAccount route */}
             {/* Other nested routes can be added here */}
           </Routes>
         </Container>
