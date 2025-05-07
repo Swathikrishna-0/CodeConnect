@@ -155,7 +155,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("md")]: {
-      width: "20ch",
+      width: "20ch", // Default width for large devices
+    },
+    [theme.breakpoints.down("md")]: {
+      width: "15ch", // Adjusted width for medium devices
+    },
+    [theme.breakpoints.down("sm")]: {
+      width: "10ch", // Adjusted width for small devices
     },
   },
 }));
@@ -401,7 +407,7 @@ export default function Feed() {
               </ClearButtonWrapper>
             )}
           </Search>
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
+          <Box sx={{ display: "flex" }}>
             <IconButton
               size="large"
               edge="end"
@@ -409,6 +415,9 @@ export default function Feed() {
               aria-haspopup="true"
               onClick={handleAvatarClick}
               color="inherit"
+              sx={{
+                display: { xs: "block", sm: "block", md: "block" }, // Ensure visibility on all devices
+              }}
             >
               {profilePic ? <Avatar src={profilePic} /> : <AccountCircle />}
             </IconButton>

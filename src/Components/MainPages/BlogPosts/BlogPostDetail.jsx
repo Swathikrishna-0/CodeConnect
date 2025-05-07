@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../../firebase";
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
-import { Box, Typography, IconButton, Avatar, TextField, Button, Alert, Menu, MenuItem } from "@mui/material";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
+import {
+  Box,
+  Typography,
+  IconButton,
+  Avatar,
+  TextField,
+  Button,
+  Alert,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CommentIcon from "@mui/icons-material/Comment";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
@@ -196,7 +212,9 @@ const BlogPostDetail = () => {
       await updateDoc(postRef, { bookmarks: arrayRemove(user.uid) });
       setPost((prevPost) => ({
         ...prevPost,
-        bookmarks: prevPost.bookmarks.filter((bookmark) => bookmark !== user.uid),
+        bookmarks: prevPost.bookmarks.filter(
+          (bookmark) => bookmark !== user.uid
+        ),
       }));
     } else {
       await updateDoc(postRef, { bookmarks: arrayUnion(user.uid) });
@@ -236,13 +254,30 @@ const BlogPostDetail = () => {
 
   return (
     <>
-      <Box sx={{ display: "flex"}}>
-        <Box component="main" sx={{ flexGrow: 1}}>
-          <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3 }}>
+      <Box
+        sx={{
+          mb: 4,
+          p: 3,
+          borderRadius: "12px",
+          background: "linear-gradient(145deg,#424769,#202338)",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+          transition: "transform 0.3s, box-shadow 0.3s",
+          "&:hover": {
+            transform: "scale(1.02)",
+            boxShadow: "0 6px 12px rgba(0, 0, 0, 0.4)",
+          },
+        }}
+      >
+        <Box component="main" sx={{ flexGrow: 1 }}>
+          <Box sx={{ color: "#ffffff", p: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar
-                src={post.userProfilePic}
-                sx={{ mr: 2, cursor: "pointer" }}
+                src={post.userProfilePic || "/default-avatar.png"} // Fallback to default avatar
+                sx={{
+                  mr: 2,
+                  cursor: "pointer",
+                  display: { xs: "block", sm: "block", md: "block" }, // Ensure visibility on all devices
+                }}
                 onClick={() => navigate(`/profile/${post.userId}`)} // Redirect to public profile
               />
               <Box>
@@ -253,19 +288,26 @@ const BlogPostDetail = () => {
                 >
                   {post.userName}
                 </Typography>
-                <Typography variant="body2" sx={{ color: "#676f9d", fontSize: "0.9rem" }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "#676f9d", fontSize: "0.9rem" }}
+                >
                   {new Date(post.createdAt.seconds * 1000).toLocaleString()}
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
-              <Box sx={{ flex: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+              }}
+            >
+              <Box sx={{ flex: 1,backgroundColor: "#202338", padding: 2, borderRadius: 2 }}>
                 <Typography
                   variant="h4"
                   sx={{
                     mb: 1,
                     color: "#ffffff",
-                    
                   }}
                 >
                   {post.title}
@@ -293,9 +335,10 @@ const BlogPostDetail = () => {
                 <IconButton
                   onClick={handleLike}
                   sx={{
-                    color: Array.isArray(post.likes) && post.likes.includes(user.uid)
-                      ? "#ffb17a"
-                      : "#ffffff",
+                    color:
+                      Array.isArray(post.likes) && post.likes.includes(user.uid)
+                        ? "#ffb17a"
+                        : "#ffffff",
                   }}
                 >
                   <FavoriteIcon />
@@ -306,15 +349,18 @@ const BlogPostDetail = () => {
                 <IconButton
                   onClick={handleBookmark}
                   sx={{
-                    color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.uid)
-                      ? "#ffb17a"
-                      : "#ffffff",
+                    color:
+                      Array.isArray(post.bookmarks) &&
+                      post.bookmarks.includes(user.uid)
+                        ? "#ffb17a"
+                        : "#ffffff",
                   }}
                 >
                   <BookmarkIcon />
                 </IconButton>
                 <Typography sx={{ mt: 1 }}>
-                  {Array.isArray(post.bookmarks) ? post.bookmarks.length : 0} Bookmarks
+                  {Array.isArray(post.bookmarks) ? post.bookmarks.length : 0}{" "}
+                  Bookmarks
                 </Typography>
               </Box>
             </Box>
@@ -323,9 +369,10 @@ const BlogPostDetail = () => {
                 <IconButton
                   onClick={handleLike}
                   sx={{
-                    color: Array.isArray(post.likes) && post.likes.includes(user.uid)
-                      ? "#ffb17a"
-                      : "#ffffff",
+                    color:
+                      Array.isArray(post.likes) && post.likes.includes(user.uid)
+                        ? "#ffb17a"
+                        : "#ffffff",
                   }}
                 >
                   <FavoriteIcon />
@@ -337,36 +384,48 @@ const BlogPostDetail = () => {
                   onClick={handleBookmark}
                   sx={{
                     ml: 2,
-                    color: Array.isArray(post.bookmarks) && post.bookmarks.includes(user.uid)
-                      ? "#ffb17a"
-                      : "#ffffff",
+                    color:
+                      Array.isArray(post.bookmarks) &&
+                      post.bookmarks.includes(user.uid)
+                        ? "#ffb17a"
+                        : "#ffffff",
                   }}
                 >
                   <BookmarkIcon />
                 </IconButton>
                 <Typography sx={{ ml: 1 }}>
-                  {Array.isArray(post.bookmarks) ? post.bookmarks.length : 0} Bookmarks
+                  {Array.isArray(post.bookmarks) ? post.bookmarks.length : 0}{" "}
+                  Bookmarks
                 </Typography>
               </Box>
             </Box>
-            <Box>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="h6" sx={{ mb: 2, mt:3 }}>
                 Comments
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "20px",
+                  justifyContent: "center",
+                }}
+              >
                 <TextField
                   fullWidth
                   label="Add a comment"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  InputLabelProps={{ style: { color: '#ffffff' } }}
-                  InputProps={{ style: { color: '#ffffff', borderColor: '#ffb17a' } }}
+                  InputLabelProps={{ style: { color: "#ffffff" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
-                    marginRight: '10px',
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': { borderColor: '#676f9d' },
-                      '&:hover fieldset': { borderColor: '#ffb17a' },
-                      '&.Mui-focused fieldset': { borderColor: '#ffb17a' },
+                    marginRight: 3,
+                    "& .MuiOutlinedInput-root": {
+                      "&:hover fieldset": { borderColor: "#676f9d" },
+                      "&.Mui-focused fieldset": { borderColor: "#676f9d" },
+                      backgroundColor: "#202338",
                     },
                   }}
                 />
@@ -374,7 +433,14 @@ const BlogPostDetail = () => {
                   onClick={handleComment}
                   variant="contained"
                   startIcon={<CommentIcon />}
-                  sx={{ backgroundColor: '#ffb17a', color: '#000000',p:1,pl:3,pr:3,height:50 }}
+                  sx={{
+                    backgroundColor: "#ffb17a",
+                    color: "#000000",
+                    p: 1,
+                    pl: 3,
+                    pr: 3,
+                    height: 50,
+                  }}
                 >
                   Comment
                 </Button>
@@ -386,13 +452,19 @@ const BlogPostDetail = () => {
               )}
               <Box sx={{ mt: 2, mb: 2 }}>
                 {comments.map((comment, index) => (
-                  <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                  <Box
+                    key={index}
+                    sx={{ display: "flex", alignItems: "center", mb: 2 }}
+                  >
                     <Avatar src={comment.userProfilePic} sx={{ mr: 2 }} />
                     <Box>
                       <Typography variant="body2" sx={{ color: "#ffffff" }}>
                         {comment.userName}: <strong>{comment.comment}</strong>
                       </Typography>
-                      <Typography variant="body2" sx={{ color: "#676f9d", fontSize: "0.8rem" }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "#676f9d", fontSize: "0.8rem" }}
+                      >
                         {new Date(comment.createdAt).toLocaleString()}
                       </Typography>
                     </Box>

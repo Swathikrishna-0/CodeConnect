@@ -273,7 +273,18 @@ const CodeSnippetDetail = () => {
 
   return (
     <>
-      <Box sx={{ display: "flex" }}>
+      <Box  sx={{
+          mb: 4,
+          p: 3,
+          borderRadius: "12px",
+          background: "linear-gradient(145deg,#424769,#202338)",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+          transition: "transform 0.3s, box-shadow 0.3s",
+          "&:hover": {
+            transform: "scale(1.02)",
+            boxShadow: "0 6px 12px rgba(0, 0, 0, 0.4)",
+          },
+        }}>
         
         {renderMobileMenu}
         {renderMenu}
@@ -282,11 +293,15 @@ const CodeSnippetDetail = () => {
           component="main"
           sx={{ flexGrow: 1, width:"100%"}}
         >
-          <Box sx={{ backgroundColor: "#202338", color: "#ffffff", p: 3 }}>
+          <Box sx={{ color: "#ffffff", p: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar
-                src={snippet.userProfilePic}
-                sx={{ mr: 2, cursor: "pointer" }}
+                src={snippet.userProfilePic || "/default-avatar.png"} // Fallback to default avatar
+                sx={{
+                  mr: 2,
+                  cursor: "pointer",
+                  display: { xs: "block", sm: "block", md: "block" }, // Ensure visibility on all devices
+                }}
                 onClick={() => navigate(`/profile/${snippet.userId}`)} // Redirect to public profile
               />
               <Box>
@@ -316,7 +331,8 @@ const CodeSnippetDetail = () => {
                   Language: {snippet.language || "Unknown"}
                 </Typography>
                 <Box
-                  sx={{ backgroundColor: "#424769", p: 2, borderRadius: "4px" }}
+                  sx={{ backgroundColor: "#202338",
+                    border: "1px solid #676f9d", p: 2, borderRadius: "4px" }}
                 >
                   <Editor
                     value={snippet.code}
@@ -332,9 +348,7 @@ const CodeSnippetDetail = () => {
                     style={{
                       fontFamily: '"Fira code", "Fira Mono", monospace',
                       fontSize: 14,
-                      backgroundColor: "#424769",
                       color: "#ffffff",
-                      border: "1px solid #676f9d",
                       borderRadius: "4px",
                       minHeight: "200px",
                     }}
@@ -390,6 +404,7 @@ const CodeSnippetDetail = () => {
                   display: "flex",
                   alignItems: "center",
                   marginBottom: "20px",
+                  justifyContent: "center",
                 }}
               >
                 <TextField
@@ -402,11 +417,11 @@ const CodeSnippetDetail = () => {
                     style: { color: "#ffffff", borderColor: "#ffb17a" },
                   }}
                   sx={{
-                    marginRight: "10px",
+                    marginRight: 3,
                     "& .MuiOutlinedInput-root": {
-                      "& fieldset": { borderColor: "#676f9d" },
-                      "&:hover fieldset": { borderColor: "#ffb17a" },
-                      "&.Mui-focused fieldset": { borderColor: "#ffb17a" },
+                      "&:hover fieldset": { borderColor: "#676f9d" },
+                      "&.Mui-focused fieldset": { borderColor: "#676f9d" },
+                      backgroundColor: "#202338",
                     },
                   }}
                 />

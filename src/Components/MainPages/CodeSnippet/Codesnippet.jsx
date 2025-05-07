@@ -7,148 +7,103 @@ import {
   Avatar,
   IconButton,
   Typography,
-  TextField,
-  Button,
   Box,
-  Alert,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import CommentIcon from "@mui/icons-material/Comment";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { db } from "../../../firebase";
 import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
-import { ref, onValue, push } from "firebase/database";
-import { realtimeDb } from "../../../firebase";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
 import "prismjs/themes/prism.css";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../../firebase";
-import { onAuthStateChanged } from "firebase/auth";
 
 const CodeSnippet = ({ snippet }) => {
   const navigate = useNavigate();
-  const [likes, setLikes] = useState(snippet.likes.length);
-  const [comments, setComments] = useState([]);
-  const [commentText, setCommentText] = useState('');
-  const [liked, setLiked] = useState(false); // Initialize with false
-  const [saved, setSaved] = useState(false); // Initialize with false
-  const [alertMessage, setAlertMessage] = useState('');
-  const [user, setUser] = useState(null);
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const user = auth.currentUser;
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        setLiked(snippet.likes.includes(currentUser.uid)); // Use `uid` instead of `id`
-        setSaved(snippet.bookmarks?.includes(currentUser.uid)); // Use `uid` instead of `id`
-      }
-    });
-    return () => unsubscribe();
-  }, [snippet]);
-
-  useEffect(() => {
-    if (!snippet.id) return;
-
-    const commentsRef = ref(realtimeDb, `codeSnippets/${snippet.id}/comments`);
-    const unsubscribe = onValue(commentsRef, (snapshot) => {
-      const data = snapshot.val();
-      const commentsArray = data ? Object.values(data) : [];
-      setComments(commentsArray);
-    });
-
-    return () => unsubscribe();
-  }, [snippet.id]);
+    if (user) {
+      setLiked(snippet.likes?.includes(user.uid));
+      setSaved(snippet.bookmarks?.includes(user.uid));
+    }
+  }, [user, snippet]);
 
   const handleLike = async () => {
-    if (!user) return; // Ensure user is logged in
+    if (!user) return;
     const snippetRef = doc(db, "codeSnippets", snippet.id);
     if (liked) {
-      await updateDoc(snippetRef, {
-        likes: arrayRemove(user.uid), // Use `uid` instead of `id`
-      });
-      setLikes(likes - 1);
+      await updateDoc(snippetRef, { likes: arrayRemove(user.uid) });
     } else {
-      await updateDoc(snippetRef, {
-        likes: arrayUnion(user.uid), // Use `uid` instead of `id`
-      });
-      setLikes(likes + 1);
+      await updateDoc(snippetRef, { likes: arrayUnion(user.uid) });
     }
     setLiked(!liked);
   };
 
   const handleSave = async () => {
-    if (!user) return; // Ensure user is logged in
+    if (!user) return;
     const snippetRef = doc(db, "codeSnippets", snippet.id);
     if (saved) {
-      await updateDoc(snippetRef, {
-        bookmarks: arrayRemove(user.uid), // Use `uid` instead of `id`
-      });
-      setSaved(false);
+      await updateDoc(snippetRef, { bookmarks: arrayRemove(user.uid) });
     } else {
-      await updateDoc(snippetRef, {
-        bookmarks: arrayUnion(user.uid), // Use `uid` instead of `id`
-      });
-      setSaved(true);
+      await updateDoc(snippetRef, { bookmarks: arrayUnion(user.uid) });
     }
-  };
-
-  const handleComment = async () => {
-    if (!commentText.trim()) {
-      setAlertMessage("Review required");
-      setTimeout(() => setAlertMessage(""), 3000);
-      return;
-    }
-
-    const commentsRef = ref(realtimeDb, `codeSnippets/${snippet.id}/comments`);
-    const newComment = {
-      userId: user.id,
-      userName: user.fullName,
-      userAvatar: user.profileImageUrl,
-      text: commentText,
-      createdAt: new Date().toISOString(),
-    };
-
-    try {
-      await push(commentsRef, newComment);
-      setCommentText("");
-      setAlertMessage("");
-    } catch (error) {
-      console.error("Error adding comment: ", error);
-      setAlertMessage("Failed to add comment. Please try again.");
-    }
+    setSaved(!saved);
   };
 
   const handleViewSnippet = () => {
-    navigate(`/feed/codesnippets/${snippet.id}`); // Navigate to CodeSnippetDetail
+    navigate(`/feed/codesnippets/${snippet.id}`);
   };
 
   return (
     <Card
       sx={{
-        marginBottom: 2,
-        backgroundColor: "#1a1a2e" ,
-        border: "0.5px solid #676f9d",
+        mb: 4,
+        p: 3,
+        borderRadius: "12px",
+        background: "linear-gradient(145deg, #2c2f48, #1a1a2e)",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+        transition: "transform 0.3s, box-shadow 0.3s",
+        "&:hover": {
+          transform: "scale(1.02)",
+          boxShadow: "0 6px 12px rgba(0, 0, 0, 0.4)",
+        },
       }}
     >
       <CardHeader
         avatar={
           <Avatar
-            src={snippet.userProfilePic}
-            sx={{ cursor: "pointer" }}
-            onClick={() => navigate(`/profile/${snippet.userId}`)} // Redirect to public profile
+            src={snippet.userProfilePic || "/default-avatar.png"} // Fallback to default avatar
+            sx={{
+              width: 50,
+              height: 50,
+              border: "2px solid #ffb17a",
+              transition: "box-shadow 0.3s",
+              "&:hover": {
+                boxShadow: "0 0 10px #ffb17a",
+              },
+            }}
+            onClick={() => navigate(`/profile/${snippet.userId}`)}
           />
         }
         title={
           <Typography
-            sx={{ color: "#ffffff", cursor: "pointer" }}
-            onClick={() => navigate(`/profile/${snippet.userId}`)} // Redirect to public profile
+            sx={{
+              color: "#ffffff",
+              fontWeight: "bold",
+              cursor: "pointer",
+              "&:hover": { color: "#ffb17a" },
+            }}
+            onClick={() => navigate(`/profile/${snippet.userId}`)}
           >
             {snippet.userName}
           </Typography>
         }
         subheader={
-          <Typography sx={{ color: "#ffffff" }}>
+          <Typography sx={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "0.9rem" }}>
             {new Date(snippet.createdAt.seconds * 1000).toLocaleString()}
           </Typography>
         }
@@ -159,11 +114,10 @@ const CodeSnippet = ({ snippet }) => {
           sx={{
             color: "#ffffff",
             cursor: "pointer",
+            fontWeight: "bold",
             textDecoration: "underline",
             mb: 2,
-            "&:hover": {
-              color: "#ffb17a",
-            },
+            "&:hover": { color: "#ffb17a" },
           }}
           onClick={handleViewSnippet}
         >
@@ -173,14 +127,14 @@ const CodeSnippet = ({ snippet }) => {
           sx={{
             backgroundColor: "#424769",
             p: 2,
-            borderRadius: "4px",
+            borderRadius: "8px",
             overflow: "hidden",
-            maxHeight: "100px", // Limit the height for preview
+            maxHeight: "150px", // Limit the height for preview
             position: "relative",
           }}
         >
           <Editor
-            value={snippet.code}
+            value={snippet.code.split("\n").slice(0, 5).join("\n")} // Show only the first 5 lines
             onValueChange={() => {}}
             highlight={(code) =>
               highlight(
@@ -197,7 +151,7 @@ const CodeSnippet = ({ snippet }) => {
               color: "#ffffff",
               border: "none",
               borderRadius: "4px",
-              pointerEvents: "none", // Make it non-editable
+              pointerEvents: "none",
             }}
             readOnly
           />
@@ -212,23 +166,31 @@ const CodeSnippet = ({ snippet }) => {
             }}
           />
         </Box>
-        <hr style={{ height: "1px", border: "none", backgroundColor: "#676f9d" }} />
       </CardContent>
-      
       <CardActions
         disableSpacing
-        sx={{ display: "flex", justifyContent: "space-between" }}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          mt: 2,
+        }}
       >
-        <IconButton onClick={handleLike}>
-          <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
-          <Typography sx={{ color: "#ffffff" }}>&nbsp; {likes} Likes</Typography>
-        </IconButton>
-        <IconButton onClick={handleSave}>
-          <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
-          <Typography sx={{ color: "#ffffff" }}>
-            &nbsp; {snippet.bookmarks?.length || 0} Bookmarks
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <IconButton onClick={handleLike} sx={{ color: liked ? "#ffb17a" : "#ffffff" }}>
+            <FavoriteIcon />
+          </IconButton>
+          <Typography sx={{ color: "#ffffff", ml: 1 }}>
+            {snippet.likes?.length || 0} Likes
           </Typography>
-        </IconButton>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <IconButton onClick={handleSave} sx={{ color: saved ? "#ffb17a" : "#ffffff" }}>
+            <BookmarkIcon />
+          </IconButton>
+          <Typography sx={{ color: "#ffffff", ml: 1 }}>
+            {snippet.bookmarks?.length || 0} Bookmarks
+          </Typography>
+        </Box>
       </CardActions>
     </Card>
   );

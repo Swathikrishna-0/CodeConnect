@@ -38,15 +38,21 @@ const PodcastPage = () => {
     },
   ];
   return (
-    <Box sx={{ mb: 4 }}>
+    <Box sx={{ padding: "20px", color: "#ffffff" }}>
       <Typography
-        variant="h5"
-        sx={{ mb: 2, color: "#ffb17a", textAlign: "center" }}
+         variant="h4"
+         sx={{ marginBottom: "10px", fontWeight: "bold",textAlign: "center" }}
       >
         Welcome to the world of Podcasts
       </Typography>
+      <Typography
+        variant="h6"
+        sx={{ marginBottom: "50px", fontSize: "16px", color: "#d1d1e0",textAlign: "center" }}
+      >
+        Tune into expert insights, developer stories, and the latest in tech—one episode at a time.
+      </Typography>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h6" sx={{ mb: 2, color: "#ffb17a" }}>
+        <Typography variant="h6" sx={{ mb: 2, color: "#fff",textDecoration: "underline",fontSize: "25px" }}>
           Popular Podcast
         </Typography>
         <iframe
@@ -106,7 +112,7 @@ const PodcastPage = () => {
               }}
             >
               <CardContent>
-                <Typography variant="h6" sx={{ mb: 2, color: "#ffb17a" }}>
+                <Typography variant="h6" sx={{ mb: 2, color: "#fff",textDecoration: "underline",fontSize: "25px" }}>
                   {section.title}
                 </Typography>
                 {section.embedUrls.map((url, idx) => (
@@ -129,7 +135,7 @@ const PodcastPage = () => {
         ))}
       </Grid>
       <Box sx={{ mt: 4 }}>
-        <Typography variant="h6" sx={{ mb: 2, color: "#ffb17a" }}>
+        <Typography variant="h6" sx={{ mb: 2, color: "#fff",textDecoration: "underline",fontSize: "25px" }}>
           Business and Tech
         </Typography>
         <iframe
@@ -144,7 +150,7 @@ const PodcastPage = () => {
         ></iframe>
       </Box>
       <Box sx={{ mt: 4 }}>
-        <Typography variant="h6" sx={{ mb: 2, color: "#ffb17a" }}>
+        <Typography vvariant="h6" sx={{ mb: 2, color: "#fff",textDecoration: "underline",fontSize: "25px" }}>
           Indian Tech Startups
         </Typography>
         <iframe style={{ borderRadius: "12px" }} src="https://open.spotify.com/embed/playlist/37i9dQZF1DWWYU1hafNQFA?utm_source=generator" width="100%" height="500" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
