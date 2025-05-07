@@ -7,8 +7,8 @@ import SignUp from "./SignUp";
 import Landing from "./Landing";
 import Feed from "../Components/MainPages/Feed/Feed";
 import Profile from "../Components/MainPages/Profile/Profile";
-import Myaccount from "../Components/MainPages/MyAccount/MyAccount";
 import Podcasts from "../Components/MainPages/Podcasts/PodcastPage"; // Import Podcasts component
+import Myaccount from "../Components/MainPages/MyAccount/Myaccount";
 
 const Auth = () => {
   const [user, setUser] = React.useState(null);
@@ -27,7 +27,7 @@ const Auth = () => {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/feed/*" element={user ? <Feed /> : <Login />} /> {/* Allow nested routes */}
       <Route path="/profile" element={user ? <Profile /> : <Login />} />
-      <Route path="/myaccount" element={user ? <Myaccount /> : <Login />} />
+      <Route path="/myaccount" element={user ? <Myaccount/> : <Login />} />
       <Route path="/podcasts" element={user ? <Podcasts /> : <Login />} /> {/* Add Podcasts route */}
       <Route path="/feed" element={<Feed />} />
     </Routes>
