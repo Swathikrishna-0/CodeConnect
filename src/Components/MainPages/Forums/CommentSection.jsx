@@ -71,7 +71,7 @@ const CommentSection = ({ questionId, groupId }) => {
       const newComment = {
         text: comment,
         createdAt: new Date().toISOString(),
-        userName: user.displayName || "Anonymous", // Use updated displayName
+        userName: user.displayName || user.email.split("@")[0], // Extract username from email
         userAvatar: user.photoURL || "/default-avatar.png", // Use updated photoURL
       };
 
@@ -162,7 +162,7 @@ const CommentSection = ({ questionId, groupId }) => {
                 variant="body1"
                 sx={{ fontWeight: "bold", marginBottom: "5px" }}
               >
-                {comment.userName}
+                {comment.userName || comment.userEmail?.split("@")[0]} {/* Extract username from email */}
               </Typography>
               <Typography variant="body1" sx={{ marginBottom: "5px" }}>
                 {comment.text}

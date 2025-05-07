@@ -310,7 +310,7 @@ const CodeSnippetDetail = () => {
                   sx={{ cursor: "pointer" }}
                   onClick={() => navigate(`/profile/${snippet.userId}`)} // Redirect to public profile
                 >
-                  {snippet.userName}
+                  {snippet.userName || snippet.userEmail?.split("@")[0]} {/* Extract username from email */}
                 </Typography>
                 <Typography variant="body2" sx={{ color: "#676f9d", fontSize: "0.9rem" }}>
                   {new Date(snippet.createdAt.seconds * 1000).toLocaleString()}
@@ -461,7 +461,8 @@ const CodeSnippetDetail = () => {
                     <Avatar src={comment.userAvatar} sx={{ mr: 2 }} />
                     <Box>
                       <Typography variant="body2" sx={{ color: "#ffffff" }}>
-                        {comment.userName}: <strong>{comment.text}</strong>
+                        {comment.userName || comment.userEmail?.split("@")[0]}: {/* Extract username from email */}
+                        <strong>{comment.text}</strong>
                       </Typography>
 
                       <Typography

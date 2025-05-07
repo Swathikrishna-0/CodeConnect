@@ -40,14 +40,14 @@ const Publicprofile = () => {
         if (isGoogleUser) {
           // Use Gmail account details
           setProfile({
-            firstName: userDocSnap.data().username || "Google User",
+            firstName: userDocSnap.data().username || userDocSnap.data().email.split("@")[0], // Extract username from email
             profilePic: userDocSnap.data().photoURL || "/default-avatar.png", // Fetch Gmail profile picture
             role: profileData.role || "User",
           });
         } else {
           // Use profile details from Firestore
           setProfile({
-            firstName: profileData.firstName || profileData.fullName || profileData.email,
+            firstName: profileData.firstName || profileData.fullName || profileData.email.split("@")[0], // Extract username from email
             profilePic: profileData.profilePic,
             role: profileData.role || "User",
           });

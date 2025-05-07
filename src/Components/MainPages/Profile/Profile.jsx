@@ -50,7 +50,10 @@ const Profile = () => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          formik.setValues(data);
+          formik.setValues({
+            ...data,
+            firstName: data.firstName || user.email.split("@")[0], // Extract username from email
+          });
         }
       };
       fetchProfile();

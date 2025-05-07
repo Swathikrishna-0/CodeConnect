@@ -195,7 +195,7 @@ const BlogPostEditor = () => {
             }}
           />
           <Editor
-            apiKey="wqheav2fbolvt7xe3m7fsnt5o9u29p25j51j3q2jd7lygpzh"
+            apiKey="ga9qsq7wugui9n38e9txs5xt6yltxssk6o4xljwjho8fy9bn"
             value={content}
             init={{
               height: 200,

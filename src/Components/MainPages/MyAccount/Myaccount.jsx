@@ -196,7 +196,7 @@ const Myaccount = () => {
         />
         <Box>
           <Typography variant="h5" sx={{ color: "#ffb17a", fontWeight: "bold" }}>
-            {user?.displayName || "Anonymous"}
+            {user?.displayName || user?.email.split("@")[0] || "Anonymous"} {/* Extract username from email */}
           </Typography>
           <Typography variant="body2" sx={{ color: "#d1d1e0" }}>
             {user?.email}

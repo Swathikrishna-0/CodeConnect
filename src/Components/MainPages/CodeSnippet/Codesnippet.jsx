@@ -99,7 +99,7 @@ const CodeSnippet = ({ snippet }) => {
             }}
             onClick={() => navigate(`/profile/${snippet.userId}`)}
           >
-            {snippet.userName}
+            {snippet.userName || snippet.userEmail?.split("@")[0]} {/* Extract username from email */}
           </Typography>
         }
         subheader={

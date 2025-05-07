@@ -105,8 +105,8 @@ const GroupDiscussion = () => {
 
       const newQuestion = {
         userId: user.uid,
-        userName: user.displayName,
-        userProfilePic: user.photoURL || "",
+        userName: user.displayName || user.email.split("@")[0], // Extract username from email
+        userProfilePic: user.photoURL || "/default-avatar.png", // Use updated photoURL
         topic,
         details,
         createdAt: new Date().toISOString(),
@@ -260,7 +260,7 @@ const GroupDiscussion = () => {
                 onClick={() => navigate(`/profile/${question.userId}`)} // Navigate to the user's public profile
               />
               <Typography variant="h6" sx={{ color: "#ffffff" }}>
-                {question.userName}
+                {question.userName || question.userEmail?.split("@")[0]} {/* Extract username from email */}
               </Typography>
             </Box>
             <Typography variant="h6" sx={{ color: "#ffb17a" }}>
