@@ -257,7 +257,6 @@ const GroupDiscussion = () => {
                     boxShadow: "0 0 10px #ffb17a", // Add glowing effect on hover
                   },
                 }}
-                onClick={() => navigate(`/profile/${question.userId}`)} // Navigate to the user's public profile
               />
               <Typography variant="h6" sx={{ color: "#ffffff" }}>
                 {question.userName || question.userEmail?.split("@")[0]} {/* Extract username from email */}

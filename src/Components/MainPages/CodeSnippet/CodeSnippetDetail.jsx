@@ -302,13 +302,11 @@ const CodeSnippetDetail = () => {
                   cursor: "pointer",
                   display: { xs: "block", sm: "block", md: "block" },
                 }}
-                onClick={() => navigate(`/profile/${snippet.userId}`)} // Navigate to user's public profile
               />
               <Box>
                 <Typography
                   variant="h6"
                   sx={{ cursor: "pointer" }}
-                  onClick={() => navigate(`/profile/${snippet.userId}`)} // Redirect to public profile
                 >
                   {snippet.userName || snippet.userEmail?.split("@")[0]} {/* Extract username from email */}
                 </Typography>

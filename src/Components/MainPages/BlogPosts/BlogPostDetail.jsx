@@ -278,13 +278,12 @@ const BlogPostDetail = () => {
                   cursor: "pointer",
                   display: { xs: "block", sm: "block", md: "block" },
                 }}
-                onClick={() => navigate(`/profile/${post.userId}`)} // Navigate to user's public profile
+               
               />
               <Box>
                 <Typography
                   variant="h6"
                   sx={{ cursor: "pointer" }}
-                  onClick={() => navigate(`/profile/${post.userId}`)} // Redirect to public profile
                 >
                   {post.userName}
                 </Typography>

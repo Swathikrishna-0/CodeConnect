@@ -86,7 +86,6 @@ const CodeSnippet = ({ snippet }) => {
                 boxShadow: "0 0 10px #ffb17a",
               },
             }}
-            onClick={() => navigate(`/profile/${snippet.userId}`)} // Navigate to user's public profile
           />
         }
         title={
@@ -97,7 +96,6 @@ const CodeSnippet = ({ snippet }) => {
               cursor: "pointer",
               "&:hover": { color: "#ffb17a" },
             }}
-            onClick={() => navigate(`/profile/${snippet.userId}`)}
           >
             {snippet.userName || snippet.userEmail?.split("@")[0]} {/* Extract username from email */}
           </Typography>

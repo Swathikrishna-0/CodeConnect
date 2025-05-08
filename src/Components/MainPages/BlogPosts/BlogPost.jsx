@@ -73,7 +73,6 @@ const BlogPost = ({ post }) => {
               boxShadow: "0 0 10px #ffb17a",
             },
           }}
-          onClick={() => navigate(`/profile/${post.userId}`)} // Navigate to user's public profile
         />
         <Box>
           <Typography

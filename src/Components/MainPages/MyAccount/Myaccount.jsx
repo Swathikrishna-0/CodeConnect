@@ -259,7 +259,7 @@ const Myaccount = () => {
         <Box
           key={index}
           sx={{
-            mb: 4,
+            mb: 2,
             backgroundColor: "#2c2f48",
             p: 3,
             borderRadius: "8px",
@@ -291,6 +291,7 @@ const Myaccount = () => {
                     position: "relative",
                     borderRadius: "8px",
                     p: 1, // Add padding for better layout
+                    mb: -3,
                   }}
                 >
                   {section.deleteHandler && (
