@@ -250,7 +250,7 @@ const BlogPostDetail = () => {
     }
   };
 
-  if (!post) return <Typography sx="{color: '#ffffff'}">Loading...</Typography>;
+  if (!post) return <Typography variant="h5" sx={{ color: "#ffb17a" }}>Loading...</Typography>;
 
   return (
     <>

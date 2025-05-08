@@ -50,6 +50,7 @@ import ClearIcon from "@mui/icons-material/Clear"; // Import Clear icon
 import SearchResults from "../Search/SearchResults"; // Import the new SearchResults component
 import Profile from "../Profile/Profile"; // Import the Profile component
 import Myaccount from "../MyAccount/Myaccount";
+import DevCardPage from "./DevCardPage";
 
 const drawerWidth = 240;
 
@@ -380,6 +381,11 @@ export default function Feed() {
     }
   };
 
+  const handleDevCardClick = () => {
+    handlePopoverClose();
+    navigate("/feed/devcard"); // Navigate to the Dev Card page
+  };
+
   return (
     <Box sx={{ display: "flex", backgroundColor: "#202338" }} className="feed-container">
       <CssBaseline />
@@ -459,6 +465,9 @@ export default function Feed() {
         </MenuItem>
         <MenuItem onClick={handleAccountClick} sx={{ "&:hover": { backgroundColor: "#676f9d" } }}>
           My Account
+        </MenuItem>
+        <MenuItem onClick={handleDevCardClick} sx={{ "&:hover": { backgroundColor: "#676f9d" } }}>
+          Dev Card
         </MenuItem>
         <MenuItem onClick={handleSignOut} sx={{ "&:hover": { backgroundColor: "#676f9d" } }}>
           Sign Out
@@ -645,6 +654,7 @@ export default function Feed() {
             {/* Add Profile Route */}
             <Route path="profile" element={<Profile />} />
             <Route path="myaccount" element={<Myaccount />} /> {/* Add MyAccount route */}
+            <Route path="devcard" element={<DevCardPage />} /> {/* Add Dev Card route */}
             {/* Other nested routes can be added here */}
           </Routes>
         </Container>

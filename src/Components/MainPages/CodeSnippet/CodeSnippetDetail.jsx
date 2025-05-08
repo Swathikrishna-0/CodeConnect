@@ -269,7 +269,7 @@ const CodeSnippetDetail = () => {
     }
   };
 
-  if (!snippet) return <Typography sx="{color: '#ffffff'}">Loading...</Typography>;
+  if (!snippet) return <Typography variant="h5" sx={{ color: "#ffb17a" }}>Loading...</Typography>;
 
   return (
     <>

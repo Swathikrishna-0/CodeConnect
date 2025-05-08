@@ -1,17 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { db } from '../../../firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import React, { useState, useEffect } from "react";
+import { db } from "../../../firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { TextField, Button, Typography, Container, Box, Alert, Grid, Avatar, Stepper, Step, StepLabel } from '@mui/material';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import {
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Box,
+  Alert,
+  Grid,
+  Avatar,
+  Stepper,
+  Step,
+  StepLabel,
+} from "@mui/material";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import DevCard from "./DevCard";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
-const steps = ['Personal Info', 'Technical Skills', 'Developer Presence', 'Preferences & Recognition'];
+const steps = [
+  "Personal Info",
+  "Technical Skills",
+  "Developer Presence",
+  "Preferences & Recognition",
+];
 
 const Profile = () => {
   const [user, setUser] = useState(null);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [activeStep, setActiveStep] = useState(0);
 
   useEffect(() => {
@@ -25,7 +45,7 @@ const Profile = () => {
     if (user) {
       const fetchProfile = async () => {
         try {
-          const docRef = doc(db, 'profiles', user.uid);
+          const docRef = doc(db, "profiles", user.uid);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             const data = docSnap.data();
@@ -35,7 +55,7 @@ const Profile = () => {
             });
           }
         } catch (error) {
-          console.error('Error fetching profile data:', error);
+          console.error("Error fetching profile data:", error);
         }
       };
       fetchProfile();
@@ -44,49 +64,49 @@ const Profile = () => {
 
   const formik = useFormik({
     initialValues: {
-      firstName: '',
-      lastName: '',
-      company: '',
-      university: '',
-      education: '',
-      role: '',
-      github: '',
-      linkedin: '',
-      primaryLanguages: '',
-      frameworks: '',
-      databases: '',
-      tools: '',
-      yearsOfExperience: '',
-      employmentType: '',
+      firstName: "",
+      lastName: "",
+      company: "",
+      university: "",
+      education: "",
+      role: "",
+      github: "",
+      linkedin: "",
+      primaryLanguages: "",
+      frameworks: "",
+      databases: "",
+      tools: "",
+      yearsOfExperience: "",
+      employmentType: "",
       openToWork: false,
-      currentPosition: '',
-      portfolio: '',
-      stackOverflow: '',
-      blog: '',
-      twitter: '',
-      favoriteTechStack: '',
-      learningGoals: '',
+      currentPosition: "",
+      portfolio: "",
+      stackOverflow: "",
+      blog: "",
+      twitter: "",
+      favoriteTechStack: "",
+      learningGoals: "",
       openSource: false,
-      preferredIDE: '',
-      certifications: '',
+      preferredIDE: "",
+      certifications: "",
       hackathonParticipation: false,
-      achievements: ''
+      achievements: "",
     },
     validationSchema: Yup.object({
-      firstName: Yup.string().required('First Name is required'),
-      lastName: Yup.string().required('Last Name is required'),
+      firstName: Yup.string().required("First Name is required"),
+      lastName: Yup.string().required("Last Name is required"),
     }),
     onSubmit: async (values) => {
       if (user) {
         try {
-          await setDoc(doc(db, 'profiles', user.uid), values);
-          setMessage('Profile saved successfully!');
-          setTimeout(() => setMessage(''), 3000); // Clear message after 3 seconds
+          await setDoc(doc(db, "profiles", user.uid), values);
+          setMessage("Profile saved successfully!");
+          setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
         } catch (error) {
-          console.error('Error saving profile:', error);
+          console.error("Error saving profile:", error);
         }
       }
-    }
+    },
   });
 
   const handleNext = async () => {
@@ -97,11 +117,15 @@ const Profile = () => {
         stepData.lastName = formik.values.lastName;
         stepData.company = formik.values.company;
         stepData.university = formik.values.university;
+        stepData.education = formik.values.education;
+        stepData.role = formik.values.role;
       } else if (activeStep === 1) {
         stepData.primaryLanguages = formik.values.primaryLanguages;
         stepData.frameworks = formik.values.frameworks;
         stepData.databases = formik.values.databases;
         stepData.tools = formik.values.tools;
+        stepData.yearsOfExperience = formik.values.yearsOfExperience;
+        stepData.currentPosition = formik.values.currentPosition;
       } else if (activeStep === 2) {
         stepData.github = formik.values.github;
         stepData.linkedin = formik.values.linkedin;
@@ -115,18 +139,20 @@ const Profile = () => {
         stepData.certifications = formik.values.certifications;
         stepData.achievements = formik.values.achievements;
         stepData.preferredIDE = formik.values.preferredIDE;
+        stepData.openToWork = formik.values.openToWork;
+        stepData.openSource = formik.values.openSource;
       }
 
       try {
-        await setDoc(doc(db, 'profiles', user.uid), stepData, { merge: true });
+        await setDoc(doc(db, "profiles", user.uid), stepData, { merge: true });
         if (activeStep < steps.length - 1) {
           setActiveStep((prevStep) => prevStep + 1);
         } else {
-          setMessage('Profile saved successfully!');
-          setTimeout(() => setMessage(''), 3000); // Clear message after 3 seconds
+          setMessage("Profile saved successfully!");
+          setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
         }
       } catch (error) {
-        console.error('Error saving step data:', error);
+        console.error("Error saving step data:", error);
       }
     }
   };
@@ -141,27 +167,56 @@ const Profile = () => {
     event.preventDefault();
     if (user) {
       try {
-        await setDoc(doc(db, 'profiles', user.uid), formik.values);
-        setMessage('Profile saved successfully!');
-        setTimeout(() => setMessage(''), 3000); // Clear message after 3 seconds
+        await setDoc(doc(db, "profiles", user.uid), formik.values);
+        setMessage("Profile saved successfully!");
+        setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
       } catch (error) {
-        console.error('Error saving profile:', error);
+        console.error("Error saving profile:", error);
       }
     }
   };
 
+  const exportToPDF = () => {
+    const input = document.getElementById("dev-card");
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const width = pdf.internal.pageSize.getWidth();
+      const height = (canvas.height * width) / canvas.width;
+      pdf.addImage(imgData, "PNG", 0, 0, width, height);
+      pdf.save("CodeConnect_DevCard.pdf");
+    });
+  };
+
+  const exportToImage = () => {
+    const input = document.getElementById("dev-card");
+    html2canvas(input).then((canvas) => {
+      const link = document.createElement("a");
+      link.download = "CodeConnect_DevCard.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+  };
+
   return (
-    <Container maxWidth="md" sx={{ backgroundColor: '#424769', borderRadius: '8px', mt: 4, p: 3 }}>
+    <Container
+      maxWidth="md"
+      sx={{ backgroundColor: "#424769", borderRadius: "8px", mt: 4, p: 3 }}
+    >
       <Box sx={{ mt: 4, mb: 2 }}>
-        <Typography variant="h4" component="h1" sx={{ color: '#ffb17a', textAlign: 'center', fontWeight: 'bold' }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{ color: "#ffb17a", textAlign: "center", fontWeight: "bold" }}
+        >
           Profile
         </Typography>
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-        <Avatar 
-          src={user?.photoURL || ''} 
-          alt="User Avatar" 
-          sx={{ width: 100, height: 100, border: '2px solid #ffb17a' }} 
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+        <Avatar
+          src={user?.photoURL || ""}
+          alt="User Avatar"
+          sx={{ width: 100, height: 100, border: "2px solid #ffb17a" }}
         />
       </Box>
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
@@ -184,10 +239,16 @@ const Profile = () => {
                   label="First Name"
                   value={formik.values.firstName}
                   onChange={formik.handleChange}
-                  error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-                  helperText={formik.touched.firstName && formik.errors.firstName}
+                  error={
+                    formik.touched.firstName && Boolean(formik.errors.firstName)
+                  }
+                  helperText={
+                    formik.touched.firstName && formik.errors.firstName
+                  }
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -207,10 +268,14 @@ const Profile = () => {
                   label="Last Name"
                   value={formik.values.lastName}
                   onChange={formik.handleChange}
-                  error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                  error={
+                    formik.touched.lastName && Boolean(formik.errors.lastName)
+                  }
                   helperText={formik.touched.lastName && formik.errors.lastName}
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -231,7 +296,9 @@ const Profile = () => {
                   value={formik.values.company}
                   onChange={formik.handleChange}
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -252,7 +319,55 @@ const Profile = () => {
                   value={formik.values.university}
                   onChange={formik.handleChange}
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
+                  sx={{
+                    marginBottom: "20px",
+                    "& .MuiOutlinedInput-root": {
+                      "&:hover fieldset": { borderColor: "#676f9d" },
+                      "&.Mui-focused fieldset": { borderColor: "#676f9d" },
+                      backgroundColor: "#202338",
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  id="education"
+                  name="education"
+                  label="Education"
+                  value={formik.values.education}
+                  onChange={formik.handleChange}
+                  InputLabelProps={{ style: { color: "#ffffff" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
+                  sx={{
+                    marginBottom: "20px",
+                    "& .MuiOutlinedInput-root": {
+                      "&:hover fieldset": { borderColor: "#676f9d" },
+                      "&.Mui-focused fieldset": { borderColor: "#676f9d" },
+                      backgroundColor: "#202338",
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  id="role"
+                  name="role"
+                  label="Role"
+                  value={formik.values.role}
+                  onChange={formik.handleChange}
+                  InputLabelProps={{ style: { color: "#ffffff" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -278,7 +393,9 @@ const Profile = () => {
                   onChange={formik.handleChange}
                   helperText="e.g., JavaScript, Python"
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -300,7 +417,9 @@ const Profile = () => {
                   onChange={formik.handleChange}
                   helperText="e.g., React, Node.js, Django"
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -322,7 +441,9 @@ const Profile = () => {
                   onChange={formik.handleChange}
                   helperText="e.g., MySQL, MongoDB"
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -344,7 +465,55 @@ const Profile = () => {
                   onChange={formik.handleChange}
                   helperText="e.g., Git, Docker, AWS"
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
+                  sx={{
+                    marginBottom: "20px",
+                    "& .MuiOutlinedInput-root": {
+                      "&:hover fieldset": { borderColor: "#676f9d" },
+                      "&.Mui-focused fieldset": { borderColor: "#676f9d" },
+                      backgroundColor: "#202338",
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  id="yearsOfExperience"
+                  name="yearsOfExperience"
+                  label="Years of Experience"
+                  value={formik.values.yearsOfExperience}
+                  onChange={formik.handleChange}
+                  InputLabelProps={{ style: { color: "#ffffff" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
+                  sx={{
+                    marginBottom: "20px",
+                    "& .MuiOutlinedInput-root": {
+                      "&:hover fieldset": { borderColor: "#676f9d" },
+                      "&.Mui-focused fieldset": { borderColor: "#676f9d" },
+                      backgroundColor: "#202338",
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  id="currentPosition"
+                  name="currentPosition"
+                  label="Current Position"
+                  value={formik.values.currentPosition}
+                  onChange={formik.handleChange}
+                  InputLabelProps={{ style: { color: "#ffffff" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -369,7 +538,9 @@ const Profile = () => {
                   value={formik.values.github}
                   onChange={formik.handleChange}
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -390,7 +561,9 @@ const Profile = () => {
                   value={formik.values.linkedin}
                   onChange={formik.handleChange}
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -411,7 +584,9 @@ const Profile = () => {
                   value={formik.values.portfolio}
                   onChange={formik.handleChange}
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -432,7 +607,9 @@ const Profile = () => {
                   value={formik.values.stackOverflow}
                   onChange={formik.handleChange}
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -453,7 +630,9 @@ const Profile = () => {
                   value={formik.values.blog}
                   onChange={formik.handleChange}
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -475,7 +654,9 @@ const Profile = () => {
                   onChange={formik.handleChange}
                   helperText="Tech-focused Twitter handle"
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -500,7 +681,9 @@ const Profile = () => {
                   value={formik.values.favoriteTechStack}
                   onChange={formik.handleChange}
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -522,7 +705,9 @@ const Profile = () => {
                   onChange={formik.handleChange}
                   helperText="e.g., Learning Rust this year"
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -544,7 +729,9 @@ const Profile = () => {
                   onChange={formik.handleChange}
                   helperText="e.g., AWS Certified, Google Developer"
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -565,7 +752,9 @@ const Profile = () => {
                   value={formik.values.achievements}
                   onChange={formik.handleChange}
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -587,7 +776,9 @@ const Profile = () => {
                   onChange={formik.handleChange}
                   helperText="e.g., VS Code, IntelliJ"
                   InputLabelProps={{ style: { color: "#ffffff" } }}
-                  InputProps={{ style: { color: "#ffffff", borderColor: "#ffb17a" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
                   sx={{
                     marginBottom: "20px",
                     "& .MuiOutlinedInput-root": {
@@ -598,15 +789,86 @@ const Profile = () => {
                   }}
                 />
               </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  id="openToWork"
+                  name="openToWork"
+                  label="Open to Work"
+                  value={formik.values.openToWork ? "Yes" : "No"}
+                  onChange={(e) =>
+                    formik.setFieldValue("openToWork", e.target.value === "Yes")
+                  }
+                  select
+                  SelectProps={{
+                    native: true,
+                  }}
+                  InputLabelProps={{ style: { color: "#ffffff" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
+                  sx={{
+                    marginBottom: "20px",
+                    "& .MuiOutlinedInput-root": {
+                      "&:hover fieldset": { borderColor: "#676f9d" },
+                      "&.Mui-focused fieldset": { borderColor: "#676f9d" },
+                      backgroundColor: "#202338",
+                    },
+                  }}
+                >
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </TextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  id="openSource"
+                  name="openSource"
+                  label="Open Source Contributor"
+                  value={formik.values.openSource ? "Yes" : "No"}
+                  onChange={(e) =>
+                    formik.setFieldValue("openSource", e.target.value === "Yes")
+                  }
+                  select
+                  SelectProps={{
+                    native: true,
+                  }}
+                  InputLabelProps={{ style: { color: "#ffffff" } }}
+                  InputProps={{
+                    style: { color: "#ffffff", borderColor: "#ffb17a" },
+                  }}
+                  sx={{
+                    marginBottom: "20px",
+                    "& .MuiOutlinedInput-root": {
+                      "&:hover fieldset": { borderColor: "#676f9d" },
+                      "&.Mui-focused fieldset": { borderColor: "#676f9d" },
+                      backgroundColor: "#202338",
+                    },
+                  }}
+                >
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </TextField>
+              </Grid>
             </>
           )}
         </Grid>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            mt: 3,
+            mb: 4,
+          }}
+        >
           <Button
             variant="contained"
             disabled={activeStep === 0}
             onClick={handleBack}
-            sx={{ backgroundColor: '#676f9d', color: '#ffffff' }}
+            sx={{ backgroundColor: "#676f9d", color: "#ffffff" }}
           >
             Back
           </Button>
@@ -614,7 +876,11 @@ const Profile = () => {
             <Button
               type="submit"
               variant="contained"
-              sx={{ backgroundColor: '#ffb17a', color: '#000000', fontWeight: 'bold' }}
+              sx={{
+                backgroundColor: "#ffb17a",
+                color: "#000000",
+                fontWeight: "bold",
+              }}
             >
               Save
             </Button>
@@ -622,14 +888,23 @@ const Profile = () => {
             <Button
               variant="contained"
               onClick={handleNext}
-              sx={{ backgroundColor: '#ffb17a', color: '#000000', fontWeight: 'bold' }}
+              sx={{
+                backgroundColor: "#ffb17a",
+                color: "#000000",
+                fontWeight: "bold",
+              }}
             >
               Next
             </Button>
           )}
         </Box>
       </form>
-      {message && <Alert severity="success" sx={{ mt: 2 }}>{message}</Alert>}
+      {message && (
+        <Alert severity="success" sx={{ mt: 2 }}>
+          {message}
+        </Alert>
+      )}
+      
     </Container>
   );
 };
