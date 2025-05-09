@@ -66,7 +66,7 @@ import Profile from "../Profile/Profile"; // Import the Profile component
 import Myaccount from "../MyAccount/Myaccount";
 import DevCardPage from "./DevCardPage";
 import { motion } from "framer-motion"; // Import motion from framer-motion
-import bitbyteImage from "../../../assets/bitbyte.png"; // Import BitByte image
+import bitbyteImage from "../../../assets/Bitbyte.png";
 import logo from "../../../assets/codeconnect_logo2.png"; // Import logo image
 
 const drawerWidth = 240;
@@ -542,7 +542,8 @@ export default function Feed() {
                 sx={{
                   color: location.pathname.includes("/feed/blogposts")
                     ? "#ffb17a"
-                    : "#ffffff",
+                    : "#ffffff",height: "25px",
+                  width: "25px",mt: 2,
                 }}
               />
             </ListItemIcon>
@@ -552,7 +553,7 @@ export default function Feed() {
                 color: location.pathname.includes("/feed/blogposts")
                   ? "#ffb17a"
                   : "#ffffff",
-                fontSize: "10px",
+                fontSize: "12px",
                 mt: 1,
               }}
             >
@@ -577,7 +578,8 @@ export default function Feed() {
                 sx={{
                   color: location.pathname.includes("/feed/codesnippets")
                     ? "#ffb17a"
-                    : "#ffffff",
+                    : "#ffffff",height: "25px",
+                  width: "25px",mt: 2,
                 }}
               />
             </ListItemIcon>
@@ -587,7 +589,7 @@ export default function Feed() {
                 color: location.pathname.includes("/feed/codesnippets")
                   ? "#ffb17a"
                   : "#ffffff",
-                fontSize: "10px",
+                fontSize: "12px",
                 mt: 1,
               }}
             >
@@ -612,7 +614,8 @@ export default function Feed() {
                 sx={{
                   color: location.pathname.includes("/feed/podcasts")
                     ? "#ffb17a"
-                    : "#ffffff",
+                    : "#ffffff",height: "25px",
+                  width: "25px",mt: 2,
                 }}
               />
             </ListItemIcon>
@@ -622,7 +625,7 @@ export default function Feed() {
                 color: location.pathname.includes("/feed/podcasts")
                   ? "#ffb17a"
                   : "#ffffff",
-                fontSize: "10px",
+                fontSize: "12px",
                 mt: 1,
               }}
             >
@@ -647,7 +650,8 @@ export default function Feed() {
                 sx={{
                   color: location.pathname.includes("/feed/forums")
                     ? "#ffb17a"
-                    : "#ffffff",
+                    : "#ffffff",height: "25px",
+                  width: "25px",mt: 2,
                 }}
               />
             </ListItemIcon>
@@ -657,7 +661,7 @@ export default function Feed() {
                 color: location.pathname.includes("/feed/forums")
                   ? "#ffb17a"
                   : "#ffffff",
-                fontSize: "10px",
+                fontSize: "12px",
                 mt: 1,
               }}
             >
@@ -682,7 +686,8 @@ export default function Feed() {
                 sx={{
                   color: location.pathname.includes("/feed/savedposts")
                     ? "#ffb17a"
-                    : "#ffffff",
+                    : "#ffffff",height: "25px",
+                  width: "25px",mt: 2,
                 }}
               />
             </ListItemIcon>
@@ -692,7 +697,7 @@ export default function Feed() {
                 color: location.pathname.includes("/feed/savedposts")
                   ? "#ffb17a"
                   : "#ffffff",
-                fontSize: "10px",
+                fontSize: "12px",
                 mt: 1,
                 textAlign: "center",
               }}
