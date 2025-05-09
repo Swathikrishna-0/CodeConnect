@@ -1,7 +1,13 @@
 import * as React from "react";
-import { useNavigate, Link, Routes, Route, useLocation } from "react-router-dom"; // Import useLocation
+import {
+  useNavigate,
+  Link,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom"; // Import useLocation
 import { styled, alpha, useTheme } from "@mui/material/styles";
-import PostAddIcon from '@mui/icons-material/PostAdd';
+import PostAddIcon from "@mui/icons-material/PostAdd";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -22,7 +28,15 @@ import Popover from "@mui/material/Popover";
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { db } from "../../../firebase";
-import { doc, getDoc, collection, query, onSnapshot, orderBy, where } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  onSnapshot,
+  orderBy,
+  where,
+} from "firebase/firestore";
 import BlogPostEditor from "../BlogPosts/BlogPostEditor";
 import BlogPost from "../BlogPosts/BlogPost";
 import BlogPostDetail from "../BlogPosts/BlogPostDetail";
@@ -37,13 +51,13 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
-import CodeIcon from '@mui/icons-material/Code';
-import PodcastsIcon from '@mui/icons-material/Podcasts';
+import CodeIcon from "@mui/icons-material/Code";
+import PodcastsIcon from "@mui/icons-material/Podcasts";
 import PodcastPage from "../Podcasts/PodcastPage";
-import ForumIcon from '@mui/icons-material/Forum'; // Import Forums icon
-import Forums from '../Forums/Forums'; // Import Forums component
-import GroupDiscussion from '../Forums/GroupDiscussion'; // Import GroupDiscussion component
-import BookmarkIcon from '@mui/icons-material/Bookmark'; // Import Bookmark icon
+import ForumIcon from "@mui/icons-material/Forum"; // Import Forums icon
+import Forums from "../Forums/Forums"; // Import Forums component
+import GroupDiscussion from "../Forums/GroupDiscussion"; // Import GroupDiscussion component
+import BookmarkIcon from "@mui/icons-material/Bookmark"; // Import Bookmark icon
 import SavedPosts from "../SavedPosts/SavedPosts"; // Import SavedPosts component
 import { signOut } from "firebase/auth";
 import ClearIcon from "@mui/icons-material/Clear"; // Import Clear icon
@@ -51,6 +65,9 @@ import SearchResults from "../Search/SearchResults"; // Import the new SearchRes
 import Profile from "../Profile/Profile"; // Import the Profile component
 import Myaccount from "../MyAccount/Myaccount";
 import DevCardPage from "./DevCardPage";
+import { motion } from "framer-motion"; // Import motion from framer-motion
+import bitbyteImage from "../../../assets/bitbyte.png"; // Import BitByte image
+import logo from "../../../assets/codeconnect_logo2.png"; // Import logo image
 
 const drawerWidth = 240;
 
@@ -230,7 +247,10 @@ export default function Feed() {
   }, []);
 
   React.useEffect(() => {
-    const q = query(collection(db, "codeSnippets"), orderBy("createdAt", "desc")); // Sort code snippets by createdAt
+    const q = query(
+      collection(db, "codeSnippets"),
+      orderBy("createdAt", "desc")
+    ); // Sort code snippets by createdAt
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const snippetsData = [];
       querySnapshot.forEach((doc) => {
@@ -244,7 +264,10 @@ export default function Feed() {
   React.useEffect(() => {
     if (user) {
       const fetchBookmarkedPosts = async () => {
-        const q = query(collection(db, "posts"), where("bookmarks", "array-contains", user.uid));
+        const q = query(
+          collection(db, "posts"),
+          where("bookmarks", "array-contains", user.uid)
+        );
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
           const bookmarksData = [];
           querySnapshot.forEach((doc) => {
@@ -387,20 +410,32 @@ export default function Feed() {
   };
 
   return (
-    <Box sx={{ display: "flex", backgroundColor: "#202338" }} className="feed-container">
+    <Box
+      sx={{ display: "flex", backgroundColor: "#202338" }}
+      className="feed-container"
+    >
       <CssBaseline />
       <AppBarStyled position="fixed" open={false}>
         <Toolbar>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            onClick={handleLogoClick}
-            style={{ cursor: "pointer" }}
+          <div
+            className="logo"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              mb: "10px",
+              cursor: "pointer",
+            }}
+            onClick={handleLogoClick} // Navigate to /feed on logo click
           >
-            <span style={{ color: "#ffffff" }}>Code</span>
-            <span style={{ color: "#ffb17a" }}>Connect</span>
-          </Typography>
+            <img src={logo} alt="CodeConnect Logo" height={40} />{" "}
+            {/* Logo image */}
+            <span
+              style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#fff" }}
+            >
+              Code<span style={{ color: "#ffb17a" }}>Connect</span>
+            </span>
+          </div>
           <Box sx={{ flexGrow: 1 }} />
           <Search>
             <SearchIconWrapper>
@@ -460,16 +495,28 @@ export default function Feed() {
           },
         }}
       >
-        <MenuItem onClick={handleProfileClick} sx={{ "&:hover": { backgroundColor: "#676f9d" } }}>
+        <MenuItem
+          onClick={handleProfileClick}
+          sx={{ "&:hover": { backgroundColor: "#676f9d" } }}
+        >
           My Profile
         </MenuItem>
-        <MenuItem onClick={handleAccountClick} sx={{ "&:hover": { backgroundColor: "#676f9d" } }}>
+        <MenuItem
+          onClick={handleAccountClick}
+          sx={{ "&:hover": { backgroundColor: "#676f9d" } }}
+        >
           My Account
         </MenuItem>
-        <MenuItem onClick={handleDevCardClick} sx={{ "&:hover": { backgroundColor: "#676f9d" } }}>
+        <MenuItem
+          onClick={handleDevCardClick}
+          sx={{ "&:hover": { backgroundColor: "#676f9d" } }}
+        >
           Dev Card
         </MenuItem>
-        <MenuItem onClick={handleSignOut} sx={{ "&:hover": { backgroundColor: "#676f9d" } }}>
+        <MenuItem
+          onClick={handleSignOut}
+          sx={{ "&:hover": { backgroundColor: "#676f9d" } }}
+        >
           Sign Out
         </MenuItem>
       </Popover>
@@ -477,43 +524,179 @@ export default function Feed() {
         <DrawerHeader />
         <Divider />
         <List>
-          <ListItem button onClick={handleCreatePostClick} sx={{ cursor: 'pointer', flexDirection: 'column' }}>
-            <ListItemIcon sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center' }}>
-              <PostAddIcon sx={{ color: location.pathname.includes("/feed/blogposts") ? "#ffb17a" : "#ffffff" }} />
+          <ListItem
+            button
+            onClick={handleCreatePostClick}
+            sx={{ cursor: "pointer", flexDirection: "column" }}
+          >
+            <ListItemIcon
+              sx={{
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <PostAddIcon
+                sx={{
+                  color: location.pathname.includes("/feed/blogposts")
+                    ? "#ffb17a"
+                    : "#ffffff",
+                }}
+              />
             </ListItemIcon>
-            <Typography variant="caption" sx={{ color: location.pathname.includes("/feed/blogposts") ? "#ffb17a" : "#ffffff", fontSize: "10px", mt: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: location.pathname.includes("/feed/blogposts")
+                  ? "#ffb17a"
+                  : "#ffffff",
+                fontSize: "10px",
+                mt: 1,
+              }}
+            >
               Blogs
             </Typography>
           </ListItem>
-          <ListItem button onClick={handleCreateSnippetClick} sx={{ cursor: 'pointer', flexDirection: 'column' }}>
-            <ListItemIcon sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center' }}>
-              <CodeIcon sx={{ color: location.pathname.includes("/feed/codesnippets") ? "#ffb17a" : "#ffffff" }} />
+          <ListItem
+            button
+            onClick={handleCreateSnippetClick}
+            sx={{ cursor: "pointer", flexDirection: "column" }}
+          >
+            <ListItemIcon
+              sx={{
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CodeIcon
+                sx={{
+                  color: location.pathname.includes("/feed/codesnippets")
+                    ? "#ffb17a"
+                    : "#ffffff",
+                }}
+              />
             </ListItemIcon>
-            <Typography variant="caption" sx={{ color: location.pathname.includes("/feed/codesnippets") ? "#ffb17a" : "#ffffff", fontSize: "10px", mt: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: location.pathname.includes("/feed/codesnippets")
+                  ? "#ffb17a"
+                  : "#ffffff",
+                fontSize: "10px",
+                mt: 1,
+              }}
+            >
               Code
             </Typography>
           </ListItem>
-          <ListItem button onClick={handleCreatePodcastClick} sx={{ cursor: 'pointer', flexDirection: 'column' }}>
-            <ListItemIcon sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center' }}>
-              <PodcastsIcon sx={{ color: location.pathname.includes("/feed/podcasts") ? "#ffb17a" : "#ffffff" }} />
+          <ListItem
+            button
+            onClick={handleCreatePodcastClick}
+            sx={{ cursor: "pointer", flexDirection: "column" }}
+          >
+            <ListItemIcon
+              sx={{
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <PodcastsIcon
+                sx={{
+                  color: location.pathname.includes("/feed/podcasts")
+                    ? "#ffb17a"
+                    : "#ffffff",
+                }}
+              />
             </ListItemIcon>
-            <Typography variant="caption" sx={{ color: location.pathname.includes("/feed/podcasts") ? "#ffb17a" : "#ffffff", fontSize: "10px", mt: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: location.pathname.includes("/feed/podcasts")
+                  ? "#ffb17a"
+                  : "#ffffff",
+                fontSize: "10px",
+                mt: 1,
+              }}
+            >
               Podcasts
             </Typography>
           </ListItem>
-          <ListItem button onClick={handleCreateForumsClick} sx={{ cursor: 'pointer', flexDirection: 'column' }}>
-            <ListItemIcon sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center' }}>
-              <ForumIcon sx={{ color: location.pathname.includes("/feed/forums") ? "#ffb17a" : "#ffffff" }} />
+          <ListItem
+            button
+            onClick={handleCreateForumsClick}
+            sx={{ cursor: "pointer", flexDirection: "column" }}
+          >
+            <ListItemIcon
+              sx={{
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <ForumIcon
+                sx={{
+                  color: location.pathname.includes("/feed/forums")
+                    ? "#ffb17a"
+                    : "#ffffff",
+                }}
+              />
             </ListItemIcon>
-            <Typography variant="caption" sx={{ color: location.pathname.includes("/feed/forums") ? "#ffb17a" : "#ffffff", fontSize: "10px", mt: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: location.pathname.includes("/feed/forums")
+                  ? "#ffb17a"
+                  : "#ffffff",
+                fontSize: "10px",
+                mt: 1,
+              }}
+            >
               Forums
             </Typography>
           </ListItem>
-          <ListItem button onClick={handleSavedPostsClick} sx={{ cursor: 'pointer', flexDirection: 'column' }}>
-            <ListItemIcon  sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column',alignItems: 'center',justifyContent: 'center' }}>
-              <BookmarkIcon sx={{ color: location.pathname.includes("/feed/savedposts") ? "#ffb17a" : "#ffffff" }} />
+          <ListItem
+            button
+            onClick={handleSavedPostsClick}
+            sx={{ cursor: "pointer", flexDirection: "column" }}
+          >
+            <ListItemIcon
+              sx={{
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <BookmarkIcon
+                sx={{
+                  color: location.pathname.includes("/feed/savedposts")
+                    ? "#ffb17a"
+                    : "#ffffff",
+                }}
+              />
             </ListItemIcon>
-            <Typography variant="caption" sx={{ color: location.pathname.includes("/feed/savedposts") ? "#ffb17a" : "#ffffff", fontSize: "10px", mt: 1,textAlign: "center" }}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: location.pathname.includes("/feed/savedposts")
+                  ? "#ffb17a"
+                  : "#ffffff",
+                fontSize: "10px",
+                mt: 1,
+                textAlign: "center",
+              }}
+            >
               Saved
             </Typography>
           </ListItem>
@@ -521,7 +704,7 @@ export default function Feed() {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <Container maxWidth="md" >
+        <Container maxWidth="md">
           <Routes>
             {/* Default Feed Content */}
             <Route
@@ -534,9 +717,79 @@ export default function Feed() {
                 !showSavedPostsPage && (
                   <Box sx={{ textAlign: "center", color: "#ffffff" }}>
                     <Typography variant="h4" sx={{ mb: 4 }}>
-                      Welcome to <span style={{ color: "#ffb17a" }}>CodeConnect</span>
+                      Welcome to{" "}
+                      <span style={{ color: "#ffb17a", fontWeight: "bold" }}>
+                        CodeConnect
+                      </span>
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2 }}>
+                    <Box
+                      sx={{
+                        position: "relative",
+                        textAlign: "center",
+                        mt: 4,
+                        display: "flex",
+                        flexDirection: { xs: "column", md: "row" },
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 2,
+                      }}
+                    >
+                      <motion.div
+                        initial={{ y: 0 }}
+                        animate={{ y: [0, -10, 0] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                        style={{ display: "inline-block" }}
+                      >
+                        <img
+                          src={bitbyteImage}
+                          alt="BitByte - The CodeConnect Dev Mascot"
+                          style={{
+                            cursor: "pointer",
+                            maxWidth: "100%",
+                            objectFit: "contain",
+                          }}
+                          className="bitbyte-image"
+                        />
+                      </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 1, delay: 0.5 }}
+                        style={{
+                          maxWidth: "90%",
+                          backgroundColor: "#ffb17a",
+                          color: "#202338",
+                          padding: "15px",
+                          borderRadius: "15px",
+                          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                          fontSize: "0.9rem",
+                          fontFamily: "'Comic Sans MS', cursive, sans-serif",
+                          whiteSpace: "normal",
+                          textAlign: "left",
+                          lineHeight: "1.5",
+                          animation: "float 3s ease-in-out infinite",
+                        }}
+                      >
+                        <strong>Character:</strong> “BitByte” – The CodeConnect
+                        Dev Mascot
+                        <br />
+                        <strong>Name:</strong> BitByte
+                        <br />
+                        <strong>Species:</strong> Digital sprite (part pixel,
+                        part code)
+                        <br />
+                        <strong>Role:</strong> Resident hacker, bug squasher,
+                        and dev cheerleader
+                        <br />
+                        <strong>Personality:</strong> Curious, clever,
+                        optimistic, always tinkering
+                        <br />
+                        <strong>Signature Look:</strong> Oversized glasses,
+                        hoodie with <code>{`{}`}</code>, glowing laptop, USB
+                        tail, loves coffee and rubber duck debugging
+                      </motion.div>
+                    </Box>
+                    <Typography variant="h6" sx={{ mb: 3, mt: 5 }}>
                       Explore the latest content from our community:
                     </Typography>
                     <Box
@@ -558,11 +811,15 @@ export default function Feed() {
                         }}
                         onClick={() => navigate("/feed/podcasts")} // Navigate to Podcasts page
                       >
-                        <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                        <Typography
+                          variant="h6"
+                          sx={{ color: "#ffb17a", mb: 2 }}
+                        >
                           Podcasts
                         </Typography>
                         <Typography variant="body2">
-                          Discover insightful podcasts created by our community members.
+                          Discover insightful podcasts created by our community
+                          members.
                         </Typography>
                       </Box>
                       <Box
@@ -576,11 +833,15 @@ export default function Feed() {
                         }}
                         onClick={() => navigate("/feed/forums")} // Navigate to Forums page
                       >
-                        <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                        <Typography
+                          variant="h6"
+                          sx={{ color: "#ffb17a", mb: 2 }}
+                        >
                           Groups
                         </Typography>
                         <Typography variant="body2">
-                          Join discussions and collaborate with like-minded individuals.
+                          Join discussions and collaborate with like-minded
+                          individuals.
                         </Typography>
                       </Box>
                       <Box
@@ -594,11 +855,15 @@ export default function Feed() {
                         }}
                         onClick={() => navigate("/feed/blogposts")} // Navigate to BlogPosts page
                       >
-                        <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                        <Typography
+                          variant="h6"
+                          sx={{ color: "#ffb17a", mb: 2 }}
+                        >
                           Blogs
                         </Typography>
                         <Typography variant="body2">
-                          Read and share blogs on various topics written by our users.
+                          Read and share blogs on various topics written by our
+                          users.
                         </Typography>
                       </Box>
                       <Box
@@ -612,11 +877,15 @@ export default function Feed() {
                         }}
                         onClick={() => navigate("/feed/codesnippets")} // Navigate to CodeSnippets page
                       >
-                        <Typography variant="h6" sx={{ color: "#ffb17a", mb: 2 }}>
+                        <Typography
+                          variant="h6"
+                          sx={{ color: "#ffb17a", mb: 2 }}
+                        >
                           Code Snippets
                         </Typography>
                         <Typography variant="body2">
-                          Explore and contribute useful code snippets for the community.
+                          Explore and contribute useful code snippets for the
+                          community.
                         </Typography>
                       </Box>
                     </Box>
@@ -633,7 +902,11 @@ export default function Feed() {
             {/* Nested Podcasts Route */}
             <Route path="podcasts" element={<PodcastPage />} />
             {/* Nested Forums Route */}
-            <Route path="forums" element={<Forums onOpenGroup={handleOpenGroup} />} /> {/* Pass handleOpenGroup */}
+            <Route
+              path="forums"
+              element={<Forums onOpenGroup={handleOpenGroup} />}
+            />{" "}
+            {/* Pass handleOpenGroup */}
             <Route
               path="forums/:groupId"
               element={<GroupDiscussion />} // Render GroupDiscussion for specific group
@@ -653,8 +926,10 @@ export default function Feed() {
             />
             {/* Add Profile Route */}
             <Route path="profile" element={<Profile />} />
-            <Route path="myaccount" element={<Myaccount />} /> {/* Add MyAccount route */}
-            <Route path="devcard" element={<DevCardPage />} /> {/* Add Dev Card route */}
+            <Route path="myaccount" element={<Myaccount />} />{" "}
+            {/* Add MyAccount route */}
+            <Route path="devcard" element={<DevCardPage />} />{" "}
+            {/* Add Dev Card route */}
             {/* Other nested routes can be added here */}
           </Routes>
         </Container>

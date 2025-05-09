@@ -19,3 +19,13 @@ div{
 h1 {
   color: white;
 }
+
+.bitbyte-image {
+  @media (min-width: 768px) {
+    height: 600px; // Medium devices
+  }
+
+  @media (min-width: 1200px) {
+    height: 1000px; // Large devices
+  }
+}

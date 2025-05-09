@@ -6,6 +6,7 @@ import { auth, db } from "../../../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import "../Navbar/Navbar.scss";
+import logo from "../../../assets/codeconnect_logo2.png"; // Import the logo image
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -74,9 +75,12 @@ const Navbar = () => {
 
   return (
     <motion.div className="navbar-container-main">
-      <h1 className="logo">
-        Code<span>Connect</span>
-      </h1>
+      <div className="logo" style={{ display: "flex", alignItems: "center", gap: "10px" ,mb: "10px"}}>
+        <img src={logo} alt="CodeConnect Logo" height={40} /> {/* Logo image */}
+        <span style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#fff" }}>
+          Code<span style={{ color: "#ffb17a" }}>Connect</span>
+        </span>
+      </div>
 
       <div className="navbar-main">
         <nav className="navbar">
@@ -110,7 +114,7 @@ const Navbar = () => {
                 />
               )}
               <motion.button
-                className="login-button"
+                className="signup-button"
                 onClick={handleSignOut}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
