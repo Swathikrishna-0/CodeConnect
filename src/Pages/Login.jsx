@@ -4,7 +4,7 @@ import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Button, Card, CardContent } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
-import bitbyteImage from "../assets/bitbyte.png"; // Import BitByte image
+import bitbyteImage from "../assets/Bitbyte.png";
 
 const Login = () => {
   const navigate = useNavigate();
