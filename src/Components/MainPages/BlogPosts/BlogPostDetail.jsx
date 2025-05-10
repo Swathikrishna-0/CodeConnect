@@ -250,7 +250,12 @@ const BlogPostDetail = () => {
     }
   };
 
-  if (!post) return <Typography variant="h5" sx={{ color: "#ffb17a" }}>Loading...</Typography>;
+  if (!post)
+    return (
+      <Typography variant="h5" sx={{ color: "#ffb17a" }}>
+        Loading...
+      </Typography>
+    );
 
   return (
     <>
@@ -278,13 +283,9 @@ const BlogPostDetail = () => {
                   cursor: "pointer",
                   display: { xs: "block", sm: "block", md: "block" },
                 }}
-               
               />
               <Box>
-                <Typography
-                  variant="h6"
-                  sx={{ cursor: "pointer" }}
-                >
+                <Typography variant="h6" sx={{ cursor: "pointer" }}>
                   {post.userName}
                 </Typography>
                 <Typography
@@ -301,7 +302,15 @@ const BlogPostDetail = () => {
                 flexDirection: { xs: "column", md: "row" },
               }}
             >
-              <Box sx={{ flex: 1,backgroundColor: "#202338", padding: 2, borderRadius: 2 }}>
+              <Box
+                sx={{
+                  flex: 1,
+                  backgroundColor: "#202338",
+                  padding: 2,
+                  borderRadius: 2,
+                  maxWidth: 700,
+                }}
+              >
                 <Typography
                   variant="h4"
                   sx={{
@@ -322,45 +331,47 @@ const BlogPostDetail = () => {
                   dangerouslySetInnerHTML={{ __html: post.content }}
                 />
               </Box>
-              <Box
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mt: 2,
+              }}
+            >
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}> 
+              <IconButton
+                onClick={handleLike}
                 sx={{
-                  display: { xs: "none", md: "flex" },
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  ml: 4,
+                  color:
+                    Array.isArray(post.likes) && post.likes.includes(user.uid)
+                      ? "#ffb17a"
+                      : "#ffffff",
                 }}
               >
-                <IconButton
-                  onClick={handleLike}
-                  sx={{
-                    color:
-                      Array.isArray(post.likes) && post.likes.includes(user.uid)
-                        ? "#ffb17a"
-                        : "#ffffff",
-                  }}
-                >
-                  <FavoriteIcon />
-                </IconButton>
-                <Typography sx={{ mt: 1, mb: 2 }}>
-                  {Array.isArray(post.likes) ? post.likes.length : 0} Likes
-                </Typography>
-                <IconButton
-                  onClick={handleBookmark}
-                  sx={{
-                    color:
-                      Array.isArray(post.bookmarks) &&
-                      post.bookmarks.includes(user.uid)
-                        ? "#ffb17a"
-                        : "#ffffff",
-                  }}
-                >
-                  <BookmarkIcon />
-                </IconButton>
-                <Typography sx={{ mt: 1 }}>
-                  {Array.isArray(post.bookmarks) ? post.bookmarks.length : 0}{" "}
-                  Bookmarks
-                </Typography>
+                <FavoriteIcon />
+              </IconButton>
+              <Typography sx={{ ml: 1, color: "#ffffff" }}>
+                {Array.isArray(post.likes) ? post.likes.length : 0} Likes
+              </Typography></Box><Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}> 
+              <IconButton
+                onClick={handleBookmark}
+                sx={{
+                  ml: 2,
+                  color:
+                    Array.isArray(post.bookmarks) &&
+                    post.bookmarks.includes(user.uid)
+                      ? "#ffb17a"
+                      : "#ffffff",
+                }}
+              >
+                <BookmarkIcon />
+              </IconButton>
+              <Typography sx={{ ml: 1, color: "#ffffff" }}>
+                {Array.isArray(post.bookmarks) ? post.bookmarks.length : 0}{" "}
+                Bookmarks
+              </Typography>
               </Box>
             </Box>
             <Box sx={{ display: { xs: "block", md: "none" }, mb: 4 }}>
@@ -399,7 +410,7 @@ const BlogPostDetail = () => {
               </Box>
             </Box>
             <Box sx={{ mt: 4 }}>
-              <Typography variant="h6" sx={{ mb: 2, mt:3 }}>
+              <Typography variant="h6" sx={{ mb: 2, mt: 3 }}>
                 Comments
               </Typography>
               <Box

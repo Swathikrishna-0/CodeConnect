@@ -330,7 +330,7 @@ const CodeSnippetDetail = () => {
                 </Typography>
                 <Box
                   sx={{ backgroundColor: "#202338",
-                    border: "1px solid #676f9d", p: 2, borderRadius: "4px" }}
+                    border: "1px solid #676f9d", p: 2, borderRadius: "4px", mb: 2 }}
                 >
                   <Editor
                     value={snippet.code}
@@ -353,44 +353,31 @@ const CodeSnippetDetail = () => {
                     readOnly
                   />
                 </Box>
-              </Box>
-              <Box
-                sx={{
-                  display: { xs: "none", md: "flex" },
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  ml: 4,
-                }}
-              >
-                <IconButton onClick={handleLike}>
-                  <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
-                </IconButton>
-                <Typography sx={{ mt: 1, mb: 2 }}>
-                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0} Likes
-                </Typography>
-                <IconButton onClick={handleSave}>
-                  <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
-                </IconButton>
-                <Typography sx={{ mt: 1 }}>
-                  {Array.isArray(snippet.bookmarks) ? snippet.bookmarks.length : 0} Bookmarks
-                </Typography>
-              </Box>
-            </Box>
-            <Box sx={{ display: { xs: "block", md: "none" }, mt: 2 }}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <IconButton onClick={handleLike}>
-                  <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
-                </IconButton>
-                <Typography sx={{ ml: 1 }}>
-                  {Array.isArray(snippet.likes) ? snippet.likes.length : 0} Likes
-                </Typography>
-                <IconButton onClick={handleSave} sx={{ ml: 2 }}>
-                  <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
-                </IconButton>
-                <Typography sx={{ ml: 1 }}>
-                  {Array.isArray(snippet.bookmarks) ? snippet.bookmarks.length : 0} Bookmarks
-                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mt: 2,
+                    mb: 4,
+                  }}
+                > <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}> 
+                  <IconButton onClick={handleLike}>
+                    <FavoriteIcon sx={{ color: liked ? "#ffb17a" : "#ffffff" }} />
+                  </IconButton>
+                  <Typography sx={{ ml: 1, color: "#ffffff" }}>
+                    {Array.isArray(snippet.likes) ? snippet.likes.length : 0} Likes
+                  </Typography>
+                  </Box>
+                   <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}> 
+                  <IconButton onClick={handleSave} sx={{ ml: 2 }}>
+                    <BookmarkIcon sx={{ color: saved ? "#ffb17a" : "#ffffff" }} />
+                  </IconButton>
+                  <Typography sx={{ ml: 1, color: "#ffffff" }}>
+                    {Array.isArray(snippet.bookmarks) ? snippet.bookmarks.length : 0} Bookmarks
+                  </Typography>
+                  </Box>
+                </Box>
               </Box>
             </Box>
             <Box sx={{ mt: 4 }}>

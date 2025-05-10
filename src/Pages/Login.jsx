@@ -4,6 +4,7 @@ import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Button, Card, CardContent } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
+import bitbyteImage from "../assets/bitbyte.png"; // Import BitByte image
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,12 +23,22 @@ const Login = () => {
     <Box
       sx={{
         display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
         backgroundColor: "#202338",
+        textAlign: "center",
       }}
     >
+      <img
+        src={bitbyteImage}
+        alt="BitByte - The CodeConnect Dev Mascot"
+        style={{
+          height: "500px",
+          marginBottom: "20px",
+        }}
+      />
       <Card
         sx={{
           maxWidth: 400,
@@ -35,7 +46,6 @@ const Login = () => {
           backgroundColor: "#2c2f48",
           color: "#ffffff",
           borderRadius: "12px",
-          textAlign: "center",
         }}
       >
         <CardContent>
