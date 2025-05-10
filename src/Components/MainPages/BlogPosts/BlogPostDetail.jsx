@@ -308,7 +308,7 @@ const BlogPostDetail = () => {
                   backgroundColor: "#202338",
                   padding: 2,
                   borderRadius: 2,
-                  maxWidth: 700,
+                  maxWidth: "100%",
                 }}
               >
                 <Typography
