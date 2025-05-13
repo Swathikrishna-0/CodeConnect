@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import DevCard from "./DevCard";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 

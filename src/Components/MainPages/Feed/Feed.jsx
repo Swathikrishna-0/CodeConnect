@@ -1,29 +1,22 @@
 import * as React from "react";
 import {
   useNavigate,
-  Link,
   Routes,
   Route,
   useLocation,
 } from "react-router-dom"; // Import useLocation
 import { styled, alpha, useTheme } from "@mui/material/styles";
 import PostAddIcon from "@mui/icons-material/PostAdd";
-import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
-import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
-import MoreIcon from "@mui/icons-material/MoreVert";
 import Avatar from "@mui/material/Avatar";
 import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
 import Popover from "@mui/material/Popover";
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -48,7 +41,6 @@ import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
 import CodeIcon from "@mui/icons-material/Code";
