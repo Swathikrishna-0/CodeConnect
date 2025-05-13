@@ -44,6 +44,7 @@ import { styled } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
+// Styled component for Drawer header
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -52,10 +53,12 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
+// BlogPostDetail component displays a single blog post and its comments
 const BlogPostDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // Get post ID from URL
   const user = auth.currentUser; // Get the current user from Firebase
   const navigate = useNavigate();
+  // State variables
   const [post, setPost] = useState(null);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
@@ -65,6 +68,7 @@ const BlogPostDetail = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  // Fetch the blog post from Firestore
   useEffect(() => {
     const fetchPost = async () => {
       const docRef = doc(db, "posts", id);
@@ -76,6 +80,7 @@ const BlogPostDetail = () => {
     fetchPost();
   }, [id]);
 
+  // Listen for comments in Realtime Database
   useEffect(() => {
     if (!id) return;
     const commentsRef = ref(realtimeDb, `blogPosts/${id}/comments`);
@@ -88,6 +93,7 @@ const BlogPostDetail = () => {
     return () => unsubscribe();
   }, [id]);
 
+  // Fetch user profile picture from Firestore
   useEffect(() => {
     if (user) {
       const fetchProfilePic = async () => {
@@ -101,40 +107,37 @@ const BlogPostDetail = () => {
     }
   }, [user]);
 
+  // Menu state helpers
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+  // Menu open/close handlers
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
   };
-
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
-
   const handleProfileClick = () => {
     handleMenuClose();
     navigate("/profile");
   };
-
   const handleAccountClick = () => {
     handleMenuClose();
     navigate("/myaccount");
   };
-
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
-
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
   };
 
+  // Render desktop menu
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -157,6 +160,7 @@ const BlogPostDetail = () => {
     </Menu>
   );
 
+  // Render mobile menu
   const mobileMenuId = "primary-search-account-menu-mobile";
   const renderMobileMenu = (
     <Menu
@@ -189,6 +193,7 @@ const BlogPostDetail = () => {
     </Menu>
   );
 
+  // Handle like button click
   const handleLike = async () => {
     const postRef = doc(db, "posts", id);
     if (Array.isArray(post.likes) && post.likes.includes(user.uid)) {
@@ -206,6 +211,7 @@ const BlogPostDetail = () => {
     }
   };
 
+  // Handle bookmark button click
   const handleBookmark = async () => {
     const postRef = doc(db, "posts", id);
     if (Array.isArray(post.bookmarks) && post.bookmarks.includes(user.uid)) {
@@ -225,6 +231,7 @@ const BlogPostDetail = () => {
     }
   };
 
+  // Handle adding a comment
   const handleComment = async () => {
     if (!comment.trim()) {
       setError("Comment required");
@@ -250,6 +257,7 @@ const BlogPostDetail = () => {
     }
   };
 
+  // Show loading state if post is not loaded yet
   if (!post)
     return (
       <Typography variant="h5" sx={{ color: "#ffb17a" }}>
@@ -259,6 +267,7 @@ const BlogPostDetail = () => {
 
   return (
     <>
+      {/* Blog post card */}
       <Box
         sx={{
           mb: 4,
@@ -275,6 +284,7 @@ const BlogPostDetail = () => {
       >
         <Box component="main" sx={{ flexGrow: 1 }}>
           <Box sx={{ color: "#ffffff", p: 3 }}>
+            {/* Author info */}
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar
                 src={post.userProfilePic || "/default-avatar.png"} // Use Gmail profile picture or fallback
@@ -296,6 +306,7 @@ const BlogPostDetail = () => {
                 </Typography>
               </Box>
             </Box>
+            {/* Post content */}
             <Box
               sx={{
                 display: "flex",
@@ -332,6 +343,7 @@ const BlogPostDetail = () => {
                 />
               </Box>
             </Box>
+            {/* Like and bookmark actions */}
             <Box
               sx={{
                 display: "flex",
@@ -374,6 +386,7 @@ const BlogPostDetail = () => {
               </Typography>
               </Box>
             </Box>
+            {/* Mobile like/bookmark actions */}
             <Box sx={{ display: { xs: "block", md: "none" }, mb: 4 }}>
               <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                 <IconButton
@@ -409,10 +422,12 @@ const BlogPostDetail = () => {
                 </Typography>
               </Box>
             </Box>
+            {/* Comments section */}
             <Box sx={{ mt: 4 }}>
               <Typography variant="h6" sx={{ mb: 2, mt: 3 }}>
                 Comments
               </Typography>
+              {/* Add comment input */}
               <Box
                 sx={{
                   display: "flex",
@@ -455,11 +470,13 @@ const BlogPostDetail = () => {
                   Comment
                 </Button>
               </Box>
+              {/* Error alert for comment */}
               {error && (
                 <Alert severity="error" sx={{ mt: 2 }}>
                   {error}
                 </Alert>
               )}
+              {/* List of comments */}
               <Box sx={{ mt: 2, mb: 2 }}>
                 {comments.map((comment, index) => (
                   <Box

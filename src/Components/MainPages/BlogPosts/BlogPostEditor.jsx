@@ -17,8 +17,10 @@ import { useParams } from "react-router-dom";
 import BlogPost from "./BlogPost";
 import SendIcon from '@mui/icons-material/Send';
 
+// BlogPostEditor component for creating and displaying blog posts
 const BlogPostEditor = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // Get post ID from URL if present
+  // State variables
   const [user, setUser] = useState(null);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
@@ -28,6 +30,7 @@ const BlogPostEditor = () => {
   const [post, setPost] = useState(null);
   const [posts, setPosts] = useState([]);
 
+  // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -35,6 +38,7 @@ const BlogPostEditor = () => {
     return () => unsubscribe();
   }, []);
 
+  // Fetch user profile and set display name/profile picture
   useEffect(() => {
     if (user) {
       const fetchProfile = async () => {
@@ -55,6 +59,7 @@ const BlogPostEditor = () => {
     }
   }, [user]);
 
+  // Fetch a single post if id is present (for detail view)
   useEffect(() => {
     if (id) {
       const fetchPost = async () => {
@@ -68,6 +73,7 @@ const BlogPostEditor = () => {
     }
   }, [id]);
 
+  // Fetch all blog posts and listen for updates
   useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("createdAt", "desc")); // Sort blog posts by createdAt
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -80,12 +86,15 @@ const BlogPostEditor = () => {
     return () => unsubscribe();
   }, []);
 
+  // Handle content change in TinyMCE editor
   const handleEditorChange = (content) => {
     setContent(content);
   };
 
+  // Handle blog post submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validate fields
     if (!title.trim()) {
       setMessage("Error: Title is required.");
       setTimeout(() => setMessage(""), 3000);
@@ -101,6 +110,7 @@ const BlogPostEditor = () => {
       setTimeout(() => setMessage(""), 3000);
       return;
     }
+    // Add post to Firestore
     if (user) {
       try {
         await addDoc(collection(db, "posts"), {
@@ -132,6 +142,7 @@ const BlogPostEditor = () => {
     }
   };
 
+  // If viewing a single post, show its detail
   if (id && post) {
     return (
       <Box sx={{ mb: 4 }}>
@@ -153,19 +164,22 @@ const BlogPostEditor = () => {
   }
 
   return (
+    // Blog post editor and list
     <Box sx={{ padding: "20px", color: "#ffffff" }}>
+      {/* Page heading */}
       <Typography
-              variant="h4"
-              sx={{ marginBottom: "10px", fontWeight: "bold" }}
-            >
-              Blogs
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{ marginBottom: "50px", fontSize: "16px", color: "#d1d1e0" }}
-            >
-              Share your knowledge and insights with the community. Post your blogs
-            </Typography>
+        variant="h4"
+        sx={{ marginBottom: "10px", fontWeight: "bold" }}
+      >
+        Blogs
+      </Typography>
+      <Typography
+        variant="h6"
+        sx={{ marginBottom: "50px", fontSize: "16px", color: "#d1d1e0" }}
+      >
+        Share your knowledge and insights with the community. Post your blogs
+      </Typography>
+      {/* Blog post creation form */}
       <Box
         sx={{
           backgroundColor: "#2c2f48",
@@ -178,6 +192,7 @@ const BlogPostEditor = () => {
           Create a Blog Post
         </Typography>
         <form onSubmit={handleSubmit}>
+          {/* Title input */}
           <TextField
             fullWidth
             label="Title"
@@ -194,6 +209,7 @@ const BlogPostEditor = () => {
               },
             }}
           />
+          {/* TinyMCE rich text editor */}
           <Editor
             apiKey="ga9qsq7wugui9n38e9txs5xt6yltxssk6o4xljwjho8fy9bn"
             value={content}
@@ -232,6 +248,7 @@ const BlogPostEditor = () => {
               automatic_uploads: true,
               file_picker_types: "image",
               file_picker_callback: function (cb, value, meta) {
+                // Custom image upload handler for TinyMCE
                 const input = document.createElement("input");
                 input.setAttribute("type", "file");
                 input.setAttribute("accept", "image/*");
@@ -255,6 +272,7 @@ const BlogPostEditor = () => {
             onEditorChange={handleEditorChange}
           />
           <br />
+          {/* Hashtags input */}
           <TextField
             fullWidth
             label="Hashtags (comma separated)"
@@ -271,6 +289,7 @@ const BlogPostEditor = () => {
               },
             }}
           />
+          {/* Publish button */}
           <Button
             type="submit"
             startIcon={<SendIcon />}
@@ -285,11 +304,13 @@ const BlogPostEditor = () => {
           </Button>
         </form>
       </Box>
+      {/* Success or error message */}
       {message && (
         <Alert severity={message.startsWith("Error") ? "error" : "success"} sx={{ mt: 2 }}>
           {message}
         </Alert>
       )}
+      {/* List of all blog posts */}
       <Box sx={{ mt: 4 }}>
         <Typography variant="h6" sx={{ mb: 2, color: "#ffffff" }}>
           All Blog Posts

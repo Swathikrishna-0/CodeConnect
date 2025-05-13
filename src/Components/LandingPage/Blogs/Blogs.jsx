@@ -9,10 +9,12 @@ import Blog4 from "../../../assets/blog4.png";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../../firebase"; // Import Firebase auth
 
+// Blogs component for the landing page
 const Blogs = () => {
   const navigate = useNavigate();
   const [isSignedIn, setIsSignedIn] = useState(false);
 
+  // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsSignedIn(!!user);
@@ -20,11 +22,11 @@ const Blogs = () => {
     return () => unsubscribe();
   }, []);
 
-  // Refs to track the visibility of blog sections
+  // Refs to track the visibility of blog sections for animation
   const blogLeftRef = useRef(null);
   const blogRightRef = useRef(null);
 
-  // Check if the blog sections are in view
+  // Check if the blog sections are in view for animation
   const blogLeftInView = useInView(blogLeftRef, {
     once: true,
     margin: "-50px",
@@ -48,6 +50,8 @@ const Blogs = () => {
 
   // Transition settings for animations
   const transition = { duration: 0.8, ease: "easeInOut" };
+
+  // Handle "Get Started" or "See all" button click
   const handleGetStartedClick = () => {
     if (isSignedIn) {
       navigate("/feed");
@@ -56,6 +60,7 @@ const Blogs = () => {
     }
   };
 
+  // Handle "See all" button click (same as above)
   const handleSeeAllClick = () => {
     if (isSignedIn) {
       navigate("/feed");
@@ -66,6 +71,7 @@ const Blogs = () => {
 
   return (
     <div className="blog-section-main" id="blogs">
+      {/* Left side: Blog post previews with animation */}
       <motion.div
         className="blog-left"
         ref={blogLeftRef}
@@ -75,6 +81,7 @@ const Blogs = () => {
         transition={transition}
       >
         <div className="blogs-top">
+          {/* Blog post 1 */}
           <div
             className="blog-post"
             style={{ backgroundColor: "#424769", marginRight: "20px" }}
@@ -82,12 +89,14 @@ const Blogs = () => {
             <img src={Blog1} alt="Blog 1" />
             <div className="blog-title"> User Interfaces with Ease</div>
           </div>
+          {/* Blog post 2 */}
           <div className="blog-post" style={{ backgroundColor: "#676f9d" }}>
             <img src={Blog2} alt="Blog 2" />
             <div className="blog-title">The Power of Open Source</div>
           </div>
         </div>
         <div className="blogs-bottom">
+          {/* Blog post 3 */}
           <div
             className="blog-post"
             style={{ backgroundColor: "#676f9d", marginRight: "20px" }}
@@ -95,6 +104,7 @@ const Blogs = () => {
             <img src={Blog3} alt="Blog 3" />
             <div className="blog-title">Streamlining Development</div>
           </div>
+          {/* Blog post 4 */}
           <div className="blog-post" style={{ backgroundColor: "#424769" }}>
             <img src={Blog4} alt="Blog 4" />
             <div className="blog-title">Artificial Intelligence Revolution</div>
@@ -102,6 +112,7 @@ const Blogs = () => {
         </div>
       </motion.div>
 
+      {/* Right side: Blog section description and button with animation */}
       <motion.div
         className="blog-right"
         ref={blogRightRef}

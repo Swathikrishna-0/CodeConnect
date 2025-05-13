@@ -21,6 +21,7 @@ import * as Yup from "yup";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
+// Stepper steps for the profile form
 const steps = [
   "Personal Info",
   "Technical Skills",
@@ -28,11 +29,14 @@ const steps = [
   "Preferences & Recognition",
 ];
 
+// Profile component for editing and saving user profile data
 const Profile = () => {
+  // State for user, feedback message, and stepper
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
   const [activeStep, setActiveStep] = useState(0);
 
+  // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -40,6 +44,7 @@ const Profile = () => {
     return () => unsubscribe();
   }, []);
 
+  // Fetch profile data from Firestore and populate formik values
   useEffect(() => {
     if (user) {
       const fetchProfile = async () => {
@@ -61,6 +66,7 @@ const Profile = () => {
     }
   }, [user]);
 
+  // Formik for form state and validation
   const formik = useFormik({
     initialValues: {
       firstName: "",
@@ -108,9 +114,11 @@ const Profile = () => {
     },
   });
 
+  // Handle next step in stepper and save partial data
   const handleNext = async () => {
     if (user) {
       const stepData = {};
+      // Save only the fields relevant to the current step
       if (activeStep === 0) {
         stepData.firstName = formik.values.firstName;
         stepData.lastName = formik.values.lastName;
@@ -156,12 +164,14 @@ const Profile = () => {
     }
   };
 
+  // Handle back step in stepper
   const handleBack = () => {
     if (activeStep > 0) {
       setActiveStep((prevStep) => prevStep - 1);
     }
   };
 
+  // Handle full form submit
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (user) {
@@ -175,6 +185,7 @@ const Profile = () => {
     }
   };
 
+  // Export Dev Card as PDF
   const exportToPDF = () => {
     const input = document.getElementById("dev-card");
     html2canvas(input).then((canvas) => {
@@ -187,6 +198,7 @@ const Profile = () => {
     });
   };
 
+  // Export Dev Card as PNG image
   const exportToImage = () => {
     const input = document.getElementById("dev-card");
     html2canvas(input).then((canvas) => {
@@ -198,10 +210,12 @@ const Profile = () => {
   };
 
   return (
+    // Main profile form container
     <Container
       maxWidth="md"
       sx={{ backgroundColor: "#424769", borderRadius: "8px", mt: 4, p: 3 }}
     >
+      {/* Profile heading */}
       <Box sx={{ mt: 4, mb: 2 }}>
         <Typography
           variant="h4"
@@ -211,6 +225,7 @@ const Profile = () => {
           Profile
         </Typography>
       </Box>
+      {/* User avatar */}
       <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
         <Avatar
           src={user?.photoURL || ""}
@@ -218,6 +233,7 @@ const Profile = () => {
           sx={{ width: 100, height: 100, border: "2px solid #ffb17a" }}
         />
       </Box>
+      {/* Stepper for multi-step form */}
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
         {steps.map((label) => (
           <Step key={label}>
@@ -225,8 +241,10 @@ const Profile = () => {
           </Step>
         ))}
       </Stepper>
+      {/* Profile form fields for each step */}
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
+          {/* Step 0: Personal Info */}
           {activeStep === 0 && (
             <>
               <Grid item xs={12} sm={6}>
@@ -379,6 +397,7 @@ const Profile = () => {
               </Grid>
             </>
           )}
+          {/* Step 1: Technical Skills */}
           {activeStep === 1 && (
             <>
               <Grid item xs={12} sm={6}>
@@ -525,6 +544,7 @@ const Profile = () => {
               </Grid>
             </>
           )}
+          {/* Step 2: Developer Presence */}
           {activeStep === 2 && (
             <>
               <Grid item xs={12} sm={6}>
@@ -668,6 +688,7 @@ const Profile = () => {
               </Grid>
             </>
           )}
+          {/* Step 3: Preferences & Recognition */}
           {activeStep === 3 && (
             <>
               <Grid item xs={12} sm={6}>
@@ -855,6 +876,7 @@ const Profile = () => {
             </>
           )}
         </Grid>
+        {/* Navigation buttons for stepper */}
         <Box
           sx={{
             display: "flex",
@@ -898,12 +920,12 @@ const Profile = () => {
           )}
         </Box>
       </form>
+      {/* Success message */}
       {message && (
         <Alert severity="success" sx={{ mt: 2 }}>
           {message}
         </Alert>
       )}
-      
     </Container>
   );
 };

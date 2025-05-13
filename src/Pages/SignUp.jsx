@@ -7,15 +7,18 @@ import { Box, Typography, Button, Card, CardContent } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import bitbyteImage from "../assets/Bitbyte.png";
 
+// SignUp component for Google authentication and user creation
 const SignUp = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
+  // Handle Google sign-up and create user document in Firestore
   const handleGoogleSignUp = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
+      // Save user info to Firestore users collection
       await setDoc(
         doc(db, "users", user.uid),
         {
@@ -33,6 +36,7 @@ const SignUp = () => {
   };
 
   return (
+    // Main sign-up page layout
     <Box
       sx={{
         display: "flex",
@@ -44,6 +48,7 @@ const SignUp = () => {
         textAlign: "center",
       }}
     >
+      {/* Mascot image */}
       <img
         src={bitbyteImage}
         alt="BitByte - The CodeConnect Dev Mascot"
@@ -52,6 +57,7 @@ const SignUp = () => {
           marginBottom: "20px",
         }}
       />
+      {/* Sign-up card */}
       <Card
         sx={{
           maxWidth: 400,
@@ -62,6 +68,7 @@ const SignUp = () => {
         }}
       >
         <CardContent>
+          {/* Heading */}
           <Typography
             variant="h4"
             sx={{
@@ -72,6 +79,7 @@ const SignUp = () => {
           >
             Join CodeConnect
           </Typography>
+          {/* Google sign-up button */}
           <Button
             fullWidth
             variant="contained"
@@ -89,6 +97,7 @@ const SignUp = () => {
           >
             Sign up with Google
           </Button>
+          {/* Error message if sign-up fails */}
           {error && (
             <Typography color="error" sx={{ mt: 2 }}>
               {error}

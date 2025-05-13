@@ -8,12 +8,14 @@ import { doc, getDoc } from "firebase/firestore";
 import "../Navbar/Navbar.scss";
 import logo from "../../../assets/codeconnect_logo2.png"; // Import the logo image
 
+// Navbar component for the landing page
 const Navbar = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Home");
   const [profilePic, setProfilePic] = useState(null);
   const [user, setUser] = useState(null);
 
+  // Listen for authentication state changes and fetch profile picture
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -33,11 +35,13 @@ const Navbar = () => {
     return () => unsubscribe();
   }, []);
 
+  // Handle sign out and redirect to login
   const handleSignOut = async () => {
     await signOut(auth);
     navigate("/login");
   };
 
+  // Navigation tabs for the navbar
   const tabs = [
     { name: "HOME", id: "home" },
     { name: "BLOGS", id: "blogs" },
@@ -47,11 +51,13 @@ const Navbar = () => {
     { name: "ABOUT", id: "about" },
   ];
 
+  // Handle tab click: set active tab and scroll to section
   const handleTabClick = (tab) => {
     setActiveTab(tab.name);
     document.getElementById(tab.id).scrollIntoView({ behavior: "smooth" });
   };
 
+  // Highlight the active tab based on scroll position
   useEffect(() => {
     const handleScroll = () => {
       const sections = tabs.map((tab) => document.getElementById(tab.id));
@@ -75,6 +81,7 @@ const Navbar = () => {
 
   return (
     <motion.div className="navbar-container-main">
+      {/* Logo section */}
       <div className="logo" style={{ display: "flex", alignItems: "center", gap: "10px" ,mb: "10px"}}>
         <img src={logo} alt="CodeConnect Logo" height={40} /> {/* Logo image */}
         <span style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#fff" }}>
@@ -83,6 +90,7 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-main">
+        {/* Navigation tabs */}
         <nav className="navbar">
           {tabs.map((tab) => (
             <motion.div
@@ -95,6 +103,7 @@ const Navbar = () => {
           ))}
         </nav>
 
+        {/* Authentication buttons and user info */}
         <div className="auth-buttons">
           {user ? (
             <>

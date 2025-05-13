@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Avatar, Typography } from "@mui/material";
 import Bitbyte from "../../../assets/Bitbyte.png";
 
+// DevCard component displays a developer's profile card with details and avatar
 const DevCard = ({
   firstName,
   lastName,
@@ -28,9 +29,10 @@ const DevCard = ({
   preferredIDE,
   openToWork,
   openSource,
-  profilePic, // Add profilePic prop to accept Gmail display picture
+  profilePic, // Accept Gmail display picture
 }) => {
   return (
+    // Main card container
     <Box
       id="dev-card"
       sx={{
@@ -44,19 +46,21 @@ const DevCard = ({
         overflow: "hidden", // Ensure the image doesn't overflow the card
       }}
     >
+      {/* Bitbyte mascot image as background */}
       <Box
         component="img"
         src={Bitbyte}
         alt="Bitbyte"
         sx={{
           position: "absolute",
-          bottom: 0, // Position the image at the bottom
-          right: 0, // Position the image at the right
-          width: "300px", // Adjust the size of the image
-          opacity: 1, // Make the image semi-transparent
-          zIndex: 0, // Ensure the image is behind the text
+          bottom: 0,
+          right: 0,
+          width: "300px",
+          opacity: 1,
+          zIndex: 0,
         }}
       />
+      {/* User avatar */}
       <Avatar
         src={profilePic || ""} // Use Gmail display picture or fallback to an empty string
         alt={`${firstName} ${lastName}`}
@@ -65,9 +69,10 @@ const DevCard = ({
           height: 80,
           mb: 2,
           mx: "auto",
-          zIndex: 1, // Ensure the avatar is above the background image
+          zIndex: 1,
         }}
       />
+      {/* Main profile info */}
       <Box sx={{ textAlign: "center", mb: 2, zIndex: 1, position: "relative" }}>
         <Typography variant="h5" sx={{ color: "#ffb17a" }}>
           {firstName} {lastName}
@@ -75,6 +80,7 @@ const DevCard = ({
         <Typography variant="subtitle1">
           {role} @ {company}
         </Typography>
+        {/* Education and language info */}
         <Box sx={{ textAlign: "left", mb: 2, display: "flex", mt: 2 }}>
           <Box>
             <Typography variant="body2">
@@ -100,6 +106,7 @@ const DevCard = ({
           </Box>
         </Box>
         <hr/>
+        {/* Tech stack, links, and other details */}
         <Box sx={{ textAlign: "left", mb: 2, display: "flex", maxWidth: "75%" }}>
           <Box>
             <Typography variant="body2" sx={{ mt: 2 }}>

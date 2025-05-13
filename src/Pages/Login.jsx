@@ -6,10 +6,12 @@ import { Box, Typography, Button, Card, CardContent } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import bitbyteImage from "../assets/Bitbyte.png";
 
+// Login component for Google authentication
 const Login = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
+  // Handle Google sign-in and redirect to feed on success
   const handleGoogleSignIn = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
@@ -20,6 +22,7 @@ const Login = () => {
   };
 
   return (
+    // Main login page layout
     <Box
       sx={{
         display: "flex",
@@ -31,6 +34,7 @@ const Login = () => {
         textAlign: "center",
       }}
     >
+      {/* Mascot image */}
       <img
         src={bitbyteImage}
         alt="BitByte - The CodeConnect Dev Mascot"
@@ -39,6 +43,7 @@ const Login = () => {
           marginBottom: "20px",
         }}
       />
+      {/* Login card */}
       <Card
         sx={{
           maxWidth: 400,
@@ -49,6 +54,7 @@ const Login = () => {
         }}
       >
         <CardContent>
+          {/* Welcome heading */}
           <Typography
             variant="h4"
             sx={{
@@ -59,6 +65,7 @@ const Login = () => {
           >
             Welcome to CodeConnect
           </Typography>
+          {/* Google sign-in button */}
           <Button
             fullWidth
             variant="contained"
@@ -76,6 +83,7 @@ const Login = () => {
           >
             Sign in with Google
           </Button>
+          {/* Error message if sign-in fails */}
           {error && (
             <Typography color="error" sx={{ mt: 2 }}>
               {error}

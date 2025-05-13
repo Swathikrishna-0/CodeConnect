@@ -178,6 +178,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+// Feed component is the main dashboard for authenticated users
 export default function Feed() {
   const location = useLocation(); // Get the current route
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -200,6 +201,7 @@ export default function Feed() {
   const [searchResults, setSearchResults] = React.useState([]); // State for search results
   const [isSearching, setIsSearching] = React.useState(false); // State to track if a search is active
 
+  // Listen for authentication state changes and set user/profilePic
   React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
@@ -213,6 +215,7 @@ export default function Feed() {
     return () => unsubscribe();
   }, []);
 
+  // Fetch profile picture from Firestore if not present
   React.useEffect(() => {
     if (user && !profilePic) {
       const fetchProfilePic = async () => {
@@ -226,6 +229,7 @@ export default function Feed() {
     }
   }, [user, profilePic]);
 
+  // Fetch all blog posts from Firestore
   React.useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("createdAt", "desc")); // Sort blog posts by createdAt
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -238,6 +242,7 @@ export default function Feed() {
     return () => unsubscribe();
   }, []);
 
+  // Fetch all code snippets from Firestore
   React.useEffect(() => {
     const q = query(
       collection(db, "codeSnippets"),
@@ -253,6 +258,7 @@ export default function Feed() {
     return () => unsubscribe();
   }, []);
 
+  // Fetch bookmarked blog posts for the user
   React.useEffect(() => {
     if (user) {
       const fetchBookmarkedPosts = async () => {
@@ -273,6 +279,7 @@ export default function Feed() {
     }
   }, [user]);
 
+  // Fetch bookmarked code snippets for the user
   React.useEffect(() => {
     if (user) {
       const fetchBookmarkedSnippets = async () => {
@@ -293,6 +300,7 @@ export default function Feed() {
     }
   }, [user]);
 
+  // Handle search for blogs and snippets
   const handleSearch = () => {
     const lowerCaseQuery = searchQuery.toLowerCase();
 
@@ -322,12 +330,14 @@ export default function Feed() {
     navigate("/feed/searchresults", { state: { results } });
   };
 
+  // Clear search input and results
   const handleClearSearch = () => {
     setSearchQuery(""); // Clear the search query
     setSearchResults([]); // Clear the search results
     setIsSearching(false); // Reset search state
   };
 
+  // Avatar/profile popover handlers
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -338,6 +348,7 @@ export default function Feed() {
 
   const isPopoverOpen = Boolean(anchorEl);
 
+  // Navigation handlers for profile, account, dev card, etc.
   const handleProfileClick = () => {
     handlePopoverClose();
     navigate("/feed/profile"); // Update the URL to include /feed
@@ -402,13 +413,16 @@ export default function Feed() {
   };
 
   return (
+    // Main layout: AppBar, Drawer, and main content
     <Box
       sx={{ display: "flex", backgroundColor: "#202338" }}
       className="feed-container"
     >
+      {/* AppBar with logo, search, and avatar */}
       <CssBaseline />
       <AppBarStyled position="fixed" open={false}>
         <Toolbar>
+          {/* Logo and title, navigates to /feed */}
           <div
             className="logo"
             style={{
@@ -429,6 +443,7 @@ export default function Feed() {
             </span>
           </div>
           <Box sx={{ flexGrow: 1 }} />
+          {/* Search bar with clear button */}
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -448,6 +463,7 @@ export default function Feed() {
               </ClearButtonWrapper>
             )}
           </Search>
+          {/* Avatar/profile icon */}
           <Box sx={{ display: "flex" }}>
             <IconButton
               size="large"
@@ -465,6 +481,7 @@ export default function Feed() {
           </Box>
         </Toolbar>
       </AppBarStyled>
+      {/* Popover for profile/account/dev card/sign out */}
       <Popover
         open={isPopoverOpen}
         anchorEl={anchorEl}
@@ -512,10 +529,12 @@ export default function Feed() {
           Sign Out
         </MenuItem>
       </Popover>
+      {/* Sidebar Drawer with navigation icons */}
       <Drawer variant="permanent" open={false}>
         <DrawerHeader />
         <Divider />
         <List>
+          {/* Blogs, Code, Podcasts, Forums, Saved navigation */}
           <ListItem
             button
             onClick={handleCreatePostClick}
@@ -534,8 +553,10 @@ export default function Feed() {
                 sx={{
                   color: location.pathname.includes("/feed/blogposts")
                     ? "#ffb17a"
-                    : "#ffffff",height: "25px",
-                  width: "25px",mt: 2,
+                    : "#ffffff",
+                  height: "25px",
+                  width: "25px",
+                  mt: 2,
                 }}
               />
             </ListItemIcon>
@@ -570,8 +591,10 @@ export default function Feed() {
                 sx={{
                   color: location.pathname.includes("/feed/codesnippets")
                     ? "#ffb17a"
-                    : "#ffffff",height: "25px",
-                  width: "25px",mt: 2,
+                    : "#ffffff",
+                  height: "25px",
+                  width: "25px",
+                  mt: 2,
                 }}
               />
             </ListItemIcon>
@@ -606,8 +629,10 @@ export default function Feed() {
                 sx={{
                   color: location.pathname.includes("/feed/podcasts")
                     ? "#ffb17a"
-                    : "#ffffff",height: "25px",
-                  width: "25px",mt: 2,
+                    : "#ffffff",
+                  height: "25px",
+                  width: "25px",
+                  mt: 2,
                 }}
               />
             </ListItemIcon>
@@ -642,8 +667,10 @@ export default function Feed() {
                 sx={{
                   color: location.pathname.includes("/feed/forums")
                     ? "#ffb17a"
-                    : "#ffffff",height: "25px",
-                  width: "25px",mt: 2,
+                    : "#ffffff",
+                  height: "25px",
+                  width: "25px",
+                  mt: 2,
                 }}
               />
             </ListItemIcon>
@@ -678,8 +705,10 @@ export default function Feed() {
                 sx={{
                   color: location.pathname.includes("/feed/savedposts")
                     ? "#ffb17a"
-                    : "#ffffff",height: "25px",
-                  width: "25px",mt: 2,
+                    : "#ffffff",
+                  height: "25px",
+                  width: "25px",
+                  mt: 2,
                 }}
               />
             </ListItemIcon>
@@ -699,11 +728,12 @@ export default function Feed() {
           </ListItem>
         </List>
       </Drawer>
+      {/* Main content area with nested routes */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
         <Container maxWidth="md">
           <Routes>
-            {/* Default Feed Content */}
+            {/* Default Feed Content: Welcome, mascot, and quick links */}
             <Route
               path="/"
               element={
@@ -713,6 +743,7 @@ export default function Feed() {
                 !activeGroup &&
                 !showSavedPostsPage && (
                   <Box sx={{ textAlign: "center", color: "#ffffff" }}>
+                    {/* Welcome message and BitByte mascot */}
                     <Typography variant="h4" sx={{ mb: 4 }}>
                       Welcome to{" "}
                       <span style={{ color: "#ffb17a", fontWeight: "bold" }}>
@@ -789,6 +820,7 @@ export default function Feed() {
                     <Typography variant="h6" sx={{ mb: 3, mt: 5 }}>
                       Explore the latest content from our community:
                     </Typography>
+                    {/* Quick navigation cards for Podcasts, Groups, Blogs, Code Snippets */}
                     <Box
                       sx={{
                         display: "flex",
@@ -890,20 +922,16 @@ export default function Feed() {
                 )
               }
             />
-            {/* Nested BlogPosts Route */}
+            {/* Nested routes for BlogPosts, CodeSnippets, Podcasts, Forums, SavedPosts, SearchResults, Profile, MyAccount, DevCard */}
             <Route path="blogposts" element={<BlogPostEditor />} />
             <Route path="blogposts/:id" element={<BlogPostDetail />} />
-            {/* Nested CodeSnippets Route */}
             <Route path="codesnippets" element={<CodeSnippetEditor />} />
             <Route path="codesnippets/:id" element={<CodeSnippetDetail />} />
-            {/* Nested Podcasts Route */}
             <Route path="podcasts" element={<PodcastPage />} />
-            {/* Nested Forums Route */}
             <Route
               path="forums"
               element={<Forums onOpenGroup={handleOpenGroup} />}
             />{" "}
-            {/* Pass handleOpenGroup */}
             <Route
               path="forums/:groupId"
               element={<GroupDiscussion />} // Render GroupDiscussion for specific group
@@ -921,13 +949,9 @@ export default function Feed() {
               path="searchresults"
               element={<SearchResults />} // Add the SearchResults route
             />
-            {/* Add Profile Route */}
             <Route path="profile" element={<Profile />} />
             <Route path="myaccount" element={<Myaccount />} />{" "}
-            {/* Add MyAccount route */}
             <Route path="devcard" element={<DevCardPage />} />{" "}
-            {/* Add Dev Card route */}
-            {/* Other nested routes can be added here */}
           </Routes>
         </Container>
       </Box>

@@ -6,10 +6,13 @@ import EastIcon from "@mui/icons-material/East";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../../firebase"; // Import Firebase auth
 
+// Podcasts component for the landing page
 const Podcasts = () => {
   const navigate = useNavigate();
+  // State to track if user is signed in
   const [isSignedIn, setIsSignedIn] = useState(false);
 
+  // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsSignedIn(!!user);
@@ -17,16 +20,20 @@ const Podcasts = () => {
     return () => unsubscribe();
   }, []);
 
+  // Animation variants for the podcast image
   const podcastVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
 
+  // Animation variants for the content section
   const contentVariants = {
     hidden: { opacity: 0, x: 50 },
     visible: { opacity: 1, x: 0, transition: { duration: 0.6, delay: 0.3 } },
   };
 
+  // Handle Listen Now button click
+  // If signed in, go to /feed, else redirect to login
   const handleListenNowClick = () => {
     if (isSignedIn) {
       navigate("/feed");
@@ -36,7 +43,9 @@ const Podcasts = () => {
   };
 
   return (
+    // Main podcasts section
     <section id="podcasts" className="podcasts-section">
+      {/* Animated podcast image */}
       <motion.div
         className="podcasts-image"
         initial="hidden"
@@ -51,6 +60,7 @@ const Podcasts = () => {
         />
       </motion.div>
 
+      {/* Animated content section */}
       <motion.div
         className="podcasts-content"
         initial="hidden"
@@ -67,6 +77,7 @@ const Podcasts = () => {
           informed and empowered in your development journey.
         </p>
         <div className="cta-buttons">
+          {/* Listen Now button */}
           <button className="cta-button" onClick={handleListenNowClick}>
             Listen Now <EastIcon className="arrow-icon" />
           </button>

@@ -11,27 +11,32 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
+// CodeSnippets component for the landing page
 const CodeSnippets = () => {
   const navigate = useNavigate();
   const sectionRef = useRef(null);
+  // Track if the section is in view for animation
   const isInView = useInView(sectionRef, { once: true });
 
-  // Framer motion variants for animations
+  // Animation variants for the left side
   const leftVariant = {
     hidden: { opacity: 0, x: -100 },
     visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeInOut" } },
   };
 
+  // Animation variants for the right side
   const rightVariant = {
     hidden: { opacity: 0, x: 100 },
     visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeInOut" } },
   };
 
+  // Animation variants for each code snippet card
   const snippetVariant = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeInOut" } },
   };
 
+  // Handle "See all" button click, redirect based on auth state
   const handleSeeAllClick = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -44,7 +49,7 @@ const CodeSnippets = () => {
 
   return (
     <div className="code-section-main" ref={sectionRef} id="code-snippets">
-      {/* Left Side */}
+      {/* Left Side: Section description and button */}
       <motion.div
         className="code-left"
         variants={leftVariant}
@@ -63,14 +68,14 @@ const CodeSnippets = () => {
         </button>
       </motion.div>
 
-      {/* Right Side */}
+      {/* Right Side: Example code snippet cards with animation */}
       <motion.div
         className="code-right"
         variants={rightVariant}
         initial="hidden"
         animate={isInView ? "visible" : "hidden"}
       >
-        {/* Code Snippet 1 */}
+        {/* Code Snippet 1 Card */}
         <motion.div
           className="code-snippet1"
           variants={snippetVariant}
@@ -92,7 +97,7 @@ const CodeSnippets = () => {
           </div>
         </motion.div>
 
-        {/* Code Snippet 2 */}
+        {/* Code Snippet 2 Card */}
         <motion.div
           className="code-snippet2"
           variants={snippetVariant}

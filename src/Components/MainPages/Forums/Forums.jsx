@@ -3,17 +3,20 @@ import { getDatabase, ref, push, onValue } from "firebase/database";
 import { Box, Typography, TextField, Button } from "@mui/material";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 
+// Forums component for creating and listing discussion groups
 const Forums = ({ onOpenGroup }) => {
+  // State for groups, new group form, and error messages
   const [groups, setGroups] = useState([]);
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupDescription, setNewGroupDescription] = useState("");
   const [error, setError] = useState(null);
 
+  // Fetch groups from Firebase Realtime Database on mount
   useEffect(() => {
     const db = getDatabase();
     const groupsRef = ref(db, "groups");
 
-    // Fetch groups from Firebase
+    // Listen for changes to groups
     const unsubscribe = onValue(
       groupsRef,
       (snapshot) => {
@@ -37,6 +40,7 @@ const Forums = ({ onOpenGroup }) => {
     return () => unsubscribe(); // Cleanup listener on component unmount
   }, []);
 
+  // Handle creating a new group
   const handleCreateGroup = async () => {
     if (!newGroupName.trim() || !newGroupDescription.trim()) {
       setError("Group title and description are required.");
@@ -67,6 +71,7 @@ const Forums = ({ onOpenGroup }) => {
 
   return (
     <Box sx={{ padding: "20px", color: "#ffffff" }}>
+      {/* Page heading */}
       <Typography
         variant="h4"
         sx={{ marginBottom: "10px", fontWeight: "bold" }}
@@ -79,6 +84,7 @@ const Forums = ({ onOpenGroup }) => {
       >
         Create and manage discussion groups.
       </Typography>
+      {/* Create new group form */}
       <Box
         sx={{
           backgroundColor: "#2c2f48",
@@ -144,6 +150,7 @@ const Forums = ({ onOpenGroup }) => {
           </Typography>
         )}
       </Box>
+      {/* List of existing groups */}
       <Typography
         variant="h5"
         sx={{ color: "#ffffff", marginBottom: "20px", fontWeight: "bold" }}

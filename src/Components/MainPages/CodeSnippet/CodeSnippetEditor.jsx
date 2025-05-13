@@ -26,7 +26,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import CodeSnippet from "./Codesnippet"; // Import CodeSnippet
 import SendIcon from '@mui/icons-material/Send';
 
+// CodeSnippetEditor component for creating and displaying code snippets
 const CodeSnippetEditor = () => {
+  // State variables
   const [user, setUser] = useState(null);
   const [code, setCode] = useState("");
   const [description, setDescription] = useState("");
@@ -36,6 +38,7 @@ const CodeSnippetEditor = () => {
   const [anchorEl, setAnchorEl] = useState(null); // Anchor element for the dropdown
   const [snippets, setSnippets] = useState([]); // State for all code snippets
 
+  // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -43,6 +46,7 @@ const CodeSnippetEditor = () => {
     return () => unsubscribe();
   }, []);
 
+  // Fetch user profile and set display name/profile picture
   useEffect(() => {
     if (user) {
       const fetchProfile = async () => {
@@ -65,6 +69,7 @@ const CodeSnippetEditor = () => {
     }
   }, [user]);
 
+  // Fetch all code snippets and listen for updates
   useEffect(() => {
     const q = query(
       collection(db, "codeSnippets"),
@@ -80,21 +85,26 @@ const CodeSnippetEditor = () => {
     return () => unsubscribe();
   }, []);
 
+  // Open the language dropdown
   const handleDropdownOpen = (event) => {
-    setAnchorEl(event.currentTarget); // Open the dropdown
+    setAnchorEl(event.currentTarget);
   };
 
+  // Close the language dropdown
   const handleDropdownClose = () => {
-    setAnchorEl(null); // Close the dropdown
+    setAnchorEl(null);
   };
 
+  // Set the selected language
   const handleLanguageSelect = (lang) => {
-    setLanguage(lang); // Set the selected language
+    setLanguage(lang);
     handleDropdownClose();
   };
 
+  // Handle code snippet submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validate fields
     if (!description.trim()) {
       setMessage("Error: Description is required.");
       setTimeout(() => setMessage(""), 3000);
@@ -105,6 +115,7 @@ const CodeSnippetEditor = () => {
       setTimeout(() => setMessage(""), 3000);
       return;
     }
+    // Add code snippet to Firestore
     if (user) {
       try {
         await addDoc(collection(db, "codeSnippets"), {
@@ -133,7 +144,9 @@ const CodeSnippetEditor = () => {
   };
 
   return (
+    // Main code snippet editor and list
     <Box sx={{ padding: "20px", color: "#ffffff" }}>
+      {/* Page heading */}
       <Typography
         variant="h4"
         sx={{ marginBottom: "10px", fontWeight: "bold" }}
@@ -146,6 +159,7 @@ const CodeSnippetEditor = () => {
       >
         Share, showcase, and explore reusable code for every developer need.
       </Typography>
+      {/* Code snippet creation form */}
       <Box
         sx={{
           backgroundColor: "#2c2f48",
@@ -158,6 +172,7 @@ const CodeSnippetEditor = () => {
           Create a Code Snippet
         </Typography>
         <form onSubmit={handleSubmit}>
+          {/* Description input */}
           <TextField
             fullWidth
             label="Description"
@@ -174,6 +189,7 @@ const CodeSnippetEditor = () => {
               },
             }}
           />
+          {/* Language dropdown */}
           <Button
             variant="outlined"
             onClick={handleDropdownOpen}
@@ -225,6 +241,7 @@ const CodeSnippetEditor = () => {
               </MenuItem>
             ))}
           </Menu>
+          {/* Code editor */}
           <Editor
             value={code}
             onValueChange={(code) => setCode(code)}
@@ -247,6 +264,7 @@ const CodeSnippetEditor = () => {
               marginBottom: "20px",
             }}
           />
+          {/* Publish button */}
           <Button
             type="submit"
             variant="contained"
@@ -261,11 +279,13 @@ const CodeSnippetEditor = () => {
           </Button>
         </form>
       </Box>
+      {/* Success or error message */}
       {message && (
         <Alert severity={message.startsWith("Error") ? "error" : "success"} sx={{ mt: 2 }}>
           {message}
         </Alert>
       )}
+      {/* List of all code snippets */}
       <Box sx={{ mt: 4 }}>
         <Typography variant="h6" sx={{ mb: 2, color: "#ffffff" }}>
           All Code Snippets

@@ -1,7 +1,9 @@
 import React from "react";
 import { Typography, Box, Grid, Card, CardContent } from "@mui/material";
 
+// PodcastPage component displays curated podcast sections with embedded Spotify iframes
 const PodcastPage = () => {
+  // Sections with titles and Spotify embed URLs
   const sections = [
     {
       title: "Trending Podcasts",
@@ -28,7 +30,6 @@ const PodcastPage = () => {
         "https://open.spotify.com/embed/episode/2E1WK1Hsw7EGP1f0biK2n0?utm_source=generator",
       ],
     },
-
     {
       title: "Ted Tech",
       embedUrls: [
@@ -39,6 +40,7 @@ const PodcastPage = () => {
   ];
   return (
     <Box sx={{ padding: "20px", color: "#ffffff" }}>
+      {/* Page heading and intro */}
       <Typography
          variant="h4"
          sx={{ marginBottom: "10px", fontWeight: "bold",textAlign: "center" }}
@@ -51,6 +53,7 @@ const PodcastPage = () => {
       >
         Tune into expert insights, developer stories, and the latest in tech—one episode at a time.
       </Typography>
+      {/* Featured popular podcasts */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h6" sx={{ mb: 2, color: "#fff",textDecoration: "underline",fontSize: "25px" }}>
           Popular Podcast
@@ -65,6 +68,7 @@ const PodcastPage = () => {
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           loading="lazy"
         ></iframe>
+        {/* Additional featured podcast iframes */}
         <Box sx={{ mt: 4 }}>
           <iframe
             style={{ borderRadius: "12px" }}
@@ -102,6 +106,7 @@ const PodcastPage = () => {
           ></iframe>
         </Box>
       </Box>
+      {/* Podcast sections in a grid */}
       <Grid container spacing={2}>
         {sections.map((section, index) => (
           <Grid item xs={12} md={6} key={index}>
@@ -115,6 +120,7 @@ const PodcastPage = () => {
                 <Typography variant="h6" sx={{ mb: 2, color: "#fff",textDecoration: "underline",fontSize: "25px" }}>
                   {section.title}
                 </Typography>
+                {/* Render each podcast embed in the section */}
                 {section.embedUrls.map((url, idx) => (
                   <Box key={idx} sx={{ mb: 2 }}>
                     <iframe
@@ -134,6 +140,7 @@ const PodcastPage = () => {
           </Grid>
         ))}
       </Grid>
+      {/* Additional curated podcast playlists */}
       <Box sx={{ mt: 4 }}>
         <Typography variant="h6" sx={{ mb: 2, color: "#fff",textDecoration: "underline",fontSize: "25px" }}>
           Business and Tech

@@ -47,6 +47,7 @@ import { styled } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
+// Styled component for Drawer header
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -55,21 +56,24 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
+// CodeSnippetDetail component displays a single code snippet and its reviews/comments
 const CodeSnippetDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [snippet, setSnippet] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [commentText, setCommentText] = useState("");
-  const [alertMessage, setAlertMessage] = useState("");
-  const [liked, setLiked] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-  const [profilePic, setProfilePic] = useState(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const { id } = useParams(); // Get the snippet ID from the URL parameters
+  const navigate = useNavigate(); // Navigation hook for redirecting
+  // State variables
+  const [snippet, setSnippet] = useState(null); // Stores the code snippet data
+  const [comments, setComments] = useState([]); // Stores the list of comments
+  const [commentText, setCommentText] = useState(""); // Stores the text of the new comment
+  const [alertMessage, setAlertMessage] = useState(""); // Stores alert messages for errors
+  const [liked, setLiked] = useState(false); // Tracks if the snippet is liked by the user
+  const [saved, setSaved] = useState(false); // Tracks if the snippet is bookmarked by the user
+  const [anchorEl, setAnchorEl] = useState(null); // Anchor element for desktop menu
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null); // Anchor element for mobile menu
+  const [profilePic, setProfilePic] = useState(null); // Stores the user's profile picture
+  const [drawerOpen, setDrawerOpen] = useState(false); // Tracks the state of the drawer
+  const [user, setUser] = useState(null); // Stores the authenticated user
 
+  // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -77,6 +81,7 @@ const CodeSnippetDetail = () => {
     return () => unsubscribe();
   }, []);
 
+  // Fetch the code snippet from Firestore and set like/bookmark state
   useEffect(() => {
     const fetchSnippet = async () => {
       const docRef = doc(db, "codeSnippets", id);
@@ -91,9 +96,9 @@ const CodeSnippetDetail = () => {
     if (user) fetchSnippet();
   }, [id, user]);
 
+  // Listen for comments in Realtime Database
   useEffect(() => {
     if (!id) return;
-
     const commentsRef = ref(realtimeDb, `codeSnippets/${id}/comments`);
     const unsubscribe = onValue(commentsRef, (snapshot) => {
       const data = snapshot.val();
@@ -104,6 +109,7 @@ const CodeSnippetDetail = () => {
     return () => unsubscribe();
   }, [id]);
 
+  // Fetch user profile picture from Firestore
   useEffect(() => {
     if (user) {
       const fetchProfilePic = async () => {
@@ -117,40 +123,37 @@ const CodeSnippetDetail = () => {
     }
   }, [user]);
 
+  // Menu state helpers
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+  // Menu open/close handlers
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
   };
-
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
-
   const handleProfileClick = () => {
     handleMenuClose();
     navigate("/profile");
   };
-
   const handleAccountClick = () => {
     handleMenuClose();
     navigate("/myaccount");
   };
-
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
-
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
   };
 
+  // Render desktop menu
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -173,6 +176,7 @@ const CodeSnippetDetail = () => {
     </Menu>
   );
 
+  // Render mobile menu
   const mobileMenuId = "primary-search-account-menu-mobile";
   const renderMobileMenu = (
     <Menu
@@ -205,6 +209,7 @@ const CodeSnippetDetail = () => {
     </Menu>
   );
 
+  // Handle like button click
   const handleLike = async () => {
     if (!snippet) return;
     const snippetRef = doc(db, "codeSnippets", id);
@@ -224,6 +229,7 @@ const CodeSnippetDetail = () => {
     setLiked(!liked);
   };
 
+  // Handle bookmark button click
   const handleSave = async () => {
     if (!snippet) return;
     const snippetRef = doc(db, "codeSnippets", id);
@@ -243,6 +249,7 @@ const CodeSnippetDetail = () => {
     setSaved(!saved);
   };
 
+  // Handle adding a code review/comment
   const handleComment = async () => {
     if (!commentText.trim()) {
       setAlertMessage("Review required");
@@ -269,10 +276,12 @@ const CodeSnippetDetail = () => {
     }
   };
 
+  // Show loading state if snippet is not loaded yet
   if (!snippet) return <Typography variant="h5" sx={{ color: "#ffb17a" }}>Loading...</Typography>;
 
   return (
     <>
+      {/* Main snippet card */}
       <Box  sx={{
           mb: 4,
           p: 3,
@@ -294,6 +303,7 @@ const CodeSnippetDetail = () => {
           sx={{ flexGrow: 1, width:"100%"}}
         >
           <Box sx={{ color: "#ffffff", p: 3 }}>
+            {/* Author info */}
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar
                 src={snippet.userProfilePic || "/default-avatar.png"} // Use Gmail profile picture or fallback
@@ -315,6 +325,7 @@ const CodeSnippetDetail = () => {
                 </Typography>
               </Box>
             </Box>
+            {/* Snippet content and code */}
             <Box
               sx={{
                 display: "flex",
@@ -353,6 +364,7 @@ const CodeSnippetDetail = () => {
                     readOnly
                   />
                 </Box>
+                {/* Like and bookmark actions */}
                 <Box
                   sx={{
                     display: "flex",
@@ -380,10 +392,12 @@ const CodeSnippetDetail = () => {
                 </Box>
               </Box>
             </Box>
+            {/* Code reviews/comments section */}
             <Box sx={{ mt: 4 }}>
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Code Reviews
               </Typography>
+              {/* Add review input */}
               <Box
                 sx={{
                   display: "flex",
@@ -426,11 +440,13 @@ const CodeSnippetDetail = () => {
                   Review Code
                 </Button>
               </Box>
+              {/* Error alert for review */}
               {alertMessage && (
                 <Alert severity="error" sx={{ mt: 2 }}>
                   {alertMessage}
                 </Alert>
               )}
+              {/* List of reviews/comments */}
               <Box sx={{ mt: 2 }}>
                 {comments.map((comment, index) => (
                   <Box

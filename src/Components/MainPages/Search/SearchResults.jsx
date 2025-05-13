@@ -4,11 +4,14 @@ import { Box, Typography, Divider } from "@mui/material";
 import BlogPost from "../BlogPosts/BlogPost";
 import CodeSnippet from "../CodeSnippet/Codesnippet";
 
+// SearchResults component displays results for blog posts and code snippets
 const SearchResults = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const results = location.state?.results || []; // Get search results from state
+  // Get search results from router state
+  const results = location.state?.results || [];
 
+  // Show message if no results found
   if (!results.length) {
     return (
       <Box sx={{ p: 4, color: "#ffffff" }}>
@@ -23,10 +26,12 @@ const SearchResults = () => {
   }
 
   return (
+    // Main container for search results
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" sx={{ color: "#ffb17a", mb: 4 }}>
         Search Results
       </Typography>
+      {/* Render each result as BlogPost or CodeSnippet */}
       {results.map((item, index) => (
         <React.Fragment key={index}>
           {item.title ? (

@@ -103,6 +103,7 @@ const GroupDiscussion = () => {
       const db = getDatabase();
       const questionsRef = ref(db, `groups/${groupId}/questions`);
 
+      // Prepare new question object with user info and timestamps
       const newQuestion = {
         userId: user.uid,
         userName: user.displayName || user.email.split("@")[0], // Extract username from email
@@ -112,10 +113,12 @@ const GroupDiscussion = () => {
         createdAt: new Date().toISOString(),
       };
 
+      // Push the new question to the group's questions in Firebase
       await push(questionsRef, newQuestion);
 
       setTopic("");
       setDetails("");
+      // Show success toast notification
       toast.success("Question posted successfully!", {
         position: "top-right",
         autoClose: 3000,

@@ -19,12 +19,15 @@ import "prismjs/themes/prism.css";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../../firebase";
 
+// CodeSnippet component displays a code snippet card with like/bookmark actions
 const CodeSnippet = ({ snippet }) => {
   const navigate = useNavigate();
+  // State for like and bookmark status
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const user = auth.currentUser;
 
+  // Set like and bookmark state based on user and snippet data
   useEffect(() => {
     if (user) {
       setLiked(snippet.likes?.includes(user.uid));
@@ -32,6 +35,7 @@ const CodeSnippet = ({ snippet }) => {
     }
   }, [user, snippet]);
 
+  // Handle like button click
   const handleLike = async () => {
     if (!user) return;
     const snippetRef = doc(db, "codeSnippets", snippet.id);
@@ -43,6 +47,7 @@ const CodeSnippet = ({ snippet }) => {
     setLiked(!liked);
   };
 
+  // Handle bookmark button click
   const handleSave = async () => {
     if (!user) return;
     const snippetRef = doc(db, "codeSnippets", snippet.id);
@@ -54,11 +59,13 @@ const CodeSnippet = ({ snippet }) => {
     setSaved(!saved);
   };
 
+  // Navigate to snippet detail page
   const handleViewSnippet = () => {
     navigate(`/feed/codesnippets/${snippet.id}`);
   };
 
   return (
+    // Card for code snippet
     <Card
       sx={{
         mb: 4,
@@ -73,6 +80,7 @@ const CodeSnippet = ({ snippet }) => {
         },
       }}
     >
+      {/* Card header: user avatar, name, and date */}
       <CardHeader
         avatar={
           <Avatar
@@ -107,6 +115,7 @@ const CodeSnippet = ({ snippet }) => {
         }
       />
       <CardContent>
+        {/* Snippet description/title */}
         <Typography
           variant="h6"
           sx={{
@@ -121,6 +130,7 @@ const CodeSnippet = ({ snippet }) => {
         >
           {snippet.description}
         </Typography>
+        {/* Code preview (first 5 lines only) */}
         <Box
           sx={{
             backgroundColor: "#424769",
@@ -153,6 +163,7 @@ const CodeSnippet = ({ snippet }) => {
             }}
             readOnly
           />
+          {/* Gradient overlay for code preview */}
           <Box
             sx={{
               position: "absolute",
@@ -165,6 +176,7 @@ const CodeSnippet = ({ snippet }) => {
           />
         </Box>
       </CardContent>
+      {/* Like and bookmark actions */}
       <CardActions
         disableSpacing
         sx={{

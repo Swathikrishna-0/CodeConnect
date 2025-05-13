@@ -5,10 +5,13 @@ import { auth } from "../../../firebase"; // Import Firebase auth
 import "../Hero/Hero.scss";
 import HeroImg from "../../../assets/HeroImg.png";
 
+// Hero component for the landing page
 const Hero = () => {
   const navigate = useNavigate();
+  // State to track if user is signed in
   const [isSignedIn, setIsSignedIn] = useState(false);
 
+  // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsSignedIn(!!user);
@@ -16,7 +19,7 @@ const Hero = () => {
     return () => unsubscribe();
   }, []);
 
-  // Framer Motion animations
+  // Framer Motion animation variants for the feature boxes
   const boxVariants = {
     hidden: { opacity: 0, x: -50 },
     visible: (i) => ({
@@ -35,11 +38,13 @@ const Hero = () => {
     },
   };
 
+  // Animation variants for the hero image
   const imageVariants = {
     hidden: { opacity: 0, x: 50 },
     visible: { opacity: 1, x: 0, transition: { delay: 0.8, duration: 0.6 } },
   };
 
+  // Data for the feature boxes
   const boxes = [
     { text: "Share Code", bgColor: "#676f9d", textColor: "white", width: "50%" },
     {
@@ -52,6 +57,8 @@ const Hero = () => {
     { text: "Write Blogs", bgColor: "#676f9d", textColor: "white", width: "35%" },
   ];
 
+  // Handle Get Started button click
+  // If signed in, go to /feed, else redirect to login
   const handleGetStartedClick = () => {
     if (isSignedIn) {
       navigate("/feed");
@@ -61,7 +68,9 @@ const Hero = () => {
   };
 
   return (
+    // Main hero section
     <section className="hero-section" id="home">
+      {/* Animated heading */}
       <motion.h1
         className="hero-heading"
         initial={{ opacity: 0, y: -20 }}
@@ -73,6 +82,7 @@ const Hero = () => {
 
       <div className="hero-container">
         <div className="hero-left">
+          {/* Animated description */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -84,6 +94,7 @@ const Hero = () => {
             to the next level.
           </motion.p>
 
+          {/* Animated Get Started button */}
           <motion.div
             className="button-get"
             initial={{ opacity: 0 }}
@@ -95,6 +106,7 @@ const Hero = () => {
             </button>
           </motion.div>
 
+          {/* Feature boxes with animation */}
           <div className="box-container">
             {boxes.map((box, i) => (
               <motion.div
@@ -119,6 +131,7 @@ const Hero = () => {
           </div>
         </div>
 
+        {/* Animated hero image */}
         <motion.div
           className="hero-right"
           initial="hidden"

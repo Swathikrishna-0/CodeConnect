@@ -9,7 +9,9 @@ import CodeSnippet from '../CodeSnippet/Codesnippet';
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
+// Myaccount component displays user's posts, likes, code snippets, bookmarks, and following
 const Myaccount = () => {
+  // State variables for user, posts, likes, code snippets, bookmarks, toggles, and following
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [likes, setLikes] = useState([]);
@@ -27,6 +29,7 @@ const Myaccount = () => {
   const [following, setFollowing] = useState([]); // State for following users
   const navigate = useNavigate();
 
+  // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -34,6 +37,7 @@ const Myaccount = () => {
     return () => unsubscribe();
   }, []);
 
+  // Fetch user's posts, likes, code snippets, bookmarks, etc.
   useEffect(() => {
     if (user) {
       const fetchUserData = async () => {
@@ -84,6 +88,7 @@ const Myaccount = () => {
     }
   }, [user]);
 
+  // Fetch users the current user is following
   useEffect(() => {
     if (user) {
       const fetchFollowing = async () => {
@@ -110,6 +115,7 @@ const Myaccount = () => {
     }
   }, [user]);
 
+  // Fetch and update user profile info
   useEffect(() => {
     if (user) {
       const fetchProfile = async () => {
@@ -125,6 +131,7 @@ const Myaccount = () => {
     }
   }, [user]);
 
+  // Delete a blog post by ID
   const handleDeletePost = async (postId) => {
     try {
       await deleteDoc(doc(db, 'posts', postId));
@@ -134,6 +141,7 @@ const Myaccount = () => {
     }
   };
 
+  // Delete a code snippet by ID
   const handleDeleteCodeSnippet = async (snippetId) => {
     try {
       await deleteDoc(doc(db, 'codeSnippets', snippetId));
@@ -143,31 +151,16 @@ const Myaccount = () => {
     }
   };
 
-  const handleShowPostsClick = () => {
-    setShowPosts(!showPosts);
-  };
-
-  const handleShowLikesClick = () => {
-    setShowLikes(!showLikes);
-  };
-
-  const handleShowCodeSnippetsClick = () => {
-    setShowCodeSnippets(!showCodeSnippets);
-  };
-
-  const handleShowLikedCodeSnippetsClick = () => {
-    setShowLikedCodeSnippets(!showLikedCodeSnippets);
-  };
-
-  const handleShowBookmarkedPostsClick = () => {
-    setShowBookmarkedPosts(!showBookmarkedPosts);
-  };
-
-  const handleShowBookmarkedCodeSnippetsClick = () => {
-    setShowBookmarkedCodeSnippets(!showBookmarkedCodeSnippets);
-  };
+  // Toggle handlers for showing/hiding sections
+  const handleShowPostsClick = () => { setShowPosts(!showPosts); };
+  const handleShowLikesClick = () => { setShowLikes(!showLikes); };
+  const handleShowCodeSnippetsClick = () => { setShowCodeSnippets(!showCodeSnippets); };
+  const handleShowLikedCodeSnippetsClick = () => { setShowLikedCodeSnippets(!showLikedCodeSnippets); };
+  const handleShowBookmarkedPostsClick = () => { setShowBookmarkedPosts(!showBookmarkedPosts); };
+  const handleShowBookmarkedCodeSnippetsClick = () => { setShowBookmarkedCodeSnippets(!showBookmarkedCodeSnippets); };
 
   return (
+    // Main container for My Account page
     <Box
       sx={{
         p: 4,
@@ -179,6 +172,7 @@ const Myaccount = () => {
         color: "#ffffff",
       }}
     >
+      {/* User profile section */}
       <Box
         sx={{
           display: "flex",
@@ -188,7 +182,6 @@ const Myaccount = () => {
           p: 2,
           borderRadius: "8px",
         }}
-       
       >
         <Avatar
           src={user?.photoURL || "/default-avatar.png"}
@@ -204,6 +197,7 @@ const Myaccount = () => {
         </Box>
       </Box>
 
+      {/* Sections for posts, likes, code snippets, bookmarks, etc. */}
       {[
         {
           title: "My Posts",
@@ -265,6 +259,7 @@ const Myaccount = () => {
             borderRadius: "8px",
           }}
         >
+          {/* Section title and toggle button */}
           <Typography
             variant="h6"
             sx={{ color: "#ffb17a", fontWeight: "bold", mb: 2 }}
@@ -282,6 +277,7 @@ const Myaccount = () => {
           >
             {section.show ? `Hide ${section.title}` : `Show ${section.title}`}
           </Button>
+          {/* Section content: list of posts/snippets with optional delete button */}
           {section.show && (
             <Box>
               {section.items.map((item) => (
@@ -312,6 +308,7 @@ const Myaccount = () => {
                     </IconButton>
                   )}
                   <Box sx={{ mt: 4 }}>
+                    {/* Render BlogPost or CodeSnippet component */}
                     <section.component {...{ [section.component === BlogPost ? "post" : "snippet"]: item }} />
                   </Box>
                 </Box>

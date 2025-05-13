@@ -5,11 +5,14 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebase";
 import CommentIcon from "@mui/icons-material/Comment";
 
+// CommentSection component for displaying and posting comments in a forum group question
 const CommentSection = ({ questionId, groupId }) => {
+  // State for user, comment input, and comments list
   const [user, setUser] = useState(null);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
 
+  // Listen for authentication state changes and fetch user profile if logged in
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -32,6 +35,7 @@ const CommentSection = ({ questionId, groupId }) => {
     return () => unsubscribe();
   }, []);
 
+  // Listen for comments in the Realtime Database for the given group/question
   useEffect(() => {
     const db = getDatabase();
     const commentsRef = ref(
@@ -55,6 +59,7 @@ const CommentSection = ({ questionId, groupId }) => {
     return () => unsubscribe();
   }, [groupId, questionId]); // Re-fetch data when groupId or questionId changes
 
+  // Handle posting a new comment
   const handlePostComment = async () => {
     if (!comment.trim()) {
       alert("Comment cannot be empty.");
@@ -86,6 +91,7 @@ const CommentSection = ({ questionId, groupId }) => {
 
   return (
     <Box sx={{ marginTop: "10px" }}>
+      {/* Comment input box */}
       <Box
         sx={{
           display: "flex",
@@ -127,6 +133,7 @@ const CommentSection = ({ questionId, groupId }) => {
         </Button>
       </Box>
 
+      {/* List of comments */}
       <Box sx={{ marginTop: "20px" }}>
         <Typography
           variant="h6"

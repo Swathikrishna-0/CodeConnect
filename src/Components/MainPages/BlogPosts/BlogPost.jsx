@@ -6,12 +6,14 @@ import { Box, Typography, IconButton, Avatar } from "@mui/material";
 import { auth, db } from "../../../firebase";
 import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 
+// BlogPost component displays a single blog post card with like/bookmark functionality
 const BlogPost = ({ post }) => {
   const user = auth.currentUser;
   const navigate = useNavigate();
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
 
+  // Set liked and bookmarked state based on user and post data
   useEffect(() => {
     if (user) {
       setLiked(post.likes?.includes(user.uid));
@@ -19,6 +21,7 @@ const BlogPost = ({ post }) => {
     }
   }, [user, post]);
 
+  // Handle like button click
   const handleLike = async () => {
     if (!user) return;
     const postRef = doc(db, "posts", post.id);
@@ -30,6 +33,7 @@ const BlogPost = ({ post }) => {
     setLiked(!liked);
   };
 
+  // Handle bookmark button click
   const handleBookmark = async () => {
     if (!user) return;
     const postRef = doc(db, "posts", post.id);
@@ -41,6 +45,7 @@ const BlogPost = ({ post }) => {
     setBookmarked(!bookmarked);
   };
 
+  // Navigate to the blog post detail page
   const handleViewPost = () => {
     navigate(`/feed/blogposts/${post.id}`);
   };
@@ -60,6 +65,7 @@ const BlogPost = ({ post }) => {
         },
       }}
     >
+      {/* User avatar and blog post title */}
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <Avatar
           src={post.userProfilePic || "/default-avatar.png"} // Use Gmail profile picture or fallback
@@ -92,10 +98,12 @@ const BlogPost = ({ post }) => {
             variant="body2"
             sx={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "0.9rem" }}
           >
+            {/* Display username and formatted date */}
             {post.userName} • {new Date(post.createdAt.seconds * 1000).toLocaleString()}
           </Typography>
         </Box>
       </Box>
+      {/* Hashtags */}
       <Typography
         variant="body2"
         sx={{
@@ -107,6 +115,7 @@ const BlogPost = ({ post }) => {
       >
         {post.hashtags?.map((hashtag) => `#${hashtag}`).join(" ")}
       </Typography>
+      {/* Like and bookmark buttons */}
       <Box
         sx={{
           display: "flex",

@@ -8,10 +8,13 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth } from "../../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
+// DevCardPage component displays the user's Dev Card and export options
 const DevCardPage = () => {
+  // State for user and profile data
   const [user, setUser] = useState(null);
   const [profileData, setProfileData] = useState(null);
 
+  // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -19,6 +22,7 @@ const DevCardPage = () => {
     return () => unsubscribe();
   }, []);
 
+  // Fetch user profile data from Firestore
   useEffect(() => {
     if (user) {
       const fetchProfileData = async () => {
@@ -36,6 +40,7 @@ const DevCardPage = () => {
     }
   }, [user]);
 
+  // Export Dev Card as PDF using html2canvas and jsPDF
   const exportToPDF = () => {
     const input = document.getElementById("dev-card");
     html2canvas(input).then((canvas) => {
@@ -48,6 +53,7 @@ const DevCardPage = () => {
     });
   };
 
+  // Export Dev Card as PNG image using html2canvas
   const exportToImage = () => {
     const input = document.getElementById("dev-card");
     html2canvas(input).then((canvas) => {
@@ -58,6 +64,7 @@ const DevCardPage = () => {
     });
   };
 
+  // Show loading state if profile data is not loaded yet
   if (!profileData) {
     return (
       <Container
@@ -72,6 +79,7 @@ const DevCardPage = () => {
   }
 
   return (
+    // Main container for Dev Card and export buttons
     <Container
       maxWidth="md"
       sx={{
@@ -86,6 +94,7 @@ const DevCardPage = () => {
         alignItems: "center",
       }}
     >
+      {/* Heading */}
       <Typography
         variant="h4"
         sx={{ mb: 4, color: "#ffb17a", fontWeight: "bold" }}
@@ -93,6 +102,7 @@ const DevCardPage = () => {
         Your Dev Card
       </Typography>
 
+      {/* DevCard component displays user profile info */}
       <DevCard
         firstName={profileData.firstName}
         lastName={profileData.lastName}
@@ -120,6 +130,7 @@ const DevCardPage = () => {
         openToWork={profileData.openToWork ? "Yes" : "No"}
         openSource={profileData.openSource ? "Yes" : "No"}
       />
+      {/* Export buttons */}
       <Container>
         <Button
           onClick={exportToPDF}
