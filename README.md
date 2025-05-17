@@ -11,6 +11,7 @@ CodeConnect is a collaborative platform designed to connect techies, it's a deve
 - [Project Structure](#project-structure)
 - [Setup Instructions](#setup-instructions)
 - [Contact](#contact)
+- [Setup Instructions With Docker](#setup-instructions-with-docker)
 
 ---
 
@@ -118,10 +119,6 @@ npm install
 Create a `.env.local` file in the project root and add the following:
 
 ```env
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
-CLERK_SECRET_KEY=your_clerk_secret_key_here
-
 # Firebase Configuration
 REACT_APP_FIREBASE_API_KEY=your_firebase_api_key_here
 REACT_APP_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain_here
@@ -129,6 +126,7 @@ REACT_APP_FIREBASE_PROJECT_ID=your_firebase_project_id_here
 REACT_APP_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket_here
 REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id_here
 REACT_APP_FIREBASE_APP_ID=your_firebase_app_id_here
+REACT_APP_DATABASE_URL=your_firebase_app_database_url_here
 
 # Optional: Google Analytics
 measurementId=your_google_analytics_measurement_id_here
@@ -175,8 +173,42 @@ Navigate to [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
+## Setup Instructions With Docker
+
+### 1. 🐳 Build the Docker Image
+
+Make sure you are in the project root directory (where the `Dockerfile` is located):
+
+```bash
+docker build -t codeconnect .
+```
+
+### 2. 🚀 Run the Docker Container
+
+```bash
+docker run -p 4173:4173 codeconnect
+```
+
+The app will be available at [http://localhost:4173](http://localhost:4173).
+
+### 3. ⚙️ Environment Variables
+
+If you need to use environment variables, you can pass them at runtime using the `--env-file` option:
+
+```bash
+docker run --env-file .env.local -p 4173:4173 codeconnect
+```
+
+> **Note:** Make sure your `.env.local` file is present in the project root and contains all required variables.
+
+### 4. 🧹 Docker Ignore
+
+The `.dockerignore` file is used to prevent copying unnecessary files (like `node_modules`, `.git`, etc.) into the Docker image.
+
+---
+
 ## Contact
 
-For questions or support, please open an issue or contact the maintainer at [swathipriyamoru@gmail.com].
+For questions or support, please open an issue or contact the maintainer at [ssspriyamoru@gmail.com].
 
 ---
