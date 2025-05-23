@@ -209,6 +209,6 @@ The `.dockerignore` file is used to prevent copying unnecessary files (like `nod
 
 ## Contact
 
-For questions or support, please open an issue or contact the maintainer at ssspriyamoru@gmail.com.
+For questions or support, please open an issue or contact the maintainer at [ssspriyamoru@gmail.com].
 
 ---
